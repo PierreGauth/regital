@@ -1,0 +1,61 @@
+﻿#fichier exemple en yaml
+
+# -*- coding: utf8 -*-
+
+---
+soirée:
+
+  date: 1717-11-02  					# Année-Mois-Jour
+  libellé date reg: "mercordi  2  zug∞"
+  ref registre: "TH-OC-10-78"
+  num page pdf: 1
+  
+  représentation:
+    - { titre brenner: "prince jaloux", titre: "fortunade Gielosie", langue: it/fr, auteur: "cicognini", première représentation: 1717-05-20 }
+    - { titre brenner: "prince jaloux", titre: "fortunade Gielosie", langue: it/fr, auteur: "cicognini", première représentation: 1717-05-20 }
+  animation:
+    - { type: "compliment", position: 2, auteur: "Alborgheti", description: "" }
+    
+  budget:
+      
+    dépenses:
+      total dépenses: 139.7.0
+      montant du cachet: 6     			# valeur parmi '6' '9' '12' '12.25' '12.5' '13' '13.75' '14' '14.75' '15'
+      part des auteurs:  
+      débit:
+        - { libelle: "lista del puruch", type: "ordinaire", traduction: "", mots cles: "", cout: 18 } # mots-cles ? traduction (it->fr)? dans ce cas : internationalisation
+        - { libelle: "lion", type: "animaux", traduction: "", mots cles: "", cout: 18 }
+        - { libelle: "chaises", type: "accessoire", traduction: "", mots_cles: "", cout: 18 }
+        - { libelle: "bougies", type: "accessoire", traduction: "", mots_cles: "", cout: 18 }
+        - { libelle: "violon", type: "musique", traduction: "", mots_cles: "", cout: 18 }
+        - { libelle: "danceurs", type: "artiste", traduction: "", mots_cles: "", cout: 18 }
+        - { libelle: "danceurs", type: "artiste", traduction: "", mots_cles: "", cout: 18 }
+
+    billeterie:
+      - { type billet: "parterre", billets: 52, recette: 208 }
+      - { type billet: "premières loges", billets: 52, recette: 208 }
+      - { type billet: "balcon premieres loges", billets: 34, recette: 68 }
+      - { type billet: "deuxiemes loges", billets: 52, recette: 208 }
+      - { type billet: "balcon deuxiemes loges", billets: 52, recette: 208 } 
+      - { type billet: "troisiemes loges", billets: 52, recette: 208 }
+      - { type billet: "paradis", billets: 52, recette: 208 }
+      - { type billet: "supplement", billets: 52, recette: 208 }
+      - { type billet: "personnalités", billets: 52, recette: 208 }
+    
+    nb total billets vendus: 197
+    recette billets vendus: 397.1.0
+    
+    debit derniere soirée:    			# dette héritée de la précédente soirée, vide sinon. 
+    total depenses corrigé:  			# dépenses + débit dernière soirée
+    quart pauvre: 96.17.6 				# impôt sur la recette (calculé comment ?)
+    debit initial: 236.40.6 			# quart du pauvre + total des dépenses corrigé
+    reste: 151.5.0  					# |recette billets - débit initial (quart du pauvre + total dépenses corrigé)|
+    credit: 387.1.0
+    credit final: 31.5.0 				#avanza
+    r_débit_total:  			
+    r_crédit_total:   			
+    anecdote: |
+        "description d'une anecdote
+        sur une ou plusieurs ligne(s)"
+    redacteurs: ["Alborgheti", "Bissoni"]
+...
