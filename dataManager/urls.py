@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     # ex: /saisie/5/vote/
     url(r'^(?P<saisie_id>\d+)/vote/$', views.vote, name='vote'),
 	# ex: /dataManager/importation/file.yml
-	url(r'^importation/$', views.importation, name='importation'),
+	url(r'^importation/$', views.importation, name='importation'),	
+	url(r'^test/$', views.test, name='importation'),
 )

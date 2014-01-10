@@ -18,4 +18,8 @@ def vote(request, saisie_id):
 def importation(request):
 	importer = Importer()
 	#return HttpResponse("Imported : %s" % importer.importYaml('dataManager/personne_regital_yaml.yml'))
-	return HttpResponse("Imported : %s" % importer.importYaml('dataManager/yaml_pivot_2.yml'))
+	return HttpResponse("%s" % importer.importYaml('dataManager/yaml_pivot_2.yml'))
+	
+def test(request):
+	importer = Importer()
+	return HttpResponse("%s" % importer.recreateYaml('dataManager/yaml_pivot_2.yml').replace("}", "}<br/>").replace("-", "<br/>-"))
