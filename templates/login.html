@@ -2,7 +2,7 @@
 	<a href="/logout"><button type="button" class="btn btn-lg btn-primary">Déconnexion</button></a>
 {% else %}
 	<button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#myModal">Connexion</button>
-	<style type="text/css">
+	<!-- <style type="text/css">
 	 .modal {
 		padding: 20px;
 		max-width: 300px;
@@ -26,17 +26,18 @@
 		margin-bottom: 15px;
 		padding: 7px 9px;
 	  }
-	</style>
-    <script>
+	</style> -->
+   <!--  <script>
 		$('#myModal').modal().css(
             {
                 'margin-left': function () {
                     return -($(this).width() / 2);
                 }
             })
-	</script>
+	</script> -->
 	<!-- Modal -->
-	<div id="myModal" class="modal fade hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+	<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog"><div class="modal-content">
 	  <div class="modal-header">
 		<h3 id="myModalLabel">Connexion</h3>
 	  </div>
@@ -44,8 +45,8 @@
 		<form class="form-signin" action="/login/" method="post">
 		  {% csrf_token %}
 			<h2 class="form-signin-heading"></h2>
-			<input type="text" class="input-block-level" placeholder="Identifiant" id="username" name="username">
-			<input type="password" class="input-block-level" placeholder="Mot de passe" name="password" id="password">
+			<input type="text" class="form-control" placeholder="Identifiant" id="username" name="username">
+			<input type="password" class="form-control" placeholder="Mot de passe" name="password" id="password">
 			<label class="checkbox"><input type="checkbox" value="remember-me"> Se souvenir de moi</label>
 			<button class="btn btn-lg btn-primary" type="submit">Se Connecter</button>
 			<script type="text/javascript">
@@ -55,6 +56,6 @@
 			</script>
 			<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#myModal">Annuler</button>
 		</form>
-	  </div>  
+	  </div></div></div>  
 	</div>
 {% endif %}

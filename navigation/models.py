@@ -2,7 +2,7 @@
 from django.db.models.signals import pre_init
 from django.core.exceptions import ValidationError
 from django.core.exceptions import NON_FIELD_ERRORS
-
+from django import forms
 
 ### définition du modèle de données
 
@@ -349,8 +349,8 @@ class Personne(models.Model):
 	prenom = models.CharField(max_length=64, blank=True)
 	pseudonyme = models.CharField(max_length=64, blank=True) # pour les acteurs essentiellement
 	uri_cesar = models.URLField(max_length=256, null=True, blank=True)
-	genre = models.CharField(max_length=1, choices=T_GENRE, default='-', blank=True)
-	nationalite = models.CharField(max_length=3, choices=T_NATIONALITE, default='-', blank=True)
+	genre = models.CharField(max_length=1, choices=T_GENRE, default='-', blank=False)
+	nationalite = models.CharField(max_length=3, choices=T_NATIONALITE, default='-', blank=False)
 	titre = models.CharField(max_length=64, blank=True)
 	date_de_naissance = models.DateField(null=True, blank=True)
 	date_de_deces = models.DateField(null=True, blank=True)
@@ -419,6 +419,37 @@ class Role(models.Model):
 # définition de tous les formulaires associés au modèle (un par classe)
 from django.forms.models import modelform_factory
 
+# class PersonneForm(forms.ModelForm):
+    # class Meta:
+        # model = Author
+        # fields = ('name', 'title')
+
+    # def clean_name(self):
+        # # custom validation for the name field
+        # ...
+
+
+
+# class PersonneForm(forms.Form):
+    # nom = forms.CharField(label='Nom', forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nom'}))        
+    
+PersonneForm = modelform_factory( Personne,  
+  widgets={
+    'nom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nom'}),
+	'prenom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Prénom'}),
+	'pseudonyme': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Pseudonyme'}),
+	'uri_cesar': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Uri Cesar'}),
+	'genre': forms.RadioSelect(attrs={'class' : 'radio inline'}),
+	'nationalite': forms.Select(attrs={'class' : 'form-control'}),
+	'titre': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre'}),
+	'date_de_naissance': forms.TextInput(attrs={'class' : 'form-control', 'value':'02-16-2012', 'id' : 'dp1' }),
+	'date_de_deces': forms.TextInput(attrs={'class' : 'form-control', 'value':'02-16-2012', 'id' : 'dp2'}),
+	'plus_dinfo': forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : '...'})
+    },
+  labels={
+    'prenom': 'Prénom',
+  })
+    
 PageRegistreForm = modelform_factory(PageRegistre)
 TransactionSoireeForm = modelform_factory(TransactionSoiree)
 TransactionAbonnementForm = modelform_factory(TransactionAbonnement)
@@ -433,6 +464,5 @@ BilletterieForm = modelform_factory(Billetterie)
 SoireeForm = modelform_factory(Soiree)
 RepresentationForm = modelform_factory(Representation)
 AnimationForm = modelform_factory(Animation)
-PersonneForm = modelform_factory(Personne)
 PieceForm = modelform_factory(Piece)
 RoleForm = modelform_factory(Role)

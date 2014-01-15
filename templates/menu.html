@@ -3,7 +3,5 @@
 	<li {% if active == "rechercher" %}class="active" {% endif %}><a href="/search/">Rechercher</a></li>
 	<li {% if active == "statistiques" %}class="active" {% endif %}><a href="/stat/">Statistiques</a></li>
 	<li {% if active == "contact" %}class="active" {% endif %}><a href="/contact/">Contact</a></li>
-	{% if user.is_authenticated %}
-		<li {% if active == "saisie" %}class="active" {% endif %}><a href="/saisie/">Saisie</a></li>
-	{% endif %}		
-</uls>
+	{% if user.is_authenticated %}<li {% if active == "saisie" %}class="active" {% endif %}><a href="/saisie/">Saisie</a></li>{% endif %}		
+</ul>
