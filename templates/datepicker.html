@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Datepicker for Bootstrap, from Twitter</title>
+    <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="../static/datepicker/css/datepicker.css" rel="stylesheet">
+  </head>
+
+  <body>		 
+    <input type="text" class="span2" value="16-02-2012" id="dp1" >
+
+        
+    <script src="../static/jquery/jquery.js"></script>
+    <script src="../static/datepicker/js/bootstrap-datepicker.js"></script>
+	<script>
+		$(function(){
+			var myDate = $('#dp1').datepicker({format: 'dd-mm-yyyy'}).on('changeDate', function(ev) {
+                myDate.hide();
+            }).data('datepicker');
+		});
+	</script>
+  </body>
+ </html>
