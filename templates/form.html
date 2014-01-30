@@ -1,26 +1,30 @@
 <link href="/static/datepicker/css/datepicker.css" rel="stylesheet">
-<form class="form-horizontal" role="form" method="post" action="{{action}}">
+{% if alert == 'on' %}<div class="alert alert-{{ alert_type }}">{{ alert_message|safe }}</div>{% endif %}
+<form class="form-horizontal" method="post" action="{{action}}">
+    {% csrf_token %}
     {{ formset.management_form }}
     {% for form in formset %}
         <div class="form-inline"> 
-            <div class="col-sm-2 control-label">{{ form.label_tag }} &nbsp;</div>
+            <div class="col-sm-2 control-label">{{ form.label_tag }}</div>
             <div  class="col-sm-10">            
             {% for field in form %}
-                {{ field }}&nbsp;&nbsp;&nbsp;
+                {{ field }}
             {% endfor %}  
             </div>
         </div>
-    {% endfor %}
+        <br/><br/>
+    {% endfor %}   
+    <button class="btn btn-primary" type="submit">Envoyer</button>
 </form>
 
 <script src="/static/datepicker/js/bootstrap-datepicker.js"></script>
 <script>
     $(function(){
-        var myDate = $('#dp1').datepicker({format: 'dd-mm-yyyy'}).on('changeDate', function(ev) {
-            myDate.hide();
+      {% for date_picker_id in date_picker_id_list %}
+        var myDatePicker{{forloop.counter}} = $({{ date_picker_id }}).datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) {
+          myDatePicker{{forloop.counter}}.hide();
         }).data('datepicker');
-        var myDate2 = $('#dp2').datepicker({format: 'dd-mm-yyyy'}).on('changeDate', function(ev) {
-            myDate2.hide();
-        }).data('datepicker');
+      {% endfor %}
     });
 </script>
+

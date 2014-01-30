@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load setvar %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+
+ <ul>
+{% for id,item in list.items %}
+		<li><a href="{{link}}{{id}}">{{item}}</a></li>
+{% endfor %}
+</ul>
+
+{% endblock %}
