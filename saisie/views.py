@@ -1,6 +1,6 @@
 
  #-*- coding: utf-8 -*-
-
+#test
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse
