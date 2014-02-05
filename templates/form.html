@@ -17,6 +17,27 @@
     <button class="btn btn-primary" type="submit">Envoyer</button>
 </form>
 
+	<!-- Modal -->
+	<div id="cesarModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="myModalLabel">Cesar</h3>
+        </div>
+        <div class="modal-body" id="modalContent">			
+          <div class="progress progress-striped active">
+            <div class="progress-bar"  role="progressbar" style="width: 100%">
+              <span class="sr-only">Searching ...</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn" data-dismiss="modal">Fermer</button>
+        </div>
+      </div>
+    </div>  
+	</div>
+
 <script src="/static/datepicker/js/bootstrap-datepicker.js"></script>
 <script>
     $(function(){
@@ -26,5 +47,33 @@
         }).data('datepicker');
       {% endfor %}
     });
+    
+    function toogleModal() {
+      $('#cesarModal').modal('toggle')
+    }
+    
+    function addToModal(content) {
+      document.getElementById('modalContent').innerHTML = content;
+    }
+
+    function setValue(name,value) {
+      elements = document.getElementsByName(name);
+      if(elements.length == 1) { 
+        elements[0].value = value;
+      }
+      else {
+        for(i=0;i<elements.length;i++) {
+          if(elements[i].value==value) {
+            elements[i].checked = 'checked';
+          }
+          else {
+            elements[i].checked = '';
+          }
+        }
+      }
+    }      
+    
+    {{ specific_function|safe }} 
+    
 </script>
 

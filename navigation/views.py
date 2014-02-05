@@ -8,7 +8,8 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from navigation.models import Personne, PersonneForm
+from navigation.models import Personne
+from navigation.forms import PersonneForm
 
 def index(request):
     return render_to_response('accueil.html', {"active":"accueil"}, context_instance=RequestContext(request))
@@ -33,16 +34,56 @@ def log_out(request):
 	return HttpResponseRedirect('/')
 	
 @login_required(login_url='/login/')
-def saisie(request, active_tab='Soiree', alert='off', alert_type='success', alert_message="unknown"):
+def saisie(request, active_tab='Personne', alert='off', alert_type='success', alert_message="unknown"):
+
     personneForm =  render_to_string(
         'form.html' , 
         {'action' : '/saisie/new/personne/', 'formset' : PersonneForm(), 
-        'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message, 'date_picker_id_list' : ['dp1','dp2']},
+        'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message, 'date_picker_id_list' : ['dp1','dp2'],
+        'specific_function' : u'''
+              function recupInfo() { 
+                var nom = document.getElementsByName("nom")[0].value;
+                var prenom = document.getElementsByName("prenom")[0].value; 
+                if (nom != "" && prenom != "") { 
+                  $.get( "../saisie/info/personne/"+nom+"/"+prenom, function( data ) 
+                      {
+                          addToModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personne ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+                      });
+                  toogleModal(); }
+              }
+              
+              
+              function parseInfo(id) {
+                $.get( "../saisie/info/personne/"+id, function( data ) 
+                {
+                    var values = data.split(';');                   
+                    setValue('titre',values[1]);                                      
+                    setValue('prenom',values[2]);                                                        
+                    setValue('nom',values[4]);                                     
+                    //setValue('date_de_naissance',values[5]);                                     
+                    //setValue('date_de_deces',values[6]);                                               
+                    setValue('pseudonyme',values[7]);
+                    if(values[8] == 'male') setValue('genre','M');
+                    else if(values[8] == 'female') setValue('genre','F'); 
+                    if(values[9] == 'French') setValue('nationalite', 'fr');
+                    else if(values[9] == 'Italian') setValue('nationalite', 'it');
+                    else if(values[9] == 'Deutsch') setValue('nationalite', 'de');
+                    else if(values[9] == 'English') setValue('nationalite', 'en');
+                    else setValue('nationalite', '-');
+                    if (values[10] /= 'undefined') setValue('plus_dinfo', values[10]);
+                    setValue('uri_cesar','http://cesar.org.uk/cesar2/people/people.php?fct=edit&person_UOID='+id);
+                });
+                toogleModal();
+              }
+
+              '''},
         context_instance=RequestContext(request))
+        
     return render_to_response('tab_page.html', 
         {"title":"Saisie", "active":"saisie", "tab_list" : 
         {"Personne" : personneForm, "Soiree":"azertyu", "Piece":"123456789"}, "active_tab":active_tab}, 
         context_instance=RequestContext(request))
+
     
 @login_required(login_url='/login/')
 def creerPersonne(request):
