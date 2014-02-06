@@ -81,7 +81,7 @@ def saisie(request, active_tab='Personne', alert='off', alert_type='success', al
         
     return render_to_response('tab_page.html', 
         {"title":"Saisie", "active":"saisie", "tab_list" : 
-        {"Personne" : personneForm, "Soiree":"azertyu", "Piece":"123456789"}, "active_tab":active_tab}, 
+        {"Personne" : personneForm, "Soiree":soireeForm, "Piece":"123456789"}, "active_tab":active_tab}, 
         context_instance=RequestContext(request))
 
     
@@ -104,7 +104,7 @@ def creerPersonne(request):
         personne.save()
         message = u"<b>" + prenom + " " + nom + u"</b> a bien été ajouté dans la base"
 	return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
-  
+	  
 def listPersonnes(request):
     personnes = Personne.objects.all()
     personnes_nom = {}

@@ -8,5 +8,5 @@ urlpatterns = patterns('',
   url(r'^info/personne/(?P<id>\d+)$', cesar.getInfoPersonne),
   url(r'^new/personne/$', views.creerPersonne),
   url(r'^new/piece/$', views.creerPersonne),
-  url(r'^new/soiree/$', views.creerPersonne),
+  url(r'^new/soiree/$', views.creerSoiree),
 	)
