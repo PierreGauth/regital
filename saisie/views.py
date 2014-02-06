@@ -18,7 +18,7 @@ def saisie(request, active_tab='Personne', alert='off', alert_type='success', al
 
     personneForm =  render_to_string(
         'form.html' , 
-        {'action' : '/saisie/new/personne/', 'formset' : PersonneForm(), 
+        {'action' : '/saisie/new/personne/', 'formset_list' : [PersonneForm()], 
         'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message, 'date_picker_id_list' : ['dp1','dp2'],
         'specific_function' : u'''
               function recupInfo() { 
@@ -62,7 +62,7 @@ def saisie(request, active_tab='Personne', alert='off', alert_type='success', al
         
     soireeForm =  render_to_string(
         'form.html' , 
-        {'action' : '/saisie/new/soiree/', 'formset' : SoireeForm(), 
+        {'action' : '/saisie/new/soiree/', 'formset_list' : [SoireeForm()], 
         'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message},
         context_instance=RequestContext(request))
         
