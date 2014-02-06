@@ -94,8 +94,8 @@ def creerPersonne(request):
 @login_required(login_url='/login/')
 def creerSoiree(request):
     if request.POST:
-        nom = request.POST.get('nom', 'none')
-        prenom = request.POST.get('prenom', 'none')
+        date = request.POST.get('date', 'none')
+        libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
         pseudonyme = request.POST.get('pseudonyme', 'none')
         uri_cesar = request.POST.get('uri_cesar', 'none')
         genre = request.POST.get('genre', 'none')
@@ -108,5 +108,5 @@ def creerSoiree(request):
             nationalite=nationalite, titre=titre, date_de_naissance=date_de_naissance, 
             date_de_deces=date_de_deces, plus_dinfo=plus_dinfo)
         personne.save()
-        message = u"<b>" + prenom + " " + nom + u"</b> a bien été ajouté dans la base"
+        message = u"<b>La soiree du " + date + "u (" + nom + u")</b> a bien été ajouté dans la base"
 	return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
