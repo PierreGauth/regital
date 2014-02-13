@@ -345,7 +345,7 @@ class Personne(models.Model):
 		('en', 	'anglaise'),
 		('-',	'indéterminée')
 	)
-	nom = models.CharField(max_length=64, null=False)
+	nom = models.CharField(max_length=64, null=False, blank=False)
 	prenom = models.CharField(max_length=64, blank=True)
 	pseudonyme = models.CharField(max_length=64, blank=True) # pour les acteurs essentiellement
 	uri_cesar = models.URLField(max_length=256, null=True, blank=True)
@@ -366,16 +366,15 @@ class Piece(models.Model):
 	T_LANGUE = (
 	    ('fr', 		'français'),
 	    ('it', 		'italien'),
-		('it/fr', 	'italien et français'),
-		('-', 		'indéterminé')
+		('it/fr', 	'italien et français')
 	)
-	titre = models.CharField(max_length=128)
+	titre = models.CharField(max_length=128, null=False, blank=False)
 	titre_brenner = models.CharField(max_length=128, null=True, blank=True)
 	uri_theaville = models.URLField(max_length=256, null=True, blank=True)
 	date_premiere = models.DateField(null=True, blank=True)
-	langue = models.CharField(max_length=5, choices=T_LANGUE, default='-', blank=True)
-	commentaire = models.TextField(null=True, blank=True) # pour consigner les anecdotes
+	langue = models.CharField(max_length=5, choices=T_LANGUE, default='-', blank=True)  
 	auteurs = models.ManyToManyField(Personne, null=True, blank=True)
+	commentaire = models.TextField(null=True, blank=True) # pour consigner les anecdotes
 
 	def __unicode__(self):
 		return '{0.titre_brenner!r} ({0.titre})'.format(self)

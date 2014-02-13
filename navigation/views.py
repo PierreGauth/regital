@@ -9,7 +9,6 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from navigation.models import Personne
-from navigation.forms import PersonneForm
 
 def index(request):
     return render_to_response('accueil.html', {"active":"accueil"}, context_instance=RequestContext(request))
