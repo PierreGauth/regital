@@ -6,29 +6,35 @@ from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse     
  
-def searchPersonne(request, titre='', auteur=''):        
-#    payload = {'r': 'piece', 'titre': titre, 'auteur': auteur,'crea_de_annee':'1709','crea_a_annee':'1794',
-#                'rep_de_annee':'1709', 'rep_a_annee':'1794', 'lieu':'', 'cible':'', 'source':''}
-#    r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload, 
-##       proxies= 
-##       {
-##         "http": "http://cache.wifi.univ-nantes.fr:3128",
-##         "https": "http://cache.wifi.univ-nantes.fr:3128",
-##       }
-#    )
-#    page = r.text
-     page = getPage1()
+def searchPiece(request, titre='', auteur=''):        
+  payload = {'r': 'pieces', 'titre': titre, 'auteur': auteur,'crea_de_annee':'1709','crea_a_annee':'1794',
+              'rep_de_annee':'1709', 'rep_a_annee':'1794'}
+  
+#  r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,   
+#  #       proxies= 
+#  #       {
+#  #         "http": "http://cache.wifi.univ-nantes.fr:3128",
+#  #         "https": "http://cache.wifi.univ-nantes.fr:3128",
+#  #       }
+#  )
+#  page = r.text
+  page = getPage1()
     
-    page = page[page.index("<!--   Document   -->"):page.index("<script>")]
-    if not '0 records matched your query' in page :   
-      page = page[page.index("<TR"):page.index("</TABLE")]
-      page = page.replace(u'<A HREF=\'../people/people.php?fct=edit&person_UOID=',u'<button type="button" class="btn" onClick=\'parsePersonneInfo(')
-      pattern = '\'>\w*</A>'
-      pattern = re.compile(pattern, re.UNICODE)
-      page = pattern.sub(u")'> <span class='glyphicon glyphicon glyphicon-arrow-right'></span></button>",page)
-      return HttpResponse("<table>" + page+ "</table>", content_type="text/plain")
-    else:
-      return HttpResponse('Aucune Personne ne correspond à ce nom sur cesar.org.uk', content_type="text/plain")
+  page = page[page.index("<!--   Document   -->"):page.index('<br class="nettoyeur" />')]
+  if not u'Aucune donnée disponible' in page :   
+    page = page[page.index("<table"):page.index("</table>")+8]
+    page = '<table>' + page[page.index("</thead>")+8:]
+    page = page.replace(u'<a href="index.php?r=pieces/afficher&amp;id=',
+      u'<button type="button" class="btn" onClick=\'parsePieceInfo(')
+    pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
+    pattern = re.compile(pattern, re.UNICODE)
+    page = pattern.sub(r")'><span class='glyphicon glyphicon-book'></span></button> \1",page)
+    pattern = '</td><td>'
+    pattern = re.compile(pattern, re.UNICODE)
+    page = pattern.sub(r")'><span class='glyphicon glyphicon-book'></span></button> \1",page)
+    return HttpResponse(page, content_type="text/plain")
+  else:
+    return HttpResponse('Aucune Personne ne correspond à ce nom sur theaville.org', content_type="text/plain")
     
 def getInfoPersonne(request, id):
     payload = {'fct': 'edit', 'person_UOID': id }
@@ -57,13 +63,9 @@ def getInfoPersonne(request, id):
     return HttpResponse(infos, content_type="text/plain")    
 
 def getPage1() :
-  return '''
-  
-
-<div id="document">
+  return u''' 
 
 <!--   Document   -->
-
 
 <small>Liste | <a href="index.php?r=pieces/cibles">Cibles</a> | <a href="index.php?r=pieces/lieux">Lieux</a> | <a href="index.php?r=pieces/auteurs">Auteurs&nbsp;</a></small><br /><br />
 
@@ -81,10 +83,10 @@ def getPage1() :
 </thead>
 <tbody>
   <tr>
-    <td><a href="index.php?r=pieces/afficher&amp;id=2">Achille et Déidamie</a></td>
-    <td><em>Achille et Déidamie</em> de Danchet et Campra</td>
-    <td>1735</td>
-    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=74">Riccoboni (François) dit Lélio fils<br />
+    <td><a href="index.php?r=pieces/afficher&amp;id=3">Alceste</a></td>
+    <td><em>Alceste</em> de Quinault et Lully</td>
+    <td>1728</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-FranÃƒÂ§ois) dit Dominique<br />
 <a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
   </tr>
 </tbody>
@@ -92,8 +94,24 @@ def getPage1() :
 <br />
 
 <script>
+$(document).ready(function(){
+  $('#table').dataTable({
 
+    "iDisplayLength": 25,
+    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+    "oLanguage": {
+		"sLengthMenu": "Afficher _MENU_ lignes",
+		"sSearch": "Recherche&nbsp;:",
+		"oPaginate": {
+			"sNext": "suivant",
+			"sPrevious": "pr&eacute;c&eacute;dent"
+		}
+    }
+  });
+});
+</script>
 
+<br class="nettoyeur" />
   '''
 
 def getPage2() :

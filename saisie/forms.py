@@ -26,7 +26,7 @@ PersonneForm = modelform_factory( Personne,
     
 PieceForm = modelform_factory( Piece,  
   widgets={
-    'titre': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre', 'onblur' :'recupInfo()'}),
+    'titre': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre', 'onblur' :'recupPieceInfo()'}),
     'titre_brenner': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre Brenner'}),
     'uri_theaville': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Uri Theaville'}),
     'date_premiere': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpiece1' }),

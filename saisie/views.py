@@ -29,6 +29,9 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
         'form.html' , 
         {'action' : '/saisie/new/piece/', 'formset_list' : [PieceForm()], 'date_picker_id_list' : ['dpiece1'],
         'previous_values' : previous_values, 'specific_function' : getPieceJs()},
+        context_instance=RequestContext(request)) + render_to_string(
+        'modal.html' , 
+        {'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
         context_instance=RequestContext(request))
         
     soireeForm = render_to_string(
@@ -190,7 +193,15 @@ function parsePersonneInfo(id) {
 def getPieceJs():
   return '''
 function recupPieceInfo() { 
-
+  var titre = document.getElementsByName("titre")[0].value;
+  //var prenom = document.getElementsByName("auteur")[0].value; 
+  if (titre != "") { 
+    $.get( "../saisie/info/piece/"+titre, function( data ) 
+        {
+          addTopieceModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personnes ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+        });
+        tooglepieceModal();
+     }
 }              
 
 function parsePieceInfo(id) {

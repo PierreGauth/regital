@@ -24,7 +24,7 @@ def searchPersonne(request, nom, prenom):
       page = page.replace(u'<A HREF=\'../people/people.php?fct=edit&person_UOID=',u'<button type="button" class="btn" onClick=\'parsePersonneInfo(')
       pattern = '\'>\w*</A>'
       pattern = re.compile(pattern, re.UNICODE)
-      page = pattern.sub(u")'> <span class='glyphicon glyphicon glyphicon-arrow-right'></span></button>",page)
+      page = pattern.sub(u")'> <span class='glyphicon glyphicon-user'></span></button>",page)
       return HttpResponse("<table>" + page+ "</table>", content_type="text/plain")
     else:
       return HttpResponse('Aucune Personne ne correspond à ce nom sur cesar.org.uk', content_type="text/plain")
