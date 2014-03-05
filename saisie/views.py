@@ -19,7 +19,8 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
     personneForm = render_to_string(
         'form.html' , 
         {'action' : '/saisie/new/personne/', 'formset_list' : [PersonneForm()],'date_picker_id_list' : ['dpersonne1','dpersonne2'], 
-        'previous_values' : previous_values, 'specific_function' : getPersonneJs()},
+        'previous_values' : previous_values, 'specific_function' : getPersonneJs(), 
+				'alertZoneId':'azpersonne'},
         context_instance=RequestContext(request)) + render_to_string(
         'modal.html' , 
         {'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar'},
@@ -28,7 +29,8 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
     pieceForm = render_to_string(
         'form.html' , 
         {'action' : '/saisie/new/piece/', 'formset_list' : [PieceForm()], 'date_picker_id_list' : ['dpiece1'],
-        'previous_values' : previous_values, 'specific_function' : getPieceJs()},
+        'previous_values' : previous_values, 'specific_function' : getPieceJs(),
+				'alertZoneId':'azpiece'},
         context_instance=RequestContext(request)) + render_to_string(
         'modal.html' , 
         {'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
@@ -55,12 +57,12 @@ def creerPersonne(request):
         uri_cesar = request.POST.get('uri_cesar', 'none')
         genre = request.POST.get('genre', 'none')
         nationalite = request.POST.get('nationalite', 'none')
-        titre = request.POST.get('titre', 'none')
+        titre = request.POST.get('titre_personne', 'none')
         date_de_naissance = request.POST.get('date_de_naissance', 'none')
         date_de_deces = request.POST.get('date_de_deces', 'none')
         plus_dinfo = request.POST.get('plus_dinfo', 'none')
         personne = Personne(nom=nom, prenom=prenom, pseudonyme=pseudonyme, uri_cesar=uri_cesar, genre=genre, 
-            nationalite=nationalite, titre=titre, date_de_naissance=date_de_naissance, 
+            nationalite=nationalite, titre_personne=titre, date_de_naissance=date_de_naissance, 
             date_de_deces=date_de_deces, plus_dinfo=plus_dinfo)
         try:
           personne.save()
@@ -75,7 +77,7 @@ def creerPersonne(request):
                       'uri_cesar':uri_cesar,
                       'genre':genre,
                       'nationalite':nationalite,
-                      'titre':titre,
+                      'titre_personne':titre,
                       'date_de_naissance':date_de_naissance,
                       'date_de_deces':date_de_deces,
                       'plus_dinfo' : plus_dinfo})
@@ -88,7 +90,7 @@ def creerPersonne(request):
                       'uri_cesar':uri_cesar,
                       'genre':genre,
                       'nationalite':nationalite,
-                      'titre':titre,
+                      'titre_personne':titre,
                       'date_de_naissance':date_de_naissance,
                       'date_de_deces':date_de_deces,
                       'plus_dinfo' : plus_dinfo}) 
@@ -157,21 +159,26 @@ def getPersonneJs():
   return '''
 function recupPersonneInfo() { 
   var nom = document.getElementsByName("nom")[0].value;
-  var prenom = document.getElementsByName("prenom")[0].value; 
-  if (nom != "" && prenom != "") { 
-    $.get( "../saisie/info/personne/"+nom+"/"+prenom, function( data ) 
+  var prenom = document.getElementsByName("prenom")[0].value;
+	 $.get( "/saisie/info/personne/"+nom+"/"+prenom, function( data ) 
         {
-          addTopersonneModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personnes ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
-        });
-        tooglepersonneModal();
-     }
-}              
+					if(data.indexOf("Aucune Personne ne correspond") == -1) {
+          	addTopersonneModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personnes ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+						document.getElementById("azpersonne").innerHTML="<div class='alert alert-info'>Nous avons trouvé des personnes similaires sur Cesar.org.uk <button class='btn btn-info' onclick='lauchPersonneModal();'>Voir</button></div>";
+					}
+        });    
+}
+
+function lauchPersonneModal() {
+	tooglepersonneModal();
+	document.getElementById('azpersonne').innerHTML='';
+}
 
 function parsePersonneInfo(id) {
-  $.get( "../saisie/info/personne/"+id, function( data ) 
+  $.get( "/saisie/info/personne/"+id, function( data ) 
   {
       var values = data.split(';');                   
-      setValue('titre',values[1]);                                      
+      setValue('titre_personne',values[1]);                                      
       setValue('prenom',values[2]);                                                        
       setValue('nom',values[4]);                                     
       //setValue('date_de_naissance',values[5]);                                     
@@ -184,7 +191,7 @@ function parsePersonneInfo(id) {
       else if(values[9] == 'Deutsch') setValue('nationalite', 'de');
       else if(values[9] == 'English') setValue('nationalite', 'en');
       else setValue('nationalite', '-');
-      if (values[10] /= 'undefined') setValue('plus_dinfo', values[10]);
+      if (values[10] != 'undefined') setValue('plus_dinfo', values[10]);
       setValue('uri_cesar','http://cesar.org.uk/cesar2/people/people.php?fct=edit&person_UOID='+id);
   });
   tooglepersonneModal();
@@ -198,14 +205,38 @@ function recupPieceInfo() {
   if (titre != "") { 
     $.get( "../saisie/info/piece/"+titre, function( data ) 
         {
-          addTopieceModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personnes ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+					if(data.indexOf("Aucune Piece ne correspond") == -1) {
+          	addTopieceModal("La piece que vous etes en train d\'enter correspond-t-elle à l\'une de ces pieces ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+						document.getElementById("azpiece").innerHTML="<div class='alert alert-info'>Nous avons trouvé des pieces similaires sur Theaville.org <button class='btn btn-info' onclick='lauchPieceModal();''>Voir</button></div>";
+					}
         });
-        tooglepieceModal();
      }
-}              
+}         
+
+function lauchPieceModal() {
+	tooglepieceModal();
+	document.getElementById('azpiece').innerHTML='';
+}
 
 function parsePieceInfo(id) {
-  $.get( "../saisie/info/personne/"+id, function( data ) 
+  $.get( "../saisie/info/piece/"+id, function( data ) 
   {
+			var values = data.split(';');                   
+      setValue('titre',values[1]);                                      
+      setValue('titre_brenner',values[2]);                                                        
+      setValue('nom',values[4]);                                     
+      //setValue('date_de_naissance',values[5]);                                     
+      //setValue('date_de_deces',values[6]);                                               
+      setValue('pseudonyme',values[7]);
+      if(values[8] == 'male') setValue('genre','M');
+      else if(values[8] == 'female') setValue('genre','F'); 
+      if(values[9] == 'French') setValue('nationalite', 'fr');
+      else if(values[9] == 'Italian') setValue('nationalite', 'it');
+      else if(values[9] == 'Deutsch') setValue('nationalite', 'de');
+      else if(values[9] == 'English') setValue('nationalite', 'en');
+      else setValue('nationalite', '-');
+      if (values[10] /= 'undefined') setValue('plus_dinfo', values[10]);
+      setValue('uri_theaville','http://cesar.org.uk/cesar2/people/people.php?fct=edit&person_UOID='+id);
   });
+  tooglepersonneModal();
 }'''

@@ -88,7 +88,7 @@ class BudgetSoiree(models.Model):
 	page_registre = models.OneToOneField(PageRegistre)
 
 	def __unicode__(self):
-		return 'Le {0.Soiree.date}: Dépenses={0.total_depenses_reg!s} | Recettes={0.total_recettes_reg!s}'.format(self)
+		return 'Depenses={0.total_depenses_reg!s} | Recettes={0.total_recettes_reg!s}'.format(self)
 
 def pre_init_budget( **kwargs):
 	attributes = kwargs['kwargs']
@@ -351,7 +351,7 @@ class Personne(models.Model):
 	uri_cesar = models.URLField(max_length=256, null=True, blank=True)
 	genre = models.CharField(max_length=1, choices=T_GENRE, default='-', blank=False)
 	nationalite = models.CharField(max_length=3, choices=T_NATIONALITE, default='-', blank=False)
-	titre = models.CharField(max_length=64, blank=True)
+	titre_personne = models.CharField(max_length=64, blank=True)
 	date_de_naissance = models.DateField(null=True, blank=True)
 	date_de_deces = models.DateField(null=True, blank=True)
 	plus_dinfo = models.TextField(null=True, blank=True)

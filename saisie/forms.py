@@ -13,7 +13,7 @@ PersonneForm = modelform_factory( Personne,
     'uri_cesar': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Uri Cesar'}),
     'genre': forms.RadioSelect(attrs={'class' : 'radio inline'}),
     'nationalite': forms.Select(attrs={'class' : 'form-control'}),
-    'titre': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre'}),
+    'titre_personne': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre', 'name' : 'titre_personne'}),
     'date_de_naissance': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpersonne1' }),
     'date_de_deces': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpersonne2'}),
     'plus_dinfo': forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : '...'})
@@ -77,7 +77,11 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
     'quart_pauvre_reg':'Quart Pauvre',
     'credit_total_reg':'Credit Total',
     'debit_total_reg':'Debit Total',
-    'reste_reg':'Reste'
+    'reste_reg':'Reste',
+		'total_depenses_reg': 'Total Dépenses',
+		'total_recettes_reg': 'Total Recettes',
+		'montant_cachet': 'Cachet',
+		'montant_cachet_auteur': 'Cachet Auteur',
 	}
 )  
 

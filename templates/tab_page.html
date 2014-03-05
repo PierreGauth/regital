@@ -13,6 +13,13 @@
 {% endfor %}
 </ul>
 <br/>
+{% if alert == 'on' %}
+<div class="alert alert-{{ alert_type }}">
+  {{ alert_message|safe }}
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+  </div>
+{% endif %}
+<br/>
 <div class="tab-content">
 {% for name, content in tab_list.items %}
 	{% if active_tab == name %}

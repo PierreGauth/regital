@@ -1,7 +1,8 @@
 {% if user.is_authenticated %}
-	<a href="/logout"><button type="button" class="btn btn-lg btn-info">Déconnexion</button></a>
+	<a href="/logout"><button type="button" class="btn btn-block" style="text-align: left; padding-left: 1em; padding-right: 1em;">Déconnexion <span class="glyphicon glyphicon-log-out" style="float:right;"/></button></a>
 {% else %}
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Connexion</button>
+	<button type="button" class="btn btn-block" data-toggle="modal" data-target="#myModal" style="text-align: left; padding-left: 1em; padding-right: 1em;">Connexion<span class="glyphicon glyphicon-log-in" style="float:right;"/>
+	</button>
 	<!-- Modal -->
 	<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog"><div class="modal-content">

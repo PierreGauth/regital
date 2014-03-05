@@ -7,60 +7,59 @@ from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse     
  
 def searchPiece(request, titre='', auteur=''):        
-  payload = {'r': 'pieces', 'titre': titre, 'auteur': auteur,'crea_de_annee':'1709','crea_a_annee':'1794',
-              'rep_de_annee':'1709', 'rep_a_annee':'1794'}
-  
-#  r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,   
-#  #       proxies= 
-#  #       {
-#  #         "http": "http://cache.wifi.univ-nantes.fr:3128",
-#  #         "https": "http://cache.wifi.univ-nantes.fr:3128",
-#  #       }
-#  )
-#  page = r.text
-  page = getPage1()
+	payload = {'r': 'pieces', 'titre': titre, 'auteur': auteur,'crea_de_annee':'1709','crea_a_annee':'1794',
+	          'rep_de_annee':'1709', 'rep_a_annee':'1794'}
+
+	#  r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,   
+	#         proxies= 
+	#         {
+	#           "http": "http://cache.wifi.univ-nantes.fr:3128",
+	#           "https": "http://cache.wifi.univ-nantes.fr:3128",
+	#         }
+	#  )
+	#  page = r.text
+	page = getPage1()
+
+	page = page[page.index("<!--   Document   -->"):page.index('<br class="nettoyeur" />')]
+	if not u'Aucune donnée disponible' in page :   
+		page = page[page.index("<table"):page.index("</table>")+8]
+		page = '<div style="overflow:auto; height:30em;"><table class="table table-striped">' + page[page.index("</thead>")+8:] + '</div>'
+		page = page.replace(r'<tr>', u'')
+		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"  onclick="parsePieceInfo(')		
+		pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
+		pattern = re.compile(pattern, re.UNICODE)
+		page = pattern.sub(r')"><td><span class="glyphicon glyphicon-book"></span></td><td>\1',page)
+		page = page.replace(u'<td>', u'<td style="vertical-align:middle;">')
+		page = page.replace(u'<a ', u'<span ')
+		return HttpResponse(page, content_type="text/plain")
+	else:
+		return HttpResponse('Aucune Piece ne correspond à ce nom sur theaville.org', content_type="text/plain")
     
-  page = page[page.index("<!--   Document   -->"):page.index('<br class="nettoyeur" />')]
-  if not u'Aucune donnée disponible' in page :   
-    page = page[page.index("<table"):page.index("</table>")+8]
-    page = '<table>' + page[page.index("</thead>")+8:]
-    page = page.replace(u'<a href="index.php?r=pieces/afficher&amp;id=',
-      u'<button type="button" class="btn" onClick=\'parsePieceInfo(')
-    pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
-    pattern = re.compile(pattern, re.UNICODE)
-    page = pattern.sub(r")'><span class='glyphicon glyphicon-book'></span></button> \1",page)
-    pattern = '</td><td>'
-    pattern = re.compile(pattern, re.UNICODE)
-    page = pattern.sub(r")'><span class='glyphicon glyphicon-book'></span></button> \1",page)
-    return HttpResponse(page, content_type="text/plain")
-  else:
-    return HttpResponse('Aucune Personne ne correspond à ce nom sur theaville.org', content_type="text/plain")
-    
-def getInfoPersonne(request, id):
-    payload = {'fct': 'edit', 'person_UOID': id }
-    r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
-      # ,proxies= 
-      # {
-        # "http": "http://cache.wifi.univ-nantes.fr:3128",
-        # "https": "http://cache.wifi.univ-nantes.fr:3128",
-      # }
-    )
-    page = r.text
-    # page = getPage2()
-    
-    page = page[page.index("<H1>People</H1>"):page.index("<H2>Notes</H2>")] 
-    infos = ''
-    
-    for i in range(1,10):
-      page = page[page.index('keyColumn')+1:]
-      if i == 8 :
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-23]
-      elif (i == 7) or (i == 6) : #si c'est une date
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
-      else:
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
-    
-    return HttpResponse(infos, content_type="text/plain")    
+def getInfoPiece(request, id):
+#    payload = {'fct': 'edit', 'person_UOID': id }
+#    r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
+#      # ,proxies= 
+#      # {
+#        # "http": "http://cache.wifi.univ-nantes.fr:3128",
+#        # "https": "http://cache.wifi.univ-nantes.fr:3128",
+#      # }
+#    )
+#    page = r.text
+	page = getPage2()
+
+	page = page[page.index("<H1>People</H1>"):page.index("<H2>Notes</H2>")] 
+	infos = ''
+
+	for i in range(1,10):
+		page = page[page.index('keyColumn')+1:]
+		if i == 8 :
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-23]
+		elif (i == 7) or (i == 6) : #si c'est une date
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
+		else:
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
+
+	return HttpResponse(infos, content_type="text/plain")    
 
 def getPage1() :
   return u''' 

@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from navigation.models import Personne
+from navigation.models import *
 
 def index(request):
     return render_to_response('accueil.html', {"active":"accueil"}, context_instance=RequestContext(request))
@@ -115,3 +115,60 @@ def listPersonnes(request):
     return render_to_response('list_page.html',
       {'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/'},
       context_instance=RequestContext(request))
+			
+def listPieces(request):
+  if request.POST:
+    search = request.POST.get('search', '')
+    pieces = Piece.objects.all().filter(titre__contains=search)
+  else:
+    pieces = Piece.objects.all()
+    
+  pieces_titre = {}
+  
+  for piece in pieces:
+    pieces_titre[piece.id] = piece.titre
+    
+  return render_to_response('list_page.html',
+    {'title':'Pieces', 'active':'pieces', 'list':pieces_titre, 'link':'/pieces/'},
+    context_instance=RequestContext(request))
+      
+def listSoirees(request):
+	if request.POST:
+		year = request.POST.get('year', '')
+		month = request.POST.get('month', '')
+		day = request.POST.get('day', '')
+		if year != '':
+			if month != '':
+				if day != '':
+					soirees = Soiree.objects.all().filter(date__year = year, date__month = month, date__day = day)
+				else:
+					soirees = Soiree.objects.all().filter(date__year = year, date__month = month)
+			else:
+				if day != '':
+					soirees = Soiree.objects.all().filter(date__year = year, date__day = day)
+				else:
+					soirees = Soiree.objects.all().filter(date__year = year)
+		else:
+			if month != '':
+				if day != '':
+					soirees = Soiree.objects.all().filter(date__month = month, date__day = day)
+				else:
+					soirees = Soiree.objects.all().filter(date__month = month)
+			else:
+				if day != '':
+					soirees = Soiree.objects.all().filter(date__day = day)
+				else:
+					soirees = Soiree.objects.all()
+
+	else:
+		soirees = Soiree.objects.all()
+
+	soiree_date = []
+
+	for soiree in soirees:
+		soiree_date.append({'Date' : str(soiree.date), 'Exist' : '1'})
+		
+	return render_to_response('list_soiree.html',
+	{'title':'Soirees', 'active':'soirees', 'list_soirees':soiree_date, 'link':'/soirees/'},
+	context_instance=RequestContext(request))
+

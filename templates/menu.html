@@ -1,10 +1,20 @@
 <ul class="nav nav-pills nav-stacked">
-	<li {% if active == "accueil" %}class="active" {% endif %}><a href="/">Accueil</a></li>
-	<li {% if active == "rechercher" %}class="active" {% endif %}><a href="/search/">Rechercher</a></li>
-	<li {% if active == "soirees" %}class="active" {% endif %}><a href="/search/">Soirées</a></li>
-	<li {% if active == "personnes" %}class="active" {% endif %}><a href="/personnes/">Personnes</a></li>
-	<li {% if active == "pieces" %}class="active" {% endif %}><a href="/search/">Pièces</a></li>
-	<li {% if active == "statistiques" %}class="active" {% endif %}><a href="/stat/">Statistiques</a></li>
-	<li {% if active == "contact" %}class="active" {% endif %}><a href="/contact/">Contact</a></li>
-	{% if user.is_authenticated %}<li {% if active == "saisie" %}class="active" {% endif %}><a href="/saisie/">Saisie</a></li>{% endif %}		
+	<li class=" {% if active == "accueil" %}active{% endif %}"><a href="/">
+		Accueil<span style="float:right;" class="glyphicon glyphicon-home"/></a></li>
+	<li class=" {% if active == "rechercher" %}active{% endif %}"><a href="/search/">
+		Rechercher<span style="float:right;" class="glyphicon glyphicon-search"/></a></li>
+	<li class=" {% if active == "soirees" %}active{% endif %}"><a href="/soirees/">
+		Soirées<span style="float:right;" class="glyphicon glyphicon-list-alt"/></a></li>
+	<li class=" {% if active == "personnes" %}active{% endif %}"><a href="/personnes/">
+		Personnes<span style="float:right;" class="glyphicon glyphicon-user"/></a></li>
+	<li class=" {% if active == "pieces" %}active{% endif %}"><a href="/pieces/">
+		Pièces<span style="float:right;" class="glyphicon glyphicon-book"/></a></li>
+	<li class=" {% if active == "statistiques" %}active{% endif %}"><a href="/stat/">
+		Statistiques<span style="float:right;" class="glyphicon glyphicon-stats"/></a></li>
+	{% if user.is_authenticated %}
+	<li class=" {% if active == "saisie" %}active{% endif %}"><a href="/saisie/">
+		Saisie<span style="float:right;" class="glyphicon glyphicon-pencil"/></a></li>
+	{% endif %}		
+	<li class=" {% if active == "contact" %}active{% endif %}"><a href="/contact/">
+		Contact<span style="float:right;" class="glyphicon glyphicon-comment"/></a></li>
 </ul>

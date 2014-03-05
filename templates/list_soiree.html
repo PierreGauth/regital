@@ -7,21 +7,22 @@
 <form action='/{{active}}/' method='POST' class='form-inline'>
     {% csrf_token %}
    <div class="form-group">
-     <input type='number' placeholder='Année' class='form-control' id='year' name='year'/>
+     <input type='number' placeholder='Année' class='form-control input-sm' id='year' name='year'/>
   </div> 
   <div class="form-group">
-     <input type='number' placeholder='Mois' class='form-control' id='month' name='month'/>
+     <input type='number' placeholder='Mois' class='form-control input-sm' id='month' name='month'/>
   </div> 
   <div class="form-group">
-     <input type='number' placeholder='Jour' class='form-control' id='day' name='day'/>
+     <input type='number' placeholder='Jour' class='form-control input-sm' id='day' name='day'/>
   </div> 
-  <button type='submit' class='btn'>Rechercher</button>
+  <button type='submit' class='btn btn-sm'>Rechercher</button>
 </form>
-<br/><br/>
  <ul>
 {% for id,item in list.items %}
 		<li><a href="{{link}}{{id}}">{{item}}</a></li>
 {% endfor %}
 </ul>
+
+{% include "calendar.html" %}
 
 {% endblock %}

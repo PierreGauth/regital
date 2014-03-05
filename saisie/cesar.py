@@ -7,53 +7,55 @@ from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse     
  
 def searchPersonne(request, nom, prenom):          
-    payload = {'fct': 'list', 'search': nom+' '+prenom}
-    r = requests.get("http://www.cesar.org.uk/cesar2/search/index.php", params=payload, 
-      # proxies= 
-      # {
-        # "http": "http://cache.wifi.univ-nantes.fr:3128",
-        # "https": "http://cache.wifi.univ-nantes.fr:3128",
-      # }
-    )
-    page = r.text
-    # page = getPage1()
-    
-    page = page[page.index("<H1>People</H1>"):page.index("function listPersonClicked")]
-    if not '0 records matched your query' in page :   
-      page = page[page.index("<TR"):page.index("</TABLE")]
-      page = page.replace(u'<A HREF=\'../people/people.php?fct=edit&person_UOID=',u'<button type="button" class="btn" onClick=\'parsePersonneInfo(')
-      pattern = '\'>\w*</A>'
-      pattern = re.compile(pattern, re.UNICODE)
-      page = pattern.sub(u")'> <span class='glyphicon glyphicon-user'></span></button>",page)
-      return HttpResponse("<table>" + page+ "</table>", content_type="text/plain")
-    else:
-      return HttpResponse('Aucune Personne ne correspond à ce nom sur cesar.org.uk', content_type="text/plain")
+	payload = {'fct': 'list', 'search': nom + ' ' + prenom}
+	r = requests.get("http://www.cesar.org.uk/cesar2/search/index.php", params=payload 
+	  # proxies= 
+	  # {
+	    # "http": "http://cache.wifi.univ-nantes.fr:3128",
+	    # "https": "http://cache.wifi.univ-nantes.fr:3128",
+	  # }
+	)
+	page = r.text
+#	page = getPage1()
+	page = page[page.index("<H1>People</H1>"):page.index("function listPersonClicked")]
+	if not '0 records matched your query' in page :   
+		page = page[page.index("<TR"):page.index("</TABLE")]
+		page = page.replace(u'<TR><TD ID=\'keywordColumn\'><A HREF=\'../people/people.php?fct=edit&person_UOID=',u'<TR style="cursor:pointer;" onclick="parsePersonneInfo(')
+		pattern = '\'>....\w*</A>'
+		pattern = re.compile(pattern, flags=re.IGNORECASE|re.DOTALL|re.UNICODE)
+		page = pattern.sub(u")\"><td><span class='glyphicon glyphicon-user'></span>",page)
+		return HttpResponse("<div style='overflow:auto; height:30em;'><table class='table table-striped'>" + page+ "</table></div>", content_type="text/plain")
+	else:
+		return HttpResponse('Aucune Personne ne correspond à ce nom sur cesar.org.uk', content_type="text/plain")
     
 def getInfoPersonne(request, id):
-    payload = {'fct': 'edit', 'person_UOID': id }
-    r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
-      # ,proxies= 
-      # {
-        # "http": "http://cache.wifi.univ-nantes.fr:3128",
-        # "https": "http://cache.wifi.univ-nantes.fr:3128",
-      # }
-    )
-    page = r.text
-    # page = getPage2()
-    
-    page = page[page.index("<H1>People</H1>"):page.index("<H2>Notes</H2>")] 
-    infos = ''
-    
-    for i in range(1,10):
-      page = page[page.index('keyColumn')+1:]
-      if i == 8 :
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-23]
-      elif (i == 7) or (i == 6) : #si c'est une date
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
-      else:
-        infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
-    
-    return HttpResponse(infos, content_type="text/plain")    
+	payload = {'fct': 'edit', 'person_UOID': id }
+	r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
+	# ,proxies= 
+	# {
+	  # "http": "http://cache.wifi.univ-nantes.fr:3128",
+	  # "https": "http://cache.wifi.univ-nantes.fr:3128",
+	# }
+	)
+	page = r.text
+	# page = getPage2()
+
+	page = page[page.index("<H1>People</H1>"):page.index("<H2>Notes</H2>")] 
+	infos = ''
+
+	for i in range(1,10):
+		page = page[page.index('keyColumn')+1:]
+		if i == 8 :
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-23]
+		elif (i == 7) or (i == 6) : #si c'est une date
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]			
+		else:
+			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
+	
+	page = page[page.index('keyColumn')+1:]		
+	infos = infos + ';' + page[page.index('valueColumn')+19:page.index('</TR>')-5]
+
+	return HttpResponse(infos, content_type="text/plain")    
 
 def getPage1() :
   return '''
@@ -97,6 +99,7 @@ def getPage1() :
   <INPUT type="hidden" name="listMaxRows" value="100"></FORM><!--Array(   
   [312485] => Array (            [0] => 1        ))--><P><I>1 records matched your query</I></P><P>
   <TABLE CELLPADDING=2 CELLSPACING=2 BORDER=0><TR><TD ID=\'keywordColumn\'><A HREF=\'../people/people.php?fct=edit&person_UOID=317922\'>
+  Testard</A></TD><TD ID=\'summaryColumn\'>Mlle <B>Marie-Anne-Xavier  Mathieu2 </B> <B><I>dite Testard</I></B> (1746 - )  </TD></TR><TR><TD ID=\'keywordColumn\'><A HREF=\'../people/people.php?fct=edit&person_UOID=317922\'>
   Testard</A></TD><TD ID=\'summaryColumn\'>Mlle <B>Marie-Anne-Xavier  Mathieu </B> <B><I>dite Testard</I></B> (1746 - )  </TD></TR>
   </TABLE><SCRIPT language="JavaScript">function listPersonClicked(person_UOID){   var href="../people/people.php";   
   href += "?fct=edit";   href += "&person_UOID="+person_UOID;   document.location.href=href;}function peopleChangeOffset(offset)
