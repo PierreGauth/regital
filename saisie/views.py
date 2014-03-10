@@ -163,37 +163,37 @@ def creerSoiree(request):
 			budgetSoiree.save()
 
 			nb_debit = 0
-			montant = request.POST.get('montant_debit'+str(nb_debit), 'none')
+			montant = request.POST.get('debit'+str(nb_debit)+'montant', 'none')
 			while montant != 'none' :
-				libelle = request.POST.get('libelle_debit'+str(nb_debit), 'none')
-				type_depense = request.POST.get('type_depense_debit'+str(nb_debit), 'none')
-				traduction = request.POST.get('traduction_debit'+str(nb_debit), 'none')
-				mots_clefs = request.POST.get('mots_clefs_debit'+str(nb_debit), 'none')
+				libelle = request.POST.get('debit'+str(nb_debit)+'libelle', 'none')
+				type_depense = request.POST.get('debit'+str(nb_debit)+'type_depense', 'none')
+				traduction = request.POST.get('debit'+str(nb_debit)+'traduction', 'none')
+				mots_clefs = request.POST.get('debit'+str(nb_debit)+'mots_clefs', 'none')
 				nb_debit += 1
 				debit = Debit(montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
 				debit.save()
-				montant = request.POST.get('montant_debit'+str(nb_debit), 'none')
+				montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 
 			nb_credit = 0
-			montant = request.POST.get('montant_credit'+str(nb_credit), 'none')
+			montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 			while montant != 'none' :
-				libelle = request.POST.get('libelle_debit'+str(nb_credit), 'none')
+				libelle = request.POST.get('credit'+str(nb_credit)+'libelle', 'none')
 				nb_credit += 1
 				credit = Credit(montant=montant, libelle=libelle, budget=budgetSoiree)
 				credit.save()
-				montant = request.POST.get('montant_debit'+str(nb_credit), 'none')
+				montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 
 			nb_billetterie = 0
-			montant = request.POST.get('montant_credit'+str(nb_billetterie), 'none')
+			montant = request.POST.get('billetterie'+str(nb_credit)+'montant', 'none')
 			while montant != 'none' :
-				libelle = request.POST.get('libelle_debit'+str(nb_billetterie), 'none')
-				nombre_billets_vendu = request.POST.get('nombre_billets_vendu'+str(nb_billetterie), 'none')
-				type_billet = request.POST.get('type_billet'+str(nb_billetterie), 'none')
-				commentaire = request.POST.get('commentaire'+str(nb_billetterie), 'none')
+				libelle = request.POST.get('billetterie'+str(nb_credit)+'libelle_debit', 'none')
+				nombre_billets_vendu = request.POST.get('billetterie'+str(nb_credit)+'nombre_billets_vendu', 'none')
+				type_billet = request.POST.get('billetterie'+str(nb_credit)+'type_billet', 'none')
+				commentaire = request.POST.get('billetterie'+str(nb_credit)+'commentaire', 'none')
 				nb_billetterie += 1
 				billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendu=nombre_billets_vendu, type_billet=type_billet, commentaire=commentaire)
 				billetterie.save()
-				montant = request.POST.get('montant_debit'+str(nb_billetterie), 'none')
+				montant = request.POST.get('billetterie'+str(nb_credit)+'montant', 'none')
 
 			date = request.POST.get('date', 'none')
 			libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
@@ -205,10 +205,10 @@ def creerSoiree(request):
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='success',alert_message=message)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
-			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message)
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
 		except IntegrityError as e:
-			message = 'Cette Personne existe déja dans la base'
-			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message)
+			message = 'Cette Soirée existe déja dans la base'
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
   
 def getPersonneJs():
   return '''
