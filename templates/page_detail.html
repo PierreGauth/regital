@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<center><b>{{personneinfos.nom}} {{personneinfos.prenom}}</b></center>
+	<br>
+	<table class="table table-striped">
+		<tr>
+			<th>Pseudonyme :</th>
+			<td>{{personneinfos.pseudonyme}}</td>
+		</tr>
+		<tr>
+			<th>URL sur Cesar :</th>
+			<td><a href="{{personneinfos.uri_cesar}}">{{personneinfos.uri_cesar}}</a></td>
+		</tr>
+		<tr>
+			<th>Genre :</th>
+			<td>{{personne_genre}}</td>
+		</tr>
+		<tr>
+			<th>Nationalité :</th>
+			<td>{{personne_nationalite}}</td>
+		</tr>
+		<tr>
+			<th>Titre Personne :</th>
+			<td>{{personneinfos.titre_personne}}</td>
+		</tr>
+		<tr>
+			<th>Date de naissance :</th>
+			<td>{{personneinfos.date_de_naissance}}</td>
+		</tr>
+		<tr>
+			<th>Date de deces :</th>
+			<td>{{personneinfos.date_de_deces}}</td>
+		</tr>
+		<tr>
+			<th>Plus d'informations :</th>
+			<td>{{personneinfos.plus_dinfo}}</td>
+		</tr>
+	</table>
+</div>
+{% endblock %}

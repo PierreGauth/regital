@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.forms.models import model_to_dict
 from navigation.models import *
 
 def index(request):
@@ -110,12 +111,24 @@ def listPersonnes(request):
     
     for personne in personnes:
       print personne.nom
-      personnes_nom[personne.id] = personne.nom
+      personnes_nom[personne.id] = personne.nom+" "+personne.prenom
       
     return render_to_response('list_page.html',
       {'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/'},
       context_instance=RequestContext(request))
-			
+
+def detailsPersonne(request,id):
+  personne=Personne.objects.get(id=id)
+  personne_nationalite=personne.get_nationalite_display()
+  personne_genre=personne.get_genre_display()
+  return render_to_response('page_detail.html',
+    {'title':personne.prenom+' '+personne.nom,
+    'active':'personnes',
+    'personneinfos':personne,
+    'personne_nationalite':personne_nationalite,
+    'personne_genre':personne_genre},
+    context_instance=RequestContext(request))
+
 def listPieces(request):
   if request.POST:
     search = request.POST.get('search', '')

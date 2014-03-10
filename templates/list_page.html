@@ -4,10 +4,10 @@
 
 {% block content %}
 
- <ul>
+<table class="table table-striped">
 {% for id,item in list.items %}
-		<li><a href="{{link}}{{id}}">{{item}}</a></li>
+	<tr><th><a href="{{link}}{{id}}">{{item}}</a></th></tr>
 {% endfor %}
-</ul>
+</table>
 
 {% endblock %}
