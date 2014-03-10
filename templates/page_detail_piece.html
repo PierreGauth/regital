@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<center><b>{{pieceinfos.titre}}</b></center>
+	<br>
+	<table class="table table-striped">
+		<tr>
+			<th>Titre brenner :</th>
+			<td>{{pieceinfos.titre_brenner}}</td>
+		</tr>
+		<tr>
+			<th>URL sur Theaville :</th>
+			<td><a href="{{pieceinfos.uri_theaville}}">{{pieceinfos.uri_theaville}}</a></td>
+		</tr>
+		<tr>
+			<th>Date de la première :</th>
+			<td>{{pieceinfos.date_premiere}}</td>
+		</tr>
+		<tr>
+			<th>Langue :</th>
+			<td>{{piece_langue}}</td>
+		</tr>
+		<tr>
+			<th>Auteurs :</th>
+			<td>
+				{% for auteur in pieceinfos.auteurs.all %}
+					<a href="/personnes/{{auteur.id}}">{{auteur.nom}} {{auteur.prenom}}</a>,
+				{% endfor %}
+			</td>
+		</tr>
+		<tr>
+			<th>Commentaire :</th>
+			<td>{{pieceinfos.commentaire}}</td>
+		</tr>
+	</table>
+</div>
+{% endblock %}

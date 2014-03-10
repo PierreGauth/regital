@@ -129,6 +129,17 @@ def detailsPersonne(request,id):
     'personne_genre':personne_genre},
     context_instance=RequestContext(request))
 
+def detailsPiece(request,id):
+  piece=Piece.objects.get(id=id)
+  piece_langue=piece.get_langue_display()
+  #print piece.auteurs.nom
+  return render_to_response('page_detail_piece.html',
+    {'title':piece.titre,
+    'active':'pieces',
+    'pieceinfos':piece,
+    'piece_langue':piece_langue,},
+    context_instance=RequestContext(request))
+
 def listPieces(request):
   if request.POST:
     search = request.POST.get('search', '')
