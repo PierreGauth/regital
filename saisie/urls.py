@@ -9,6 +9,6 @@ urlpatterns = patterns('',
   url(r'^info/personne/(?P<id>\d+)$', cesar.getInfoPersonne),
 	url(r'^info/piece/(?P<id>\d+)$', theaville.getInfoPiece),
   url(r'^new/personne/$', views.creerPersonne),
-  url(r'^new/piece/$', views.creerPersonne),
+  url(r'^new/piece/$', views.creerPiece),
   url(r'^new/soiree/$', views.creerSoiree),
 	)

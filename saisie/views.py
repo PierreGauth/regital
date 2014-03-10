@@ -38,7 +38,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
         
     soireeForm = render_to_string(
         'form.html' , 
-        {'action' : '/saisie/new/soiree/', 'formset_list' : [SoireeForm(), BudgetSoireeForm()], 'formitems' : {'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
+        {'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 'formitems' : {'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
         'previous_values' : previous_values, 'date_picker_id_list' : ['dsoiree1']},
         context_instance=RequestContext(request))
         
@@ -106,7 +106,7 @@ def creerPiece(request):
         auteurs = request.POST.get('auteurs', 'none')
         commentaire = request.POST.get('commentaire', 'none')
         
-        piece = Piece(titre=titre, titre_brenner=titre_brenner, uri_theaville=uri_theaville, date_premiere=date_premiere, langue=langue, commentaire=commentaire)
+        piece = Piece(titre=titre, titre_brenner=titre_brenner, uri_theaville=uri_theaville, date_premiere=date_premiere, langue=langue)
         
         try:
           piece.save()
@@ -138,7 +138,7 @@ def creerPiece(request):
 @login_required(login_url='/login/')
 def creerSoiree(request):
 	if request.POST:
-		try:
+#		try:
 			ref_registre = request.POST.get('ref_registre', 'none')
 			num_page_pdf = request.POST.get('num_page_pdf', 'none')
 			redacteur = request.POST.get('redacteur', 'none')
@@ -172,7 +172,7 @@ def creerSoiree(request):
 				nb_debit += 1
 				debit = Debit(montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
 				debit.save()
-				montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
+				montant = request.POST.get('debit'+str(nb_debit)+'montant', 'none')
 
 			nb_credit = 0
 			montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
@@ -184,31 +184,31 @@ def creerSoiree(request):
 				montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 
 			nb_billetterie = 0
-			montant = request.POST.get('billetterie'+str(nb_credit)+'montant', 'none')
+			montant = request.POST.get('billetterie'+str(nb_billetterie)+'montant', 'none')
 			while montant != 'none' :
-				libelle = request.POST.get('billetterie'+str(nb_credit)+'libelle_debit', 'none')
-				nombre_billets_vendu = request.POST.get('billetterie'+str(nb_credit)+'nombre_billets_vendu', 'none')
-				type_billet = request.POST.get('billetterie'+str(nb_credit)+'type_billet', 'none')
-				commentaire = request.POST.get('billetterie'+str(nb_credit)+'commentaire', 'none')
+				libelle = request.POST.get('billetterie'+str(nb_billetterie)+'libelle_debit', 'none')
+				nombre_billets_vendus = request.POST.get('billetterie'+str(nb_billetterie)+'nombre_billets_vendus', 'none')
+				type_billet = request.POST.get('billetterie'+str(nb_billetterie)+'type_billet', 'none')
+				commentaire = request.POST.get('billetterie'+str(nb_billetterie)+'commentaire', 'none')
 				nb_billetterie += 1
-				billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendu=nombre_billets_vendu, type_billet=type_billet, commentaire=commentaire)
+				billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendus=nombre_billets_vendus, type_billet=type_billet, commentaire=commentaire)
 				billetterie.save()
-				montant = request.POST.get('billetterie'+str(nb_credit)+'montant', 'none')
+				montant = request.POST.get('billetterie'+str(nb_billetterie)+'montant', 'none')
 
 			date = request.POST.get('date', 'none')
 			libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
 			ligne_src = request.POST.get('ligne_src', 'none') 
-			soiree = Soiree(date=sate, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src)
+			soiree = Soiree(date=date, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src, page_registre=page_registre)
 			soiree.save()
 
-			message = u"La soirée du<b>" + date + u"</b> a bien été ajouté dans la base"
+			message = u"La soirée du<b>" + u"</b> a bien été ajouté dans la base"
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='success',alert_message=message)
-		except ValidationError as e:
-			message = ' '.join(e.messages)
-			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
-		except IntegrityError as e:
-			message = 'Cette Soirée existe déja dans la base'
-			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
+#		except ValidationError as e:
+#			message = ' '.join(e.messages)
+#			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
+#		except IntegrityError as e:
+#			message = 'Cette Soirée existe déja dans la base'
+#			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
   
 def getPersonneJs():
   return '''

@@ -11,6 +11,7 @@ from django.core.exceptions import NON_FIELD_ERRORS
 class PageRegistre(models.Model):
 	ref_registre = models.CharField(max_length=64, null=False)
 	num_page_pdf = models.IntegerField()
+	redacteurs = models.ManyToManyField('Personne', null=True, blank=True) # class Personne pas encore déclarée
 	class Meta:
 		unique_together = ('ref_registre', 'num_page_pdf',)
 
@@ -84,8 +85,6 @@ class BudgetSoiree(models.Model):
 	# Attention : en cas de solde négatif, les cachets déclarés sont versés au cours de la soirée suivante (avec solde positif) !
 	credit_final_reg = models.IntegerField(null=True, blank=True)	# reste - salaires, vide si solde est négatif pour la soirée
 	# où va cet argent ('avanza') ? On ne le retrouve pas ensuite...
-	redacteurs = models.ManyToManyField('Personne', null=True, blank=True) # class Personne pas encore déclarée
-	page_registre = models.OneToOneField(PageRegistre)
 
 	def __unicode__(self):
 		return 'Depenses={0.total_depenses_reg!s} | Recettes={0.total_recettes_reg!s}'.format(self)
@@ -265,6 +264,7 @@ class Soiree(models.Model):
 	libelle_date_reg = models.CharField(max_length=64)
 	budget = models.OneToOneField(BudgetSoiree, null=True, blank=True)
 	ligne_src = models.IntegerField(null=False)
+	page_registre = models.OneToOneField(PageRegistre)
 
 	def __unicode__(self):
 		return 'Soiree du {0.date} '.format(self)

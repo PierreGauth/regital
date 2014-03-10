@@ -52,7 +52,7 @@ SoireeForm = modelform_factory( Soiree,
 )
   
 BudgetSoireeForm = modelform_factory( BudgetSoiree,
-  fields=('credit_final_reg', 'debit_initial_reg','montant_cachet','montant_cachet_auteur','nb_total_billets_vendus_reg','nombre_cachets','quart_pauvre_reg','credit_total_reg','debit_total_reg','reste_reg','total_depenses_reg','total_recettes_reg'),
+  fields=('credit_final_reg', 'debit_initial_reg','montant_cachet','montant_cachet_auteur','nb_total_billets_vendus_reg','nombre_cachets','quart_pauvre_reg','credit_total_reg','debit_total_reg','reste_reg','total_depenses_reg','total_recettes_reg','debit_derniere_soiree_reg','total_depenses_corrige_reg'),
 	widgets={
 		'credit_final_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Crédit final'}),
 		'debit_initial_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Débit initial'}),
@@ -66,6 +66,8 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
 		'reste_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Reste'}),
 		'total_depenses_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Total dépenses'}),
 		'total_recettes_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Total recettes'}),
+		'debit_derniere_soiree_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Débit dernière soirée'}),
+		'total_depenses_corrige_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Dépenses corrigées'}),
 	},
 	labels={
     'credit_final_reg':'Crédit Final', 
@@ -82,14 +84,17 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
 		'total_recettes_reg': 'Total Recettes',
 		'montant_cachet': 'Cachet',
 		'montant_cachet_auteur': 'Cachet Auteur',
+		'debit_derniere_soiree_reg': 'Débit dernière soirée',
+		'total_depenses_corrige_reg': 'Dépenses corrigées',
 	}
 )  
 
 PageRegistreForm = modelform_factory(PageRegistre,
-  fields=('ref_registre','num_page_pdf'),
+  fields=('ref_registre','num_page_pdf','redacteurs'),
   widgets={
     'ref_registre' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Référence Registre'}),
     'num_page_pdf' : forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Numéro page du PDF'}),
+		'redacteurs' : forms.Select(attrs={'class' : 'form-control'}),
   },
   labels={
     'ref_registre':'Référence Registre',
