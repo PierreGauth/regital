@@ -56,7 +56,7 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
 	widgets={
 		'credit_final_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Crédit final'}),
 		'debit_initial_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Débit initial'}),
-		'montant_cachet': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant cachet'}),
+		'montant_cachet': forms.Select(attrs={'class' : 'form-control'}),
 		'montant_cachet_auteur': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant cachet de l\'auteur'}),
 		'nb_total_billets_vendus_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Nombre total de billets vendus'}),
 		'nombre_cachets': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Nombre de cachets'}),
@@ -85,18 +85,72 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
 	}
 )  
 
+PageRegistreForm = modelform_factory(PageRegistre,
+  fields=('ref_registre','num_page_pdf'),
+  widgets={
+    'ref_registre' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Référence Registre'}),
+    'num_page_pdf' : forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Numéro page du PDF'}),
+  },
+  labels={
+    'ref_registre':'Référence Registre',
+    'num_page_pdf':'Numéro page PDF',
+  }
+)
 
+DebitForm = modelform_factory(Debit,
+  fields=('montant','libelle','type_depense','traduction','mots_clefs'),
+  widgets={
+    'montant': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant'}),
+    'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
+    'type_depense' : forms.Select(attrs={'class' : 'form-control'}),
+    'traduction' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Traduction'}),
+    'mots_clefs' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Mots clefs'}),
+  },
+  labels={
+    'montant':'Montant',
+    'libelle':'Libellé',
+    'type_depense':'Type de dépense',
+    'traduction':'Traduction',
+    'mots_clefs':'Mots clefs',
+  }
+)
 
-PageRegistreForm = modelform_factory(PageRegistre)
+CreditForm = modelform_factory(Credit,
+  fields=('montant','libelle'),
+  widgets={
+    'montant': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant'}),
+    'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
+  },
+  labels={
+    'montant':'Montant',
+    'libelle':'Libellé',
+  }
+)
+
+BilletterieForm = modelform_factory(Billetterie,
+  fields=('montant','libelle','nombre_billets_vendus','type_billet','commentaire'),
+  widgets={
+    'montant': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant'}),
+    'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
+    'nombre_billets_vendus' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nombre de billets vendus'}),
+    'type_billet' : forms.Select(attrs={'class' : 'form-control'}),
+    'commentaire' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Commentaire'}),
+  },
+  labels={
+    'montant':'Montant',
+    'libelle':'Libellé',
+    'nombre_billets_vendus':'Billets vendus',
+    'type_billet':'Type billet',
+    'commentaire':'Commentaire',
+  }
+)
+
 TransactionSoireeForm = modelform_factory(TransactionSoiree)
 TransactionAbonnementForm = modelform_factory(TransactionAbonnement)
 AbonnementForm = modelform_factory(Abonnement)
 RecapitulatifForm = modelform_factory(Recapitulatif)
 DebitRecapitulatifForm = modelform_factory(DebitRecapitulatif)
 CreditRecapitulatifForm = modelform_factory(CreditRecapitulatif)
-DebitForm = modelform_factory(Debit)
-CreditForm = modelform_factory(Credit)
-BilletterieForm = modelform_factory(Billetterie)
 RepresentationForm = modelform_factory(Representation)
 AnimationForm = modelform_factory(Animation)
 RoleForm = modelform_factory(Role)
