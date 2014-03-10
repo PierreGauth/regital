@@ -38,7 +38,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
         
     soireeForm = render_to_string(
         'form.html' , 
-        {'action' : '/saisie/new/soiree/', 'formset_list' : [SoireeForm(), BudgetSoireeForm()], 
+        {'action' : '/saisie/new/soiree/', 'formset_list' : [SoireeForm(), BudgetSoireeForm()], 'formitems' : {'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
         'previous_values' : previous_values, 'date_picker_id_list' : ['dsoiree1']},
         context_instance=RequestContext(request))
         

@@ -107,11 +107,11 @@ DebitForm = modelform_factory(Debit,
     'mots_clefs' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Mots clefs'}),
   },
   labels={
-    'montant':'Montant',
-    'libelle':'Libellé',
+    'montant':'',
+    'libelle':'',
     'type_depense':'Type de dépense',
-    'traduction':'Traduction',
-    'mots_clefs':'Mots clefs',
+    'traduction':'',
+    'mots_clefs':'',
   }
 )
 
@@ -122,8 +122,8 @@ CreditForm = modelform_factory(Credit,
     'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
   },
   labels={
-    'montant':'Montant',
-    'libelle':'Libellé',
+    'montant':'',
+    'libelle':'',
   }
 )
 
@@ -137,11 +137,11 @@ BilletterieForm = modelform_factory(Billetterie,
     'commentaire' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Commentaire'}),
   },
   labels={
-    'montant':'Montant',
-    'libelle':'Libellé',
-    'nombre_billets_vendus':'Billets vendus',
+    'montant':'',
+    'libelle':'',
+    'nombre_billets_vendus':'',
     'type_billet':'Type billet',
-    'commentaire':'Commentaire',
+    'commentaire':'',
   }
 )
 
