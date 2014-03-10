@@ -9,11 +9,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 def searchPersonne(request, nom, prenom):          
 	payload = {'fct': 'list', 'search': nom + ' ' + prenom}
 	r = requests.get("http://www.cesar.org.uk/cesar2/search/index.php", params=payload 
-	  # proxies= 
-	  # {
-	    # "http": "http://cache.wifi.univ-nantes.fr:3128",
-	    # "https": "http://cache.wifi.univ-nantes.fr:3128",
-	  # }
+#	   ,proxies= 
+#	   {
+#	     "http": "http://cache.wifi.univ-nantes.fr:3128",
+#	     "https": "http://cache.wifi.univ-nantes.fr:3128",
+#	   }
 	)
 	page = r.text
 #	page = getPage1()
@@ -31,11 +31,11 @@ def searchPersonne(request, nom, prenom):
 def getInfoPersonne(request, id):
 	payload = {'fct': 'edit', 'person_UOID': id }
 	r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
-	# ,proxies= 
-	# {
-	  # "http": "http://cache.wifi.univ-nantes.fr:3128",
-	  # "https": "http://cache.wifi.univ-nantes.fr:3128",
-	# }
+#		,proxies= 
+#		{
+#		 "http": "http://cache.wifi.univ-nantes.fr:3128",
+#		 "https": "http://cache.wifi.univ-nantes.fr:3128",
+#		}
 	)
 	page = r.text
 	# page = getPage2()

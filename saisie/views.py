@@ -137,23 +137,78 @@ def creerPiece(request):
 
 @login_required(login_url='/login/')
 def creerSoiree(request):
-    if request.POST:
-        date = request.POST.get('date', 'none')
-        libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
-        pseudonyme = request.POST.get('pseudonyme', 'none')
-        uri_cesar = request.POST.get('uri_cesar', 'none')
-        genre = request.POST.get('genre', 'none')
-        nationalite = request.POST.get('nationalite', 'none')
-        titre = request.POST.get('titre', 'none')
-        date_de_naissance = request.POST.get('date_de_naissance', 'none')
-        date_de_deces = request.POST.get('date_de_deces', 'none')
-        plus_dinfo = request.POST.get('plus_dinfo', 'none')
-        personne = Personne(nom=nom, prenom=prenom, pseudonyme=pseudonyme, uri_cesar=uri_cesar, genre=genre, 
-            nationalite=nationalite, titre=titre, date_de_naissance=date_de_naissance, 
-            date_de_deces=date_de_deces, plus_dinfo=plus_dinfo)
-        personne.save()
-        message = u"<b>La soiree du " + date + "u (" + nom + u")</b> a bien été ajouté dans la base"
-	return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
+	if request.POST:
+		try:
+			ref_registre = request.POST.get('ref_registre', 'none')
+			num_page_pdf = request.POST.get('num_page_pdf', 'none')
+			redacteur = request.POST.get('redacteur', 'none')
+			page_registre = PageRegistre(ref_registre=ref_registre, num_page_pdf=num_page_pdf)
+			page_registre.save()
+
+			total_depenses_reg = request.POST.get('total_depenses_reg', 'none')
+			nb_total_billets_vendus_reg = request.POST.get('nb_total_billets_vendus_reg', 'none')
+			total_recettes_reg = request.POST.get('total_recettes_reg', 'none')
+			debit_derniere_soiree_reg = request.POST.get('debit_derniere_soiree_reg', 'none')
+			total_depenses_corrige_reg = request.POST.get('total_depenses_corrige_reg', 'none')
+			quart_pauvre_reg = request.POST.get('quart_pauvre_reg', 'none')
+			debit_initial_reg = request.POST.get('debit_initial_reg', 'none')
+			reste_reg = request.POST.get('reste_reg', 'none')
+			debit_total_reg = request.POST.get('debit_total_reg', 'none')
+			credit_total_reg = request.POST.get('credit_total_reg', 'none')
+			nombre_cachets = request.POST.get('nombre_cachets', 'none')
+			montant_cachet = request.POST.get('montant_cachet', 'none')
+			montant_cachet_auteur = request.POST.get('montant_cachet_auteur', 'none')
+			credit_final_reg = request.POST.get('credit_final_reg', 'none')
+			budgetSoiree = BudgetSoiree(total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, debit_total_reg=debit_total_reg, credit_total_reg=credit_total_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg)
+			budgetSoiree.save()
+
+			nb_debit = 0
+			montant = request.POST.get('montant_debit'+str(nb_debit), 'none')
+			while montant != 'none' :
+				libelle = request.POST.get('libelle_debit'+str(nb_debit), 'none')
+				type_depense = request.POST.get('type_depense_debit'+str(nb_debit), 'none')
+				traduction = request.POST.get('traduction_debit'+str(nb_debit), 'none')
+				mots_clefs = request.POST.get('mots_clefs_debit'+str(nb_debit), 'none')
+				nb_debit += 1
+				debit = Debit(montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
+				debit.save()
+				montant = request.POST.get('montant_debit'+str(nb_debit), 'none')
+
+			nb_credit = 0
+			montant = request.POST.get('montant_credit'+str(nb_credit), 'none')
+			while montant != 'none' :
+				libelle = request.POST.get('libelle_debit'+str(nb_credit), 'none')
+				nb_credit += 1
+				credit = Credit(montant=montant, libelle=libelle, budget=budgetSoiree)
+				credit.save()
+				montant = request.POST.get('montant_debit'+str(nb_credit), 'none')
+
+			nb_billetterie = 0
+			montant = request.POST.get('montant_credit'+str(nb_billetterie), 'none')
+			while montant != 'none' :
+				libelle = request.POST.get('libelle_debit'+str(nb_billetterie), 'none')
+				nombre_billets_vendu = request.POST.get('nombre_billets_vendu'+str(nb_billetterie), 'none')
+				type_billet = request.POST.get('type_billet'+str(nb_billetterie), 'none')
+				commentaire = request.POST.get('commentaire'+str(nb_billetterie), 'none')
+				nb_billetterie += 1
+				billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendu=nombre_billets_vendu, type_billet=type_billet, commentaire=commentaire)
+				billetterie.save()
+				montant = request.POST.get('montant_debit'+str(nb_billetterie), 'none')
+
+			date = request.POST.get('date', 'none')
+			libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
+			ligne_src = request.POST.get('ligne_src', 'none') 
+			soiree = Soiree(date=sate, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src)
+			soiree.save()
+
+			message = u"La soirée du<b>" + date + u"</b> a bien été ajouté dans la base"
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='success',alert_message=message)
+		except ValidationError as e:
+			message = ' '.join(e.messages)
+			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message)
+		except IntegrityError as e:
+			message = 'Cette Personne existe déja dans la base'
+			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message)
   
 def getPersonneJs():
   return '''
