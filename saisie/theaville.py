@@ -24,13 +24,29 @@ def searchPiece(request, titre='', auteur=''):
 	if not u'Aucune donnée disponible' in page :   
 		page = page[page.index("<table"):page.index("</table>")+8]
 		page = '<div style="overflow:auto; height:30em;"><table class="table table-striped">' + page[page.index("</thead>")+8:] + '</div>'
-		page = page.replace(r'<tr>', u'')
-		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"  onclick="parsePieceInfo(')		
-		pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
-		pattern = re.compile(pattern, re.UNICODE)
-		page = pattern.sub(r')"><td><span class="glyphicon glyphicon-book"></span></td><td>\1',page)
-		page = page.replace(u'<td>', u'<td style="vertical-align:middle;">')
-		page = page.replace(u'<a ', u'<span ')
+#		page = page.replace(r'<tr>', u'')
+#		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"  onclick="parsePieceInfo(')		
+#		pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
+
+#		pattern = '<tr>(.|\n|\r)*<td><a href="index.php?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)* <td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
+#		pattern = re.compile(pattern, re.UNICODE)
+#		page = pattern.sub(r'<tr style="cursor:pointer;"  onclick="parsePieceInfo(\1)"><td><span class="glyphicon glyphicon-book"></span></td><td>\2<td/><td>\3<td/><td>\4<td/></tr>',page)
+
+		pattern = '<a href="index.php\?r=pieces/auteurs/details.php&amp;id=(?P<id>\d+)">'
+		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
+		page = pattern.sub(r' ',page)
+		
+		page = page.replace(u'<br />', u'')
+		
+		pattern = '<tr>(\n|\r|\t| )*<td><a href="index.php\?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)*<td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
+		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
+		page = pattern.sub(r'<tr style="cursor:pointer;"  onclick="parsePieceInfo(\'\2;\3;\6;\8\')"><td><span class="glyphicon glyphicon-book"></span></td><td>\3<td/><td>\6<td/><td>\8<td/></tr>',page)
+		
+		
+#		pattern = re.compile(pattern, re.UNICODE)
+#		page = pattern.sub(r')"><td><span class="glyphicon glyphicon-book"></span></td><td>\1',page)
+#		page = page.replace(u'<td>', u'<td style="vertical-align:middle;">')
+#		page = page.replace(u'<a ', u'<span ')
 		return HttpResponse(page, content_type="text/plain")
 	else:
 		return HttpResponse('Aucune Piece ne correspond à ce nom sur theaville.org', content_type="text/plain")

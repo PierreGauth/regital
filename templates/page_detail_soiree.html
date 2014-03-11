@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<div class="row" style="margin-left:1%;">
+	<div class="col-md-12">
+		<h2><center><b>{{soireeinfos}}</b></center></h2>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th>Libellé date (registre) :</th>
+				<td>{{soireeinfos.libelle_date_reg}}</td>
+			</tr>
+			<tr>
+				<th>Page du registre :</th>
+				<td>{{soireeinfos.page_registre.ref_registre}} p.{{soireeinfos.page_registre.num_page_pdf}}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div class="row" style="margin-left:1%;">
+	<div class="col-md-10 col-md-offset-1">
+		<h4><center><b>Représentations</b></center></h4>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th>Position :</th>
+				<th>Pièce/Animation :</th>
+				<th>Auteur(s) :</th>
+				<th>Desciption :</th>
+			</tr>
+			{% for representation in liste_representations %}
+			<tr>			
+				<td>{{ representation.position }}</td>
+				<td>
+					<a href="/pieces/{{representation.id}}">{{ representation.piece.titre|capfirst }}</a>{{ representation.get_type_display|capfirst }}
+				</a></td>
+				<td>
+					{% for auteur in representation.piece.auteurs.all%}<a href="/personnes/{{auteur.id}}">{{ auteur.prenom|capfirst }} {{ auteur.nom|capfirst }}</a>;{%endfor%}
+					<a href="/personnes/{{representation.auteur.id}}">{{ representation.auteur.prenom|capfirst }} {{ representation.auteur.nom|capfirst }}</a>
+				</a></td>
+				<td>{{ representation.piece.commentaire }}{{ representation.description }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		
+	</div>
+</div>	
+	
+<div class="row" style="margin-left:1%;">
+	<div class="col-md-5">
+		<h4><center><b>Budget</b></center></h4>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th >Débit Initial :</th>
+				<td >{{soireeinfos.budget.debit_initial_reg}}</td>
+			</tr>
+			<tr>
+				<th >Crédit Final :</th>
+				<td >{{soireeinfos.budget.credit_final_reg}}</td>
+			</tr>
+			<tr>
+				<th >Cachet :</th>
+				<td >{{soireeinfos.budget.get_montant_cachet_display }}</td>
+			</tr>
+			<tr>
+				<th >Cachet Auteur :</th>
+				<td >{{soireeinfos.budget.montant_cachet_auteur}}</td>
+			</tr>
+			<tr>
+				<th >Total Billets Vendus :</th>
+				<td >{{soireeinfos.budget.nb_total_billets_vendus_reg}}</td>
+			</tr>
+			<tr>
+				<th >Nombre Cachets :</th>
+				<td >{{soireeinfos.budget.nombre_cachets }}</td>
+			</tr>
+			<tr>
+				<th >Quart Pauvre :</th>
+				<td >{{soireeinfos.budget.quart_pauvre_reg}}</td>
+			</tr>
+			<tr>
+				<th >Credit Total :</th>
+				<td >{{soireeinfos.budget.credit_total_reg}}</td>
+			</tr>
+			<tr>
+				<th >Debit Total :</th>
+				<td >{{soireeinfos.budget.debit_total_reg}}</td>
+			</tr>
+			<tr>
+				<th >Reste :</th>
+				<td >{{soireeinfos.budget.reste_reg}}</td>
+			</tr>
+			<tr>
+				<th >Total Dépenses :</th>
+				<td >{{soireeinfos.budget.total_depenses_reg}}</td>
+			</tr>
+			<tr>
+				<th >Total Recettes :</th>
+				<td >{{soireeinfos.budget.total_recettes_reg}}</td>
+			</tr>
+			<tr>
+				<th >Débit dernière soirée :</th>
+				<td >{{soireeinfos.budget.debit_derniere_soiree_reg}}</td>
+			</tr>
+			<tr>
+				<th >Dépenses corrigées :</th>
+				<td >{{soireeinfos.budget.total_depenses_corrige_reg}}</td>
+			</tr>
+		</table>
+	</div>
+	
+	<div class="col-md-6 col-md-offset-1">
+		<h4><center><b>Billetterie</b></center></h4>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th >Type :</th>
+				<th >Prix :</th>
+				<th >Billets vendus :</th>
+				<th >Commentaire :</th>
+			</tr>
+			{% for billetterie in billetterieinfos.all %}
+			<tr>				
+				<td>{{billetterie.get_type_billet_display}}</td>
+				<td>{{billetterie.montant}}</td>
+				<td>{{billetterie.nombre_billets_vendus}}</td>
+				<td>{{billetterie.commentaire}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		<br/>
+		<h4><center><b>Débits : </b></center></h4>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th >Libellé :</th>
+				<th >Montant :</th>
+				<th >Type :</th>
+				<th >Traduction :</th>
+				<th >Mots cléfs :</th>
+			</tr>
+			{% for debit in debitsinfos.all %}
+			<tr>				
+				<td>{{debit.libelle}}</td>
+				<td>{{debit.montant}}</td>
+				<td>{{debit.get_type_depense_display}}</td>
+				<td>{{debit.traduction}}</td>
+				<td>{{debit.mots_clefs}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+		<br/>
+		<h4><center><b>Crédits : </b></center></h4>
+		<br>
+		<table class="table table-striped">
+			<tr>
+				<th >Libellé :</th>
+				<th >Montant :</th>
+			</tr>
+			{% for credit in creditsinfos.all %}
+			<tr>				
+				<td>{{credit.libelle}}</td>
+				<td>{{credit.montant}}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+	
+</div>
+ 
+{% endblock %}

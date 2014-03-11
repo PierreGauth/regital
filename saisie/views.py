@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from navigation.models import Personne,Piece,Soiree,BudgetSoiree
+from navigation.models import *
 from saisie.forms import *
 
 	
@@ -38,7 +38,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
         
     soireeForm = render_to_string(
         'form.html' , 
-        {'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 'formitems' : {'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
+        {'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 'formitems' : {'representation': RepresentationForm, 'animation': AnimationForm() ,'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
         'previous_values' : previous_values, 'date_picker_id_list' : ['dsoiree1']},
         context_instance=RequestContext(request))
         
@@ -138,7 +138,7 @@ def creerPiece(request):
 @login_required(login_url='/login/')
 def creerSoiree(request):
 	if request.POST:
-#		try:
+		try:
 			ref_registre = request.POST.get('ref_registre', 'none')
 			num_page_pdf = request.POST.get('num_page_pdf', 'none')
 			redacteur = request.POST.get('redacteur', 'none')
@@ -200,12 +200,32 @@ def creerSoiree(request):
 			ligne_src = request.POST.get('ligne_src', 'none') 
 			soiree = Soiree(date=date, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src, page_registre=page_registre)
 			soiree.save()
-
-			message = u"La soirée du<b>" + u"</b> a bien été ajouté dans la base"
+			
+			nb_representations = 0
+			position = request.POST.get('representation'+str(nb_representations)+'position', 'none')
+			while position != 'none' :
+				piece = request.POST.get('representation'+str(nb_representations)+'piece', 'none')
+				nb_representations += 1
+				representation = Representation(position=position, piece=Piece.objects.get(id=int(piece)), Soiree=soiree)
+				representation.save()
+				position = request.POST.get('representation'+str(nb_representations)+'position', 'none')
+				
+			nb_animations = 0
+			position = request.POST.get('animation'+str(nb_animations)+'position', 'none')
+			while position != 'none' :
+				type = request.POST.get('animation'+str(nb_animations)+'type', 'none')
+				auteur = request.POST.get('animation'+str(nb_animations)+'auteur', 'none')
+				description = request.POST.get('animation'+str(nb_animations)+'description', 'none')
+				nb_animations += 1
+				animation = Animation(position=position, type=type, auteur=Personne.objects.get(id=int(auteur)), description=description, Soiree=soiree)
+				animation.save()
+				position = request.POST.get('animation'+str(nb_animations)+'position', 'none')
+				
+			message = u"La soirée du<a href='/soirees/"+soiree.date+"'><b> " + date + u"</a></b> a bien été ajouté dans la base"
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='success',alert_message=message)
-#		except ValidationError as e:
-#			message = ' '.join(e.messages)
-#			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
+		except ValidationError as e:
+			message = ' '.join(e.messages)
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
 #		except IntegrityError as e:
 #			message = 'Cette Soirée existe déja dans la base'
 #			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
@@ -273,25 +293,12 @@ function lauchPieceModal() {
 	document.getElementById('azpiece').innerHTML='';
 }
 
-function parsePieceInfo(id) {
-  $.get( "../saisie/info/piece/"+id, function( data ) 
-  {
-			var values = data.split(';');                   
-      setValue('titre',values[1]);                                      
-      setValue('titre_brenner',values[2]);                                                        
-      setValue('nom',values[4]);                                     
-      //setValue('date_de_naissance',values[5]);                                     
-      //setValue('date_de_deces',values[6]);                                               
-      setValue('pseudonyme',values[7]);
-      if(values[8] == 'male') setValue('genre','M');
-      else if(values[8] == 'female') setValue('genre','F'); 
-      if(values[9] == 'French') setValue('nationalite', 'fr');
-      else if(values[9] == 'Italian') setValue('nationalite', 'it');
-      else if(values[9] == 'Deutsch') setValue('nationalite', 'de');
-      else if(values[9] == 'English') setValue('nationalite', 'en');
-      else setValue('nationalite', '-');
-      if (values[10] /= 'undefined') setValue('plus_dinfo', values[10]);
-      setValue('uri_theaville','http://cesar.org.uk/cesar2/people/people.php?fct=edit&person_UOID='+id);
-  });
+function parsePieceInfo(data) {
+		var values = data.split(';');                   
+    setValue('titre',values[2]);  
+		setValue('auteurs',values[4]);                                                              
+    setValue('date_premiere',values[3]);               
+    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[1]);
+
   tooglepersonneModal();
 }'''

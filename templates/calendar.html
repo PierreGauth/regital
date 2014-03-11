@@ -32,7 +32,7 @@
 .RdYlGn .q7-11{fill:rgb(166,217,106)}
 .RdYlGn .q8-11{fill:rgb(102,189,99)}
 .RdYlGn .q9-11{fill:rgb(26,152,80)}
-.RdYlGn .q10-11{fill:rgb(0,104,55)}
+.RdYlGn .q10-11{fill:rgb(20,100,200)}
 
 .vertical .carousel-inner {
   height: 100%;
@@ -106,7 +106,7 @@
 
 #carousel-calendar {
 	position: absolute;
-	margin: -15% 1%;
+	margin: -100px 1%;
 	overflow:auto;
 	height:750px;
 	z-index:0;
@@ -171,25 +171,7 @@
 
 <div style="margin-top:525px;"></div>
 
-<!--<center style="margin-top:-650px;"><h3>
-	<a href="javascript:prevSlide();">
-		<span class="glyphicon glyphicon-chevron-up"></span>
-	</a>
-	<a href="javascript:nextSlide();">
-		<span class="glyphicon glyphicon-chevron-down"></span>
-	</a>
-</h3></center>
-
-<center style="margin-top:500px;"><h3>
-	<a href="javascript:prevSlide();">
-		<span class="glyphicon glyphicon-chevron-up"></span>
-	</a>
-	<a href="javascript:nextSlide();">
-		<span class="glyphicon glyphicon-chevron-down"></span>
-	</a>
-</h3></center>-->
-
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="/static/d3js/d3.min.js"></script>
 <script>
 
 var minDate = 1697;
@@ -229,7 +211,7 @@ function createCalendar(from, to, balise)
     .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
   	.enter().append("rect")
     .attr("class", "day")
-    .attr("onclick", "window.location.href=\"/\";")
+    .attr("onclick", function(d) { return "window.location.href=\"/soirees/" +format(d) + "\";"; })
     .attr("width", cellSize)
     .attr("height", cellSize)
     .attr("x", function(d) { return week(d) * cellSize; })

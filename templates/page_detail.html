@@ -4,40 +4,40 @@
 
 {% block content %}
 <div class="row">
-	<center><b>{{personneinfos.nom}} {{personneinfos.prenom}}</b></center>
+	<h2><center><b>{{personneinfos.nom|capfirst}} {{personneinfos.prenom|capfirst}}</b></center></h2>
 	<br>
 	<table class="table table-striped">
-		<tr>
-			<th>Pseudonyme :</th>
-			<td>{{personneinfos.pseudonyme}}</td>
+		<tr class="row">
+			<th class="col-md-5">Pseudonyme :</th>
+			<td class="col-md-5">{{personneinfos.pseudonyme}}</td>
 		</tr>
-		<tr>
-			<th>URL sur Cesar :</th>
-			<td><a href="{{personneinfos.uri_cesar}}">{{personneinfos.uri_cesar}}</a></td>
+		<tr class="row">
+			<th class="col-md-5">URL sur Cesar :</th>
+			<td class="col-md-5"><a href="{{personneinfos.uri_cesar}}">{{personneinfos.uri_cesar}}</a></td>
 		</tr>
-		<tr>
-			<th>Genre :</th>
-			<td>{{personne_genre}}</td>
+		<tr class="row">
+			<th class="col-md-5">Genre :</th>
+			<td class="col-md-5">{{personne_genre}}</td>
 		</tr>
-		<tr>
-			<th>Nationalité :</th>
-			<td>{{personne_nationalite}}</td>
+		<tr class="row">
+			<th class="col-md-5">Nationalité :</th>
+			<td class="col-md-5">{{personne_nationalite}}</td>
 		</tr>
-		<tr>
-			<th>Titre Personne :</th>
-			<td>{{personneinfos.titre_personne}}</td>
+		<tr class="row">
+			<th class="col-md-5">Titre Personne :</th>
+			<td class="col-md-5">{{personneinfos.titre_personne}}</td>
 		</tr>
-		<tr>
-			<th>Date de naissance :</th>
-			<td>{{personneinfos.date_de_naissance}}</td>
+		<tr class="row">
+			<th class="col-md-5">Date de naissance :</th>
+			<td class="col-md-5">{{personneinfos.date_de_naissance}}</td>
 		</tr>
-		<tr>
-			<th>Date de deces :</th>
-			<td>{{personneinfos.date_de_deces}}</td>
+		<tr class="row">
+			<th class="col-md-5">Date de deces :</th>
+			<td class="col-md-5">{{personneinfos.date_de_deces}}</td>
 		</tr>
-		<tr>
-			<th>Plus d'informations :</th>
-			<td>{{personneinfos.plus_dinfo}}</td>
+		<tr class="row">
+			<th class="col-md-5">Plus d'informations :</th>
+			<td class="col-md-5">{{personneinfos.plus_dinfo}}</td>
 		</tr>
 	</table>
 </div>

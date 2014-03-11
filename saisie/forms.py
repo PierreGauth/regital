@@ -150,12 +150,31 @@ BilletterieForm = modelform_factory(Billetterie,
   }
 )
 
+RepresentationForm = modelform_factory(Representation,
+  fields=('position','piece'),
+  widgets={
+    'position': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Position'}),
+    'piece' : forms.Select(attrs={'class' : 'form-control'}),
+  },
+  labels={
+  }
+)
+AnimationForm = modelform_factory(Animation,
+  fields=('position','type','auteur','description'),
+  widgets={
+    'position': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Position'}),
+    'type' : forms.Select(attrs={'class' : 'form-control'}),
+    'auteur' : forms.Select(attrs={'class' : 'form-control'}),
+    'description' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Description'}),
+  },
+  labels={
+  }
+)
+
 TransactionSoireeForm = modelform_factory(TransactionSoiree)
 TransactionAbonnementForm = modelform_factory(TransactionAbonnement)
 AbonnementForm = modelform_factory(Abonnement)
 RecapitulatifForm = modelform_factory(Recapitulatif)
 DebitRecapitulatifForm = modelform_factory(DebitRecapitulatif)
 CreditRecapitulatifForm = modelform_factory(CreditRecapitulatif)
-RepresentationForm = modelform_factory(Representation)
-AnimationForm = modelform_factory(Animation)
 RoleForm = modelform_factory(Role)

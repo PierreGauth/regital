@@ -286,7 +286,7 @@ class Representation(models.Model):
 		unique_together=(('piece', 'Soiree', 'position'),)
 
 	def __unicode__(self):
-		return 'La pièce {0.piece.titre!r} jouée le {0.Soiree.date!s} ({0.position!s})'.format(self)
+		return u'La pièce {0.piece.titre!r} jouée le {0.Soiree.date!s} ({0.position!s})'.format(self)
 
 def pre_init_representation( **kwargs):
 	attributes = kwargs['kwargs']
@@ -316,19 +316,19 @@ class Animation(models.Model):
 		unique_together=(('type', 'Soiree', 'position'),)
 	
 	def __unicode__(self):
-		return 'Un {0.type_animation} est donné le {0.Soiree.date!s} ({0.position!s})'.format(self)
+		return u'Un {0.type} est donné le {0.Soiree.date!s} ({0.position!s})'.format(self)
 
-def pre_init_animation( **kwargs):
-	attributes = kwargs['kwargs']
-	auteur = attributes.get('auteur')	
-	if not isinstance(auteur, Personne):
-		attributes['auteur'] = Personne.objects.get(nom=auteur)
-	# if 'type' in attributes :
-		# attributes['type'] = T_ANIMATION(attributes['type'])
-		# del attributes['type']
-	kwargs['kwargs'] = attributes
+#def pre_init_animation( **kwargs):
+#	attributes = kwargs['kwargs']
+#	auteur = attributes.get('auteur')	
+#	if not isinstance(auteur, Personne):
+#		attributes['auteur'] = Personne.objects.get(nom=auteur)
+#	# if 'type' in attributes :
+#		# attributes['type'] = T_ANIMATION(attributes['type'])
+#		# del attributes['type']
+#	kwargs['kwargs'] = attributes
 		
-pre_init.connect(pre_init_animation, Animation)
+#pre_init.connect(pre_init_animation, Animation)
 	
 ### Gestion des pièces et des ressources humaines
 
