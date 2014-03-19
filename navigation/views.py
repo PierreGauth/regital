@@ -13,7 +13,7 @@ from django.forms.models import model_to_dict
 from navigation.models import *
 
 def index(request):
-    return render_to_response('accueil.html', {"active":"accueil"}, context_instance=RequestContext(request))
+	return render_to_response('accueil.html', {"title":"Accueil", "active":"accueil"}, context_instance=RequestContext(request))
 
 def log_in(request, next='/'):
 	logout(request)
@@ -106,7 +106,7 @@ def detailsPersonne(request,id):
   personne=Personne.objects.get(id=id)
   personne_nationalite=personne.get_nationalite_display()
   personne_genre=personne.get_genre_display()
-  return render_to_response('page_detail.html',
+  return render_to_response('page_detail_personne.html',
     {'title':personne.prenom+' '+personne.nom,
     'active':'personnes',
     'personneinfos':personne,
@@ -140,7 +140,7 @@ def detailsSoiree(request,date):
 	except ObjectDoesNotExist as e:
 		return listSoirees(request,date)
 	return render_to_response('page_detail_soiree.html',
-    {'title':soiree,
+    {'title':str(soiree.date),
     'active':'soirees',
     'soireeinfos':soiree,
 		'billetterieinfos':billetteries,

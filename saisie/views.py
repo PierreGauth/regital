@@ -281,7 +281,7 @@ function recupPieceInfo() {
     $.get( "../saisie/info/piece/"+titre, function( data ) 
         {
 					if(data.indexOf("Aucune Piece ne correspond") == -1) {
-          	addTopieceModal("La piece que vous etes en train d\'enter correspond-t-elle à l\'une de ces pieces ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
+          	addTopieceModal("La piece que vous etes en train d\'enter correspond-t-elle à l\'une de ces pieces ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data.replace(/@/g,"'"));
 						document.getElementById("azpiece").innerHTML="<div class='alert alert-info'>Nous avons trouvé des pieces similaires sur Theaville.org <button class='btn btn-info' onclick='lauchPieceModal();''>Voir</button></div>";
 					}
         });
@@ -294,11 +294,15 @@ function lauchPieceModal() {
 }
 
 function parsePieceInfo(data) {
-		var values = data.split(';');                   
-    setValue('titre',values[2]);  
-		setValue('auteurs',values[4]);                                                              
-    setValue('date_premiere',values[3]);               
-    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[1]);
-
-  tooglepersonneModal();
+		alert('a');
+		var values = data.split(';'); 
+		alert('a');                  
+    setValue('titre',values[1]); 
+		alert('a'); 
+		setValue('auteurs',values[3]);
+		alert('a');                                                              
+    setValue('date_premiere',values[2]);
+		alert('a');               
+    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[0]);
+  //tooglepersonneModal();
 }'''

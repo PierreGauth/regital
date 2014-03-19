@@ -1,7 +1,7 @@
 <ul class="nav nav-pills nav-stacked">
 	<li class=" {% if active == "accueil" %}active{% endif %}"><a href="/">
 		Accueil<span style="float:right;" class="glyphicon glyphicon-home"/></a></li>
-	<li class=" {% if active == "rechercher" %}active{% endif %}"><a href="/search/">
+	<li class=" {% if active == "rechercher" %}active{% endif %}"><a unactivehref="/search/" active="none">
 		Rechercher<span style="float:right;" class="glyphicon glyphicon-search"/></a></li>
 	<li class=" {% if active == "soirees" %}active{% endif %}"><a href="/soirees/">
 		Soirées<span style="float:right;" class="glyphicon glyphicon-list-alt"/></a></li>
@@ -9,12 +9,12 @@
 		Personnes<span style="float:right;" class="glyphicon glyphicon-user"/></a></li>
 	<li class=" {% if active == "pieces" %}active{% endif %}"><a href="/pieces/">
 		Pièces<span style="float:right;" class="glyphicon glyphicon-book"/></a></li>
-	<li class=" {% if active == "statistiques" %}active{% endif %}"><a href="/stat/">
+	<li class=" {% if active == "statistiques" %}active{% endif %}"><a unactivehref="/stat/">
 		Statistiques<span style="float:right;" class="glyphicon glyphicon-stats"/></a></li>
 	{% if user.is_authenticated %}
 	<li class=" {% if active == "saisie" %}active{% endif %}"><a href="/saisie/">
 		Saisie<span style="float:right;" class="glyphicon glyphicon-pencil"/></a></li>
 	{% endif %}		
-	<li class=" {% if active == "contact" %}active{% endif %}"><a href="/contact/">
+	<li class=" {% if active == "contact" %}active{% endif %}"><a unactivehref="/contact/">
 		Contact<span style="float:right;" class="glyphicon glyphicon-comment"/></a></li>
 </ul>

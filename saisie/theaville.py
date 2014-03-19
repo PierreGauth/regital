@@ -32,6 +32,10 @@ def searchPiece(request, titre='', auteur=''):
 #		pattern = re.compile(pattern, re.UNICODE)
 #		page = pattern.sub(r'<tr style="cursor:pointer;"  onclick="parsePieceInfo(\1)"><td><span class="glyphicon glyphicon-book"></span></td><td>\2<td/><td>\3<td/><td>\4<td/></tr>',page)
 
+		pattern = '(\n|\r)*'
+		pattern = re.compile(pattern, re.UNICODE)
+		page = pattern.sub(r'',page)
+		
 		pattern = '<a href="index.php\?r=pieces/auteurs/details.php&amp;id=(?P<id>\d+)">'
 		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
 		page = pattern.sub(r' ',page)
@@ -40,7 +44,7 @@ def searchPiece(request, titre='', auteur=''):
 		
 		pattern = '<tr>(\n|\r|\t| )*<td><a href="index.php\?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)*<td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
 		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
-		page = pattern.sub(r'<tr style="cursor:pointer;"  onclick="parsePieceInfo(\'\2;\3;\6;\8\')"><td><span class="glyphicon glyphicon-book"></span></td><td>\3<td/><td>\6<td/><td>\8<td/></tr>',page)
+		page = pattern.sub(r'<tr style="cursor:pointer;" onclick="parsePieceInfo(@\2;\3;\6;\8@);"><td><span class="glyphicon glyphicon-book"></span></td><td>\3<td/><td>\6<td/><td>\8<td/></tr>',page)
 		
 		
 #		pattern = re.compile(pattern, re.UNICODE)
