@@ -16,8 +16,15 @@
 			<td class="col-md-5"><a href="{{pieceinfos.uri_theaville}}">{{pieceinfos.uri_theaville}}</a></td>
 		</tr>
 		<tr class="row">
+		{% if pieceinfos.date_premiere_isComplete %}
 			<th class="col-md-5">Date de la première :</th>
 			<td class="col-md-5">{{pieceinfos.date_premiere}}</td>
+		{% else %}
+			<th class="col-md-5" style="background-color: #f2dede">Date de la première :</th>
+			<td class="col-md-5" style="background-color: #f2dede" data-toggle="tooltip" data-placement="right" title="Date incomplète">
+				{{pieceinfos.date_premiere_text}} <span class="glyphicon glyphicon-warning-sign" style="float:right;"/>
+			</td>
+		{% endif %}
 		</tr>
 		<tr class="row">
 			<th class="col-md-5">Langue :</th>
@@ -37,4 +44,10 @@
 		</tr>
 	</table>
 </div>
+
+<script>
+	$(function() {
+		$('td').tooltip();
+	})
+</script>
 {% endblock %}

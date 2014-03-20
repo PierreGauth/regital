@@ -28,12 +28,26 @@
 			<td class="col-md-5">{{personneinfos.titre_personne}}</td>
 		</tr>
 		<tr class="row">
+		{% if personneinfos.date_de_naissance_isComplete %}
 			<th class="col-md-5">Date de naissance :</th>
 			<td class="col-md-5">{{personneinfos.date_de_naissance}}</td>
+		{% else %}
+			<th class="col-md-5" style="background-color: #f2dede">Date de naissance :</th>
+			<td class="col-md-5" style="background-color: #f2dede" data-toggle="tooltip" data-placement="right" title="Date incomplète">
+				{{personneinfos.date_de_naissance_text}} <span class="glyphicon glyphicon-warning-sign" style="float:right;"/>
+			</td>
+		{% endif %}			
 		</tr>
 		<tr class="row">
-			<th class="col-md-5">Date de deces :</th>
+		{% if personneinfos.date_de_deces_isComplete %}
+			<th class="col-md-5">Date de déces :</th>
 			<td class="col-md-5">{{personneinfos.date_de_deces}}</td>
+		{% else %}
+			<th class="col-md-5" style="background-color: #f2dede">Date de déces :</th>
+			<td class="col-md-5" style="background-color: #f2dede" data-toggle="tooltip" data-placement="right" title="Date incomplète">
+				{{personneinfos.date_de_deces_text}} <span class="glyphicon glyphicon-warning-sign" style="float:right;"/>
+			</td>
+		{% endif %}		
 		</tr>
 		<tr class="row">
 			<th class="col-md-5">Plus d'informations :</th>

@@ -50,50 +50,24 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 
 @login_required(login_url='/login/')
 def creerPersonne(request):
-    if request.POST:
-        nom = request.POST.get('nom', 'none')
-        prenom = request.POST.get('prenom', 'none')
-        pseudonyme = request.POST.get('pseudonyme', 'none')
-        uri_cesar = request.POST.get('uri_cesar', 'none')
-        genre = request.POST.get('genre', 'none')
-        nationalite = request.POST.get('nationalite', 'none')
-        titre = request.POST.get('titre_personne', 'none')
-        date_de_naissance = request.POST.get('date_de_naissance', 'none')
-        date_de_deces = request.POST.get('date_de_deces', 'none')
-        plus_dinfo = request.POST.get('plus_dinfo', 'none')
-        personne = Personne(nom=nom, prenom=prenom, pseudonyme=pseudonyme, uri_cesar=uri_cesar, genre=genre, 
-            nationalite=nationalite, titre_personne=titre, date_de_naissance=date_de_naissance, 
-            date_de_deces=date_de_deces, plus_dinfo=plus_dinfo)
-        try:
-          personne.save()
-          message = u"<b>" + prenom + " " + nom + u"</b> a bien été ajouté dans la base"
-          return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
-        except ValidationError as e:
-          message = ' '.join(e.messages)
-          return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-            previous_values = {'nom':nom,
-                      'prenom':prenom,
-                      'pseudonyme':pseudonyme,
-                      'uri_cesar':uri_cesar,
-                      'genre':genre,
-                      'nationalite':nationalite,
-                      'titre_personne':titre,
-                      'date_de_naissance':date_de_naissance,
-                      'date_de_deces':date_de_deces,
-                      'plus_dinfo' : plus_dinfo})
-        except IntegrityError as e:
-          message = 'Cette Personne existe déja dans la base'
-          return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-            previous_values = {'nom':nom,
-                      'prenom':prenom,
-                      'pseudonyme':pseudonyme,
-                      'uri_cesar':uri_cesar,
-                      'genre':genre,
-                      'nationalite':nationalite,
-                      'titre_personne':titre,
-                      'date_de_naissance':date_de_naissance,
-                      'date_de_deces':date_de_deces,
-                      'plus_dinfo' : plus_dinfo}) 
+	if request.POST:
+		personne = PersonneForm(request.POST)
+		try:
+			instance = personne.save()
+			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + request.POST.get('prenom') + ' ' + request.POST.get('nom') + u'</a></b> a bien été ajouté dans la base'
+			return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
+		except ValidationError as e:
+			message = ' '.join(e.messages)
+			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
+			  previous_values = request.POST)
+		except ValueError as e:
+			message = 'La personne existe déjà dans la base'
+			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
+			  previous_values = request.POST)
+		except IntegrityError as e:
+			message = e
+			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
+			previous_values = request.POST) 
                       
 @login_required(login_url='/login/')
 def creerPiece(request):

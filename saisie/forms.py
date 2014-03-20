@@ -6,7 +6,7 @@ from django.forms.models import modelform_factory
 # définition de tous les formulaires associés au modèle (un par classe)
 
 PersonneForm = modelform_factory( Personne,  
-  widgets={
+	widgets={
     'nom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nom', 'onblur' :'recupPersonneInfo()'}),
     'prenom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Prénom', 'onblur' :'recupPersonneInfo()'}),
     'pseudonyme': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Pseudonyme'}),
@@ -15,21 +15,31 @@ PersonneForm = modelform_factory( Personne,
     'nationalite': forms.Select(attrs={'class' : 'form-control'}),
     'titre_personne': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre', 'name' : 'titre_personne'}),
     'date_de_naissance': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpersonne1' }),
+		'date_de_naissance_text': forms.HiddenInput(attrs={'value':''}),
+		'date_de_naissance_isComplete': forms.HiddenInput(attrs={'value':'True'}),
     'date_de_deces': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpersonne2'}),
+		'date_de_deces_text': forms.HiddenInput(attrs={'value':''}),
+		'date_de_deces_isComplete': forms.HiddenInput(attrs={'value':'True'}),
     'plus_dinfo': forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : '...'})
     },
   labels={
     'prenom': 'Prénom',
     'date_de_deces': 'Décès',
     'date_de_naissance': 'Naissance',
+		'date_de_naissance_text': '',
+		'date_de_naissance_isComplete': '',
+		'date_de_deces_text': '',
+		'date_de_deces_isComplete': '',
   })
     
-PieceForm = modelform_factory( Piece,  
-  widgets={
+PieceForm = modelform_factory( Piece,
+	widgets={
     'titre': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre', 'onblur' :'recupPieceInfo()'}),
     'titre_brenner': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Titre Brenner'}),
     'uri_theaville': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Uri Theaville'}),
     'date_premiere': forms.TextInput(attrs={'class' : 'form-control', 'value':'1700-01-01', 'id' : 'dpiece1' }),
+		'date_premiere_text': forms.HiddenInput(attrs={'value':''}),
+		'date_premiere_isComplete': forms.HiddenInput(attrs={'value':'True'}),
     'langue': forms.Select(attrs={'class' : 'form-control'}),
     'auteurs': forms.Select(attrs={'class' : 'form-control'}),
     'commentaire': forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : '...'})
@@ -123,8 +133,8 @@ DebitForm = modelform_factory(Debit,
 CreditForm = modelform_factory(Credit,
   fields=('montant','libelle'),
   widgets={
-    'montant': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Montant'}),
-    'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
+		'libelle' : forms.TextInput(attrs={'class' : 'form-control col-md-2', 'placeholder' : 'Libellé'}),
+    'montant': forms.NumberInput(attrs={'class' : 'form-control col-md-2', 'placeholder' : 'Montant'}),
   },
   labels={
     'montant':'',
@@ -139,7 +149,7 @@ BilletterieForm = modelform_factory(Billetterie,
     'libelle' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Libellé'}),
     'nombre_billets_vendus' : forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nombre de billets vendus'}),
     'type_billet' : forms.Select(attrs={'class' : 'form-control'}),
-    'commentaire' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Commentaire'}),
+    'commentaire' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Commentaire', 'rows':'1'}),
   },
   labels={
     'montant':'',
@@ -165,7 +175,7 @@ AnimationForm = modelform_factory(Animation,
     'position': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Position'}),
     'type' : forms.Select(attrs={'class' : 'form-control'}),
     'auteur' : forms.Select(attrs={'class' : 'form-control'}),
-    'description' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Description'}),
+    'description' : forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : 'Description', 'rows':'1'}),
   },
   labels={
   }

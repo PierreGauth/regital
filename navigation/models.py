@@ -353,7 +353,11 @@ class Personne(models.Model):
 	nationalite = models.CharField(max_length=3, choices=T_NATIONALITE, default='-', blank=False)
 	titre_personne = models.CharField(max_length=64, blank=True)
 	date_de_naissance = models.DateField(null=True, blank=True)
+	date_de_naissance_text = models.CharField(max_length=50, null=True, blank=True)
+	date_de_naissance_isComplete = models.BooleanField(null=False, blank=True)
 	date_de_deces = models.DateField(null=True, blank=True)
+	date_de_deces_text = models.CharField(max_length=50, null=True, blank=True)
+	date_de_deces_isComplete = models.BooleanField(null=False, blank=True)
 	plus_dinfo = models.TextField(null=True, blank=True)
 	class Meta:
 		unique_together=(('nom', 'prenom', 'date_de_naissance', 'genre'),)
@@ -372,6 +376,8 @@ class Piece(models.Model):
 	titre_brenner = models.CharField(max_length=128, null=True, blank=True)
 	uri_theaville = models.URLField(max_length=256, null=True, blank=True)
 	date_premiere = models.DateField(null=True, blank=True)
+	date_premiere_text = models.CharField(max_length=50, null=True, blank=True)
+	date_premiere_isComplete = models.BooleanField(null=False, blank=True)
 	langue = models.CharField(max_length=5, choices=T_LANGUE, default='-', blank=True)  
 	auteurs = models.ManyToManyField(Personne, null=True, blank=True)
 	commentaire = models.TextField(null=True, blank=True) # pour consigner les anecdotes

@@ -14,7 +14,7 @@ def generate_arianne(context, title):
 	current_url = context['request'].get_full_path()
 
 	if 'arianne' not in session :
-		session['arianne'] = title + ';'
+		session['arianne'] = title + ':/;'
 		session['prevTitle'] = title
 
 	arianne = ''

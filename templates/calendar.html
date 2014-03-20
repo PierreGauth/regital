@@ -162,7 +162,7 @@
 </div>
 
 <div id="carousel-calendar" class="carousel slide vertical" data-ride="carousel" data-interval="0">
-	<div id="toolTipsArea" style="position:relative;z-index:1;opacity:0.5;"></div>
+	<div id="toolTipsArea" style="position:relative;z-index:1;opacity:0.7;"></div>
   <div id="slideList" class="carousel-inner">
 		<div class="item calendar calendar1697"></div>
 		<div class="item active calendar calendar1700"></div> 
@@ -182,8 +182,6 @@
 <script src="/static/d3js/d3.min.js"></script>
 <script>
 
-var minDate = 1697;
-var maxDate = 1703;
 var currentDate = 1700;
 
 var width = 960,
@@ -225,7 +223,7 @@ function createCalendar(from, to, balise)
     .attr("height", cellSize)
     .attr("x", function(d) { return week(d) * cellSize; })
     .attr("y", function(d) { return day(d) * cellSize; })
-		.attr("yearPosition", function(d) { return year(d) - currentDate; })
+		.attr("yearPosition", function(d) { return year(d) - from - 1; })
 		.attr("onmouseover", "myToolType();")
 		.attr("onmouseout", "supprToolType();")
 		.attr("title", function(d) { return format(d); })
@@ -260,48 +258,37 @@ function monthPath(t0) {
 }
 
 function nextSlide() {
-	currentDate += 3;
-	if(currentDate >= maxDate) {
-		maxDate += 3;
-		slides = window.document.getElementById('slideList').innerHTML;
-		window.document.getElementById('slideList').innerHTML = slides + '<div class="item calendar calendar'+maxDate+'"></div>';	
-		createCalendar(maxDate-1,maxDate+4, ".calendar"+maxDate);
-	}	
-	$('#carousel-calendar').carousel('next');
+	goToSlide(currentDate+3);
 }
 
 function prevSlide() {
-	currentDate -= 3;
-	if(currentDate <= minDate) {
-		minDate -= 3;
-		slides = window.document.getElementById('slideList').innerHTML;
-		window.document.getElementById('slideList').innerHTML = '<div class="item calendar calendar'+minDate+'"></div>' + slides;
-		createCalendar(minDate-4,minDate+1, ".calendar"+minDate);
-	}	
-	$('#carousel-calendar').carousel('prev');
+	goToSlide(currentDate-3);
 }
 
 function goToSlide(newDate) {
 
-	if(newDate == -1) {
+	if(newDate == -1) { //si la date à été entrée par l'utilisateur
 		newDate = parseInt(window.document.getElementById('searchYear').value);
 	}
 	
 	if(newDate != "") {
-		currentDate = newDate;
-		if(currentDate <= minDate || currentDate >= maxDate) {
-		
-			minDate = currentDate - 3;
-			maxDate = currentDate + 3;
-			
-			window.document.getElementById('slideList').innerHTML = '<div class="item calendar calendar'+minDate+' active"></div>'
-				+ '<div class="item calendar calendar'+currentDate+'"></div>'
-				+ '<div class="item calendar calendar'+maxDate+'"></div>';
-				
-			createCalendar(currentDate-1,currentDate+4, ".calendar"+currentDate);
-			createCalendar(minDate-4,minDate+1, ".calendar"+minDate);
-			createCalendar(maxDate-1,maxDate+4, ".calendar"+maxDate);
+		if(currentDate < newDate) {						
+			window.document.getElementById('slideList').innerHTML = '<div class="item calendar calendar'+(newDate-3)+' active"></div>'
+				+ '<div class="item calendar calendar'+newDate+'"></div>'
+				+ '<div class="item calendar calendar'+(newDate+3)+'"></div>'; 
 		}
+		else {
+			window.document.getElementById('slideList').innerHTML = '<div class="item calendar calendar'+(newDate-3)+'"></div>'
+				+ '<div class="item calendar calendar'+newDate+'"></div>'
+				+ '<div class="item calendar calendar'+(newDate+3)+' active"></div>';
+		}	
+		
+		currentDate = newDate;
+			
+		createCalendar(currentDate-2,currentDate+3, ".calendar"+currentDate);
+		createCalendar(currentDate-5,currentDate, ".calendar"+(currentDate-3));
+		createCalendar(currentDate+1,currentDate+6, ".calendar"+(currentDate+3));
+		
 		$('#carousel-calendar').carousel(1);
 	}
 	return false;
