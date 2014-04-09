@@ -4,7 +4,11 @@
 
 {% block content %}
 <div class="row">
-	<h2><center><b>{{pieceinfos.titre|capfirst}}</b></center></h2>
+	<h2><center><b>{{pieceinfos.titre|capfirst}}</b>
+		{% if user.is_authenticated %}
+			<a href="/saisie/update/piece/{{pieceinfos.id}}"><button class="btn btn-sm" type="button" style="float:right;">Modifier</button></a>
+		{% endif %}
+		</center></h2>
 	<br>
 	<table class="table table-striped">
 		<tr class="row">

@@ -41,13 +41,13 @@ PieceForm = modelform_factory( Piece,
 		'date_premiere_text': forms.HiddenInput(attrs={'value':''}),
 		'date_premiere_isComplete': forms.HiddenInput(attrs={'value':'True'}),
     'langue': forms.Select(attrs={'class' : 'form-control'}),
-    'auteurs': forms.Select(attrs={'class' : 'form-control'}),
+    'auteurs': forms.SelectMultiple(attrs={'class' : 'form-control'}),
     'commentaire': forms.Textarea(attrs={'class' : 'form-control', 'placeholder' : '...'})
     },
   labels={
     'date_premiere': 'Première',
-    'titre_brenner': 'Titre Brenner',
-    'uri_theaville': 'Uri Theaville'
+    'titre_brenner': 'Titre Brenner',
+    'uri_theaville': 'Uri Theaville'
   })   
     
 SoireeForm = modelform_factory( Soiree,
@@ -57,7 +57,7 @@ SoireeForm = modelform_factory( Soiree,
 		'libelle_date_reg': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Date de la soiree(version originale)'}),
 	},
   labels={
-    'libelle_date_reg': 'Date Registre'
+    'libelle_date_reg': 'Date Registre'
   }
 )
   
@@ -76,26 +76,26 @@ BudgetSoireeForm = modelform_factory( BudgetSoiree,
 		'reste_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Reste'}),
 		'total_depenses_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Total dépenses'}),
 		'total_recettes_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Total recettes'}),
-		'debit_derniere_soiree_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Débit dernière soirée'}),
-		'total_depenses_corrige_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Dépenses corrigées'}),
+		'debit_derniere_soiree_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Débit dernière soirée'}),
+		'total_depenses_corrige_reg': forms.NumberInput(attrs={'class' : 'form-control', 'placeholder' : 'Dépenses corrigées'}),
 	},
 	labels={
-    'credit_final_reg':'Crédit Final', 
-    'debit_initial_reg':'Débit Initial',
-    'montant_cachet':'Montant Cachet',
-    'montant_cachet_auteur':'Montant Cachet Auteur',
-    'nb_total_billets_vendus_reg':'Total Billets Vendus',
-    'nombre_cachets':'Nombre Cachets',
-    'quart_pauvre_reg':'Quart Pauvre',
-    'credit_total_reg':'Credit Total',
-    'debit_total_reg':'Debit Total',
+    'credit_final_reg':'Crédit Final', 
+    'debit_initial_reg':'Débit Initial',
+    'montant_cachet':'Montant Cachet',
+    'montant_cachet_auteur':'Montant Cachet Auteur',
+    'nb_total_billets_vendus_reg':'Total Billets Vendus',
+    'nombre_cachets':'Nombre Cachets',
+    'quart_pauvre_reg':'Quart Pauvre',
+    'credit_total_reg':'Credit Total',
+    'debit_total_reg':'Debit Total',
     'reste_reg':'Reste',
 		'total_depenses_reg': 'Total Dépenses',
 		'total_recettes_reg': 'Total Recettes',
 		'montant_cachet': 'Cachet',
 		'montant_cachet_auteur': 'Cachet Auteur',
-		'debit_derniere_soiree_reg': 'Débit dernière soirée',
-		'total_depenses_corrige_reg': 'Dépenses corrigées',
+		'debit_derniere_soiree_reg': 'Débit dernière soirée',
+		'total_depenses_corrige_reg': 'Dépenses corrigées',
 	}
 )  
 
@@ -107,8 +107,8 @@ PageRegistreForm = modelform_factory(PageRegistre,
 		'redacteurs' : forms.Select(attrs={'class' : 'form-control'}),
   },
   labels={
-    'ref_registre':'Référence Registre',
-    'num_page_pdf':'Numéro page PDF',
+    'ref_registre':'Référence Registre',
+    'num_page_pdf':'Numéro page PDF',
   }
 )
 

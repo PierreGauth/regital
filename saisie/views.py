@@ -8,105 +8,106 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.core.exceptions import ValidationError
+from django.forms.models import model_to_dict
 from django.db import IntegrityError
 from navigation.models import *
 from saisie.forms import *
+import re
 
 	
 @login_required(login_url='/login/')
-def saisie(request, active_tab='Soiree', alert='off', alert_type='success', alert_message="unknown", previous_values = {}):
+def saisie(request, active_tab='Soiree', alert='off', alert_type='success', alert_message="unknown", previous_values = {}, date=''):
 
-    personneForm = render_to_string(
-        'form.html' , 
-        {'action' : '/saisie/new/personne/', 'formset_list' : [PersonneForm()],'date_picker_id_list' : ['dpersonne1','dpersonne2'], 
-        'previous_values' : previous_values, 'specific_function' : getPersonneJs(), 
-				'alertZoneId':'azpersonne'},
-        context_instance=RequestContext(request)) + render_to_string(
-        'modal.html' , 
-        {'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar'},
-        context_instance=RequestContext(request))
-    
-    pieceForm = render_to_string(
-        'form.html' , 
-        {'action' : '/saisie/new/piece/', 'formset_list' : [PieceForm()], 'date_picker_id_list' : ['dpiece1'],
-        'previous_values' : previous_values, 'specific_function' : getPieceJs(),
-				'alertZoneId':'azpiece'},
-        context_instance=RequestContext(request)) + render_to_string(
-        'modal.html' , 
-        {'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
-        context_instance=RequestContext(request))
-        
-    soireeForm = render_to_string(
-        'form.html' , 
-        {'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 'formitems' : {'representation': RepresentationForm, 'animation': AnimationForm() ,'debit':DebitForm(),'credit':CreditForm(),'billetterie':BilletterieForm()}, 
-        'previous_values' : previous_values, 'date_picker_id_list' : ['dsoiree1']},
-        context_instance=RequestContext(request))
-        
-    return render_to_response('tab_page.html', 
-        {"title":"Saisie", "active":"saisie", "tab_list" : 
-        {"Personne" : personneForm, "Soiree":soireeForm, "Piece":pieceForm}, "active_tab":active_tab,  
-        'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message}, 
-        context_instance=RequestContext(request))
+	previous_values['date'] = date
+
+	personneForm = render_to_string(
+		'form.html' , 
+		{'action' : '/saisie/new/personne/', 'formset_list' : [PersonneForm()],'date_picker_id_list' : ['dpersonne1','dpersonne2'], 
+		'previous_values' : previous_values, 'specific_function' : 'saisie_personne.js', 
+		'alertZoneId':'azpersonne', 'formId':'personneForm'},
+		context_instance=RequestContext(request)) + render_to_string(
+		'modal.html' , 
+		{'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar'},
+		context_instance=RequestContext(request))
+
+	pieceForm = render_to_string(
+		'form.html' , 
+		{'action' : '/saisie/new/piece/', 'formset_list' : [PieceForm()], 'date_picker_id_list' : ['dpiece1'],
+		'previous_values' : previous_values, 'specific_function' : 'saisie_piece.js',
+		'alertZoneId':'azpiece', 'formId':'pieceForm'},
+		context_instance=RequestContext(request)) + render_to_string(
+		'modal.html' , 
+		{'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
+		context_instance=RequestContext(request))
+
+	soireeForm = render_to_string(
+		'form_soiree.html' , 
+		{'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 
+		'formitems' : {'representation': RepresentationForm, 'animation': AnimationForm() ,'debit':DebitForm(),
+		'credit':CreditForm(),'billetterie':BilletterieForm()}, 'formId' : 'soireeForm',
+		'previous_values' : previous_values, 'specific_function' : 'saisie_soiree.js', 'date_picker_id_list' : ['dsoiree1']},
+		context_instance=RequestContext(request))
+
+	return render_to_response('tab_page.html', 
+		{"title":"Saisie", "active":"saisie", "tab_list" : 
+		{"Personne" : personneForm, "Soiree":soireeForm, "Piece":pieceForm}, "active_tab":active_tab, 
+		'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message}, 
+		context_instance=RequestContext(request))
+				
 
 @login_required(login_url='/login/')
-def creerPersonne(request):
-	if request.POST:
-		personne = PersonneForm(request.POST)
+def creerPersonne(request, createFrom='Personne'):
+	if request.POST:		
+		data = { x:y for x,y in request.POST.iteritems() }
+		data = testDateForm(data,['date_de_naissance','date_de_deces'])	
+	
+		#instance = None
+		personne = PersonneForm(data)
+		
 		try:
 			instance = personne.save()
 			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + request.POST.get('prenom') + ' ' + request.POST.get('nom') + u'</a></b> a bien été ajouté dans la base'
-			return saisie(request, active_tab='Personne',alert='on',alert_type='success',alert_message=message)
+			return saisie(request, active_tab=createFrom,alert='on',alert_type='success',alert_message=message, previous_values = data)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-			  previous_values = request.POST)
+			  previous_values = data)
 		except ValueError as e:
-			message = 'La personne existe déjà dans la base'
+			message = e
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-			  previous_values = request.POST)
+			  previous_values = data)
 		except IntegrityError as e:
 			message = e
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-			previous_values = request.POST) 
+				previous_values = data)
                       
 @login_required(login_url='/login/')
 def creerPiece(request):
-    if request.POST:
-        titre = request.POST.get('titre', 'none')
-        titre_brenner = request.POST.get('titre_brenner', 'none')
-        uri_theaville = request.POST.get('uri_theaville', 'none')
-        date_premiere = request.POST.get('date_premiere', 'none')
-        langue = request.POST.get('langue', 'none')
-        auteurs = request.POST.get('auteurs', 'none')
-        commentaire = request.POST.get('commentaire', 'none')
-        
-        piece = Piece(titre=titre, titre_brenner=titre_brenner, uri_theaville=uri_theaville, date_premiere=date_premiere, langue=langue)
-        
-        try:
-          piece.save()
-          piece.auteurs.add(auteurs)
-          message = u"<b>" + titre + u"</b> a bien été ajouté dans la base"
-          return saisie(request, active_tab='Piece',alert='on',alert_type='success',alert_message=message)
-        except ValidationError as e:
-          message = ' '.join(e.messages)
-          return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
-            previous_values = {'titre':titre,
-                      'titre_brenner':titre_brenner,
-                      'date_premiere':date_premiere,
-                      'uri_theaville':uri_theaville,
-                      'langue':langue,
-                      'auteurs':auteurs,
-                      'commentaire':commentaire})
-        except IntegrityError as e:
-          message = 'Cette Piece existe déja dans la base'
-          return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
-            previous_values = {'titre':titre,
-                      'titre_brenner':titre_brenner,
-                      'date_premiere':date_premiere,
-                      'uri_theaville':uri_theaville,
-                      'langue':langue,
-                      'auteurs':auteurs,
-                      'commentaire':commentaire})
+	if request.POST:	
+		data = { x:y for x,y in request.POST.iteritems() }
+		data = testDateForm(data,['date_premiere'])	
+		del data['auteurs']
+
+		auteurs = [ Personne.objects.get(id=int(x)) for x in request.POST.getlist('auteurs')]
+		piece = PieceForm(data)
+		
+		try:
+			instance = piece.save()
+			for auteur in auteurs : instance.auteurs.add(auteur)
+			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été ajouté dans la base'
+			return saisie(request, active_tab='Piece',alert='on',alert_type='success',alert_message=message)
+		except ValidationError as e:
+			message = ' '.join(e.messages)
+			return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
+				previous_values = request.POST)
+		except ValueError as e:
+			message = e
+			return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
+			  previous_values = request.POST)
+#		except IntegrityError as e:
+#			message = 'Cette Piece existe déja dans la base'
+#			return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
+#				previous_values = request.POST)
         
 
 @login_required(login_url='/login/')
@@ -203,80 +204,64 @@ def creerSoiree(request):
 #		except IntegrityError as e:
 #			message = 'Cette Soirée existe déja dans la base'
 #			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
-  
-def getPersonneJs():
-  return '''
-function recupPersonneInfo() { 
-  var nom = document.getElementsByName("nom")[0].value;
-  var prenom = document.getElementsByName("prenom")[0].value;
-	 $.get( "/saisie/info/personne/"+nom+"/"+prenom, function( data ) 
-        {
-					if(data.indexOf("Aucune Personne ne correspond") == -1) {
-          	addTopersonneModal("La personne que vous etes en train d\'enter correspond-t-elle à l\'une de ces personnes ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data);
-						document.getElementById("azpersonne").innerHTML="<div class='alert alert-info'>Nous avons trouvé des personnes similaires sur Cesar.org.uk <button class='btn btn-info' onclick='lauchPersonneModal();'>Voir</button></div>";
-					}
-        });    
-}
 
-function lauchPersonneModal() {
-	tooglepersonneModal();
-	document.getElementById('azpersonne').innerHTML='';
-}
 
-function parsePersonneInfo(id) {
-  $.get( "/saisie/info/personne/"+id, function( data ) 
-  {
-      var values = data.split(';');                   
-      setValue('titre_personne',values[1]);                                      
-      setValue('prenom',values[2]);                                                        
-      setValue('nom',values[4]);                                     
-      //setValue('date_de_naissance',values[5]);                                     
-      //setValue('date_de_deces',values[6]);                                               
-      setValue('pseudonyme',values[7]);
-      if(values[8] == 'male') setValue('genre','M');
-      else if(values[8] == 'female') setValue('genre','F'); 
-      if(values[9] == 'French') setValue('nationalite', 'fr');
-      else if(values[9] == 'Italian') setValue('nationalite', 'it');
-      else if(values[9] == 'Deutsch') setValue('nationalite', 'de');
-      else if(values[9] == 'English') setValue('nationalite', 'en');
-      else setValue('nationalite', '-');
-      if (values[10] != 'undefined') setValue('plus_dinfo', values[10]);
-      setValue('uri_cesar','http://cesar.org.uk/cesar2/people/people.php?fct=edit&person_UOID='+id);
-  });
-  tooglepersonneModal();
-}'''
+@login_required(login_url='/login/')
+def update(request, type, id) :
+	instance = {}
+	if type == 'personne':
+		instance = model_to_dict(Personne.objects.get(id=id))
+	elif type == 'piece':
+		instance = model_to_dict(Piece.objects.get(id=id))
+	else :
+		instance = model_to_dict(Soiree.objects.get(id=id))
+	return saisie(request,active_tab=type.capitalize(), previous_values=instance)
 
-def getPieceJs():
-  return '''
-function recupPieceInfo() { 
-  var titre = document.getElementsByName("titre")[0].value;
-  //var prenom = document.getElementsByName("auteur")[0].value; 
-  if (titre != "") { 
-    $.get( "../saisie/info/piece/"+titre, function( data ) 
-        {
-					if(data.indexOf("Aucune Piece ne correspond") == -1) {
-          	addTopieceModal("La piece que vous etes en train d\'enter correspond-t-elle à l\'une de ces pieces ? Si oui, cliquer sur le lien correpondant : <br/><br/>" + data.replace(/@/g,"'"));
-						document.getElementById("azpiece").innerHTML="<div class='alert alert-info'>Nous avons trouvé des pieces similaires sur Theaville.org <button class='btn btn-info' onclick='lauchPieceModal();''>Voir</button></div>";
-					}
-        });
-     }
-}         
 
-function lauchPieceModal() {
-	tooglepieceModal();
-	document.getElementById('azpiece').innerHTML='';
-}
-
-function parsePieceInfo(data) {
-		alert('a');
-		var values = data.split(';'); 
-		alert('a');                  
-    setValue('titre',values[1]); 
-		alert('a'); 
-		setValue('auteurs',values[3]);
-		alert('a');                                                              
-    setValue('date_premiere',values[2]);
-		alert('a');               
-    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[0]);
-  //tooglepersonneModal();
-}'''
+#Permet la mise en forme des champs date listé (list_champs_date) dans un dictionnaire donné (data)	  
+def testDateForm(data, list_champs_date) :
+	for champs_date in list_champs_date:
+		date = data[champs_date]
+		dateTextIsBlank = True
+		if '?' in date:
+			data[champs_date+'_text'] = date
+			data[champs_date+'_isComplete'] = False
+			dateTextIsBlank = False
+			date = date.replace(u'?',u'0')
+			date = date.replace(u'.',u'0')
+		if re.match(r'^\d{4}$',date, re.UNICODE):
+			if dateTextIsBlank :
+				data[champs_date+'_text'] = date
+				data[champs_date+'_isComplete'] = False
+				dateTextIsBlank = False
+			date += '-01-01'
+			data[champs_date] = date
+		if re.match(r'^[\w,û,é]* \d{4}$',date, re.UNICODE):
+			if dateTextIsBlank :
+				data[champs_date+'_text'] = date
+				data[champs_date+'_isComplete'] = False
+				dateTextIsBlank = False
+			date = '01 '+date
+		if re.match(r'^\d{1,2} [\w,û,é]* \d{4}$',date, re.UNICODE):
+			date = date.replace(u'janvier',u'01')
+			date = date.replace(u'février',u'02')
+			date = date.replace(u'mars',u'03')
+			date = date.replace(u'avril',u'04')
+			date = date.replace(u'mai',u'05')
+			date = date.replace(u'juin',u'06')
+			date = date.replace(u'juillet',u'07')
+			date = date.replace(u'août',u'08')
+			date = date.replace(u'septembre',u'09')
+			date = date.replace(u'octobre',u'10')
+			date = date.replace(u'novembre',u'11')
+			date = date.replace(u'décembre',u'12')
+			date = date[-4:] + '-' + date[date.index(' ')+1:-5] + '-' + date[:date.index(' ')]
+			data[champs_date] = date
+		if not re.match(r'^\d{4}-\d{1,2}-\d{1,2}$',date, re.UNICODE):
+			if dateTextIsBlank :
+				data[champs_date+'_text'] = date
+				data[champs_date+'_isComplete'] = False
+				dateTextIsBlank = False
+			data[champs_date] = '1700-01-01'
+				
+	return data

@@ -4,7 +4,11 @@
 
 {% block content %}
 <div class="row">
-	<h2><center><b>{{personneinfos.nom|capfirst}} {{personneinfos.prenom|capfirst}}</b></center></h2>
+	<h2><center><b>{{personneinfos.nom|capfirst}} {{personneinfos.prenom|capfirst}}</b>
+		{% if user.is_authenticated %}
+			<a href="/saisie/update/personne/{{personneinfos.id}}"><button class="btn btn-sm" type="button" style="float:right;">Modifier</button></a>
+		{% endif %}
+		</center></h2>
 	<br>
 	<table class="table table-striped">
 		<tr class="row">
@@ -55,4 +59,11 @@
 		</tr>
 	</table>
 </div>
+
+<script>
+	$(function() {
+		$('td').tooltip();
+	})
+</script>
+
 {% endblock %}

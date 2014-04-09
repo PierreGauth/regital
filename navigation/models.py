@@ -16,7 +16,7 @@ class PageRegistre(models.Model):
 		unique_together = ('ref_registre', 'num_page_pdf',)
 
 	def __unicode__(self):
-		return 'Registre {0.ref_registre!r} page {0.num_page_pdf!s}'.format(self)
+		return u'Registre {0.ref_registre!r} page {0.num_page_pdf!s}'.format(self)
 
 ### Gestion financière
 
@@ -36,19 +36,19 @@ class Transaction(models.Model): # relevé de compte
 	encours = models.IntegerField(null=True, blank=True) # attribut calculé, pour suivi de compte à tout instant
 
 	def __unicode__(self):
-		return '{0.date!s} - {0.libelle}: {0.montant!s}'.format(self)
+		return u'{0.date!s} - {0.libelle}: {0.montant!s}'.format(self)
 
 class TransactionSoiree(Transaction):
 	budget = models.OneToOneField('BudgetSoiree')
 
 	def __unicode__(self):
-		return '{}'.format(super)
+		return u'{}'.format(super)
 
 class TransactionAbonnement(Transaction): 		
 	paiement_abonnement = models.ForeignKey('Abonnement') # 1 abonnement est payé en plusieurs fois
 
 	def __unicode__(self):
-		return '{}'.format(super)
+		return u'{}'.format(super)
 
 		
 class BudgetSoiree(models.Model):
@@ -87,7 +87,7 @@ class BudgetSoiree(models.Model):
 	# où va cet argent ('avanza') ? On ne le retrouve pas ensuite...
 
 	def __unicode__(self):
-		return 'Depenses={0.total_depenses_reg!s} | Recettes={0.total_recettes_reg!s}'.format(self)
+		return u'Depenses={0.total_depenses_reg!s} | Recettes={0.total_recettes_reg!s}'.format(self)
 
 def pre_init_budget( **kwargs):
 	attributes = kwargs['kwargs']
@@ -132,7 +132,7 @@ class Abonnement(models.Model):
 	abonne = models.ForeignKey('Personne')
 
 	def __unicode__(self):
-		return 'Abonnement du {0.debut!s} au {0.fin!s} pour la somme de {0.montant!s}d'.format(self)
+		return u'Abonnement du {0.debut!s} au {0.fin!s} pour la somme de {0.montant!s}d'.format(self)
 
 
 # récapitualif "hors compte", non associé à une transaction	
@@ -161,7 +161,7 @@ class Recapitulatif(models.Model):
 		unique_together=(('date', 'frequence',),)
 
 	def __unicode__(self):
-		return 'Bilan {0.frequence} du {0.date!s}: Dépenses={0.total_depenses_reg!s}d | Recettes={0.total_recettes_reg!s}d'.format(self)
+		return u'Bilan {0.frequence} du {0.date!s}: Dépenses={0.total_depenses_reg!s}d | Recettes={0.total_recettes_reg!s}d'.format(self)
 	
 
 class CreditRecapitulatif(models.Model):
@@ -170,7 +170,7 @@ class CreditRecapitulatif(models.Model):
 	bilan = models.ForeignKey(Recapitulatif)
 
 	def __unicode__(self):
-		return '{0.libelle}: {0.montant!s}d'.format(self)
+		return u'{0.libelle}: {0.montant!s}d'.format(self)
 
 
 class DebitRecapitulatif(models.Model):
@@ -179,7 +179,7 @@ class DebitRecapitulatif(models.Model):
 	bilan = models.ForeignKey(Recapitulatif)
 
 	def __unicode__(self):
-		return '{0.libelle}: {0.montant!s}d'.format(self)
+		return u'{0.libelle}: {0.montant!s}d'.format(self)
 
 
 class Credit(models.Model):
@@ -188,7 +188,7 @@ class Credit(models.Model):
 	budget = models.ForeignKey(BudgetSoiree)
 
 	def __unicode__(self):
-		return '{0.libelle}: {0.montant!r}d'.format(self)
+		return u'{0.libelle}: {0.montant!r}d'.format(self)
 	
 	
 class Billetterie(Credit):	# relation d'héritage (sous-classe de)
@@ -210,7 +210,7 @@ class Billetterie(Credit):	# relation d'héritage (sous-classe de)
 	commentaire = models.TextField(null=True, blank=True)
 
 	def __unicode__(self):
-		return '{0.type_billet!r}: {0.nombre_billets_vendus} billet(s) pour {0.montant}d'.format(self)
+		return u'{0.type_billet!r}: {0.nombre_billets_vendus} billet(s) pour {0.montant}d'.format(self)
 	
 	# def validate_unique(self, *args, **kwargs):
 	# 	super(Billetterie, self).validate_unique(*args, **kwargs)
@@ -254,7 +254,7 @@ class Debit(models.Model):
 		unique_together=(('libelle', 'budget', 'montant', 'type_depense',),)
 		
 	def __unicode__(self):
-		return '{0.type_depense!r}: {0.libelle} pour {0.montant}d'.format(self)
+		return u'{0.type_depense!r}: {0.libelle} pour {0.montant}d'.format(self)
 
 		
 ### Gestion des soirées : unité élémentaire du modèle de données
@@ -267,7 +267,7 @@ class Soiree(models.Model):
 	page_registre = models.OneToOneField(PageRegistre)
 
 	def __unicode__(self):
-		return 'Soiree du {0.date} '.format(self)
+		return u'Soiree du {0.date} '.format(self)
 		
 def pre_init_soiree( **kwargs):
 	attributes = kwargs['kwargs']
@@ -363,7 +363,7 @@ class Personne(models.Model):
 		unique_together=(('nom', 'prenom', 'date_de_naissance', 'genre'),)
 
 	def __unicode__(self):
-		return '{0.prenom} {0.nom}'.format(self)
+		return u'{0.prenom} {0.nom}'.format(self)
 
 	
 class Piece(models.Model):
@@ -383,7 +383,7 @@ class Piece(models.Model):
 	commentaire = models.TextField(null=True, blank=True) # pour consigner les anecdotes
 
 	def __unicode__(self):
-		return '{0.titre_brenner!r} ({0.titre})'.format(self)
+		return u'{0.titre_brenner!r} ({0.titre})'.format(self)
 
 	class Meta:
 		unique_together=(('titre_brenner', 'date_premiere',),)
@@ -418,7 +418,7 @@ class Role(models.Model):
 		unique_together=(('personne', 'representation', 'role'),)
 
 	def __unicode__(self):
-		return 'Rôle {0.role} par {0.personne.prenom} {0.personne.nom} dans {0.representation}'.format(self)
+		return u'Rôle {0.role} par {0.personne.prenom} {0.personne.nom} dans {0.representation}'.format(self)
 
 
 

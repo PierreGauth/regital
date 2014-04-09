@@ -21,8 +21,7 @@ def generate_arianne(context, title):
 	arianneLine = session['arianne'].split(';')
 	session['arianne'] = ''
 	
-	for el in arianneLine :	
-		print '---'+el+'---'
+	for el in arianneLine :
 		if el != '' :
 			session['arianne'] += el + ':' + current_url + ';'
 			item = el.split(':')

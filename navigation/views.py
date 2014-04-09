@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.forms.models import model_to_dict
+from django.db.models import Q
 from navigation.models import *
 
 def index(request):
@@ -35,32 +36,44 @@ def log_out(request):
 	return HttpResponseRedirect('/')
 	  
 def listPersonnes(request):
-    personnes = Personne.objects.all()
-    personnes_nom = {}
-    
-    for personne in personnes:
-      print personne.nom
-      personnes_nom[personne.id] = personne.nom+" "+personne.prenom
+
+	if request.POST:
+		startwith = request.POST.get('start_with', '')
+		page = int(request.POST.get('page_num', '1'))
+	else :
+		startwith = ''
+		page = 1
+		
+	personnes = Personne.objects.all().filter(Q(nom__startswith=startwith) | Q(prenom__startswith=startwith)).order_by('nom','prenom')  
+	page_nb = len(personnes)/20 + 1
+	personnes = personnes[20*(page-1):20*page]
+  
+	personnes_nom = [(personne.id, personne.nom+" "+personne.prenom) for personne in personnes]
       
-    return render_to_response('list_page.html',
-      {'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/'},
-      context_instance=RequestContext(request))
+	return render_to_response('list_page.html',
+		{'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/', 
+		'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
+		context_instance=RequestContext(request))
 
 def listPieces(request):
-  if request.POST:
-    search = request.POST.get('search', '')
-    pieces = Piece.objects.all().filter(titre__contains=search)
-  else:
-    pieces = Piece.objects.all()
-    
-  pieces_titre = {}
-  
-  for piece in pieces:
-    pieces_titre[piece.id] = piece.titre
-    
-  return render_to_response('list_page.html',
-    {'title':'Pieces', 'active':'pieces', 'list':pieces_titre, 'link':'/pieces/'},
-    context_instance=RequestContext(request))
+
+	if request.POST:
+		startwith = request.POST.get('start_with', '')
+		page = int(request.POST.get('page_num', '1'))
+	else :
+		startwith = ''
+		page = 1
+
+	pieces = Piece.objects.all().filter(titre__startswith=startwith).order_by('titre')  
+	page_nb = len(pieces)/20 + 1
+	pieces = pieces[20*(page-1):20*page]
+
+	piece_titre = [(piece.id, piece.titre) for piece in pieces]
+
+	return render_to_response('list_page.html',
+	{'title':'Pieces', 'active':'pieces', 'list':piece_titre, 'link':'/pieces/', 
+	'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
+	context_instance=RequestContext(request))
       
 def listSoirees(request,date='1700-01-01'):
 	if request.POST:

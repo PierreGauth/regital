@@ -1,0 +1,31 @@
+{% extends "form.html" %}
+
+{% block form %}
+
+<button type='button' onclick='addPersonne();'>+ Personne</button>
+<button type='button' onclick='addPiece();'>+ Piece</button>
+
+{% for formset in formset_list %} 
+  {{ formset.management_form }} 
+    {% for form in formset %}
+    <div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+      <div class="col-md-2 control-label">{{ form.label_tag }}</div>
+			<div class="col-md-10" style="margin-bottom: 0.5em;text-valign: bottom;"> {% for field in form %} {{ field }} {% endfor %} </div>
+		</div>
+		{% endfor %}
+{% endfor %} 
+
+{% for nom,formitem in formitems.items %}
+	<div class="row"> 
+		<div class="col-sm-2 control-label"><b>{{nom|capfirst}} :</b></div>
+		<div class="col-sm-10">
+			<table class="table table-striped">
+				<tbody id="formitemdiv{{nom}}"></tbody>
+				<tfoot><tr><td>
+					<button class="btn btn-sm" type="button" onclick="addFormitem{{nom}}()"><span class="glyphicon glyphicon-plus"></span></button>
+				</td></tr></tfoot>
+			</table>
+		</div>
+	</div>
+{% endfor %} 
+{% endblock %}
