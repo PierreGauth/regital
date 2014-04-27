@@ -17,6 +17,10 @@ def generate_arianne(context, title):
 		session['arianne'] = title + ':/;'
 		session['prevTitle'] = title
 
+	if title =='Accueil' :
+		session['arianne'] = title + ':/;'
+		session['prevTitle'] = title
+
 	arianne = ''
 	arianneLine = session['arianne'].split(';')
 	session['arianne'] = ''

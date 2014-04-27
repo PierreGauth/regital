@@ -53,17 +53,17 @@ class TransactionAbonnement(Transaction):
 		
 class BudgetSoiree(models.Model):
 	T_SALAIRE = (
-	    (' 6 ', '1440'),
-	    (' 9 ', '2160'),
-	    ('12 ', '2880'),
-	    ('12¼', '2940'),
-	    ('12½', '3000'),
-	    ('13 ', '3120'),
-	    ('13¾', '3300'),
-	    ('14 ', '3360'),
-	    ('14¾', '3540'),
-	    ('15 ', '3600'),
-		('err', '-1')
+	    (1440,' 6 '),
+	    (2160,' 9 '),
+	    (2880,'12 '),
+	    (2940,'12¼'),
+	    (3000,'12½'),
+	    (3120,'13 '),
+	    (3300,'13¾'),
+	    (3360,'14 '),
+	    (3540,'14¾'),
+	    (3600,'15 '),
+			(-1, 'err')
 	)
 	total_depenses = models.IntegerField(null=True, blank=True) # attribut calculé
 	nb_total_billets_vendus = models.IntegerField(null=True, blank=True) # attribut calculé
@@ -76,8 +76,6 @@ class BudgetSoiree(models.Model):
 	quart_pauvre_reg = models.IntegerField(null=True, blank=True)	# impôt sur la recette (calculé comment ?)
 	debit_initial_reg = models.IntegerField(null=True, blank=True)	# quart du pauvre + total dépenses corrigé
 	reste_reg = models.IntegerField(null=True, blank=True)	# |recette billets - débit initial (quart du pauvre + total dépenses corrigé)|
-	debit_total_reg = models.IntegerField(null=True, blank=True) 	# ???
-	credit_total_reg = models.IntegerField(null=True, blank=True)	# ???
 	nombre_cachets = models.FloatField(null=True, blank=True) # nombre de personnes rémunérées (hors auteurs)
 	montant_cachet = models.CharField(max_length=3, choices=T_SALAIRE) # montant du cachet, identique pour tous (sauf auteurs)
 	montant_cachet_auteur = models.IntegerField(null=True, blank=True)	# montant du cachet aux auteurs (par auteur ?) - s'ajoute à la "masse salariale"
@@ -383,10 +381,10 @@ class Piece(models.Model):
 	commentaire = models.TextField(null=True, blank=True) # pour consigner les anecdotes
 
 	def __unicode__(self):
-		return u'{0.titre_brenner!r} ({0.titre})'.format(self)
+		return u'{0.titre}'.format(self)
 
 	class Meta:
-		unique_together=(('titre_brenner', 'date_premiere',),)
+		unique_together=(('titre', 'date_premiere',),)
 
 #	def validate_unique(self, *args, **kwargs):
 #		super(Piece, self).validate_unique(*args, **kwargs)

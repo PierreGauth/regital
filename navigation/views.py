@@ -37,7 +37,7 @@ def log_out(request):
 	  
 def listPersonnes(request):
 
-	if request.POST:
+	if request.POST: #Pour le trie par ordre alphabétique et la pagination
 		startwith = request.POST.get('start_with', '')
 		page = int(request.POST.get('page_num', '1'))
 	else :
@@ -48,16 +48,20 @@ def listPersonnes(request):
 	page_nb = len(personnes)/20 + 1
 	personnes = personnes[20*(page-1):20*page]
   
-	personnes_nom = [(personne.id, personne.nom+" "+personne.prenom) for personne in personnes]
-      
+	personnes_nom = [(personne.id, personne.titre_personne+" "+personne.nom+" "+personne.prenom) for personne in personnes]
+  
+	data = [{'letter': x, 'frequency' : .1234, 'langue' : 'f', 'partie' : '2'} for x in ['A','B','C','D','E','F', 'G']]
+	data.append({'letter': 'H', 'frequency' : .1234, 'langue' : 'i', 'partie' : '1'})	
+	data.insert(0, {'x' : 'letter', 'y' : 'frequency', 'opt' : ['langue', 'partie']})
+					    
 	return render_to_response('list_page.html',
 		{'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/', 
-		'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
+		'page_nb': page_nb, 'start_with': startwith, 'page_num': page, 'data1' : data },
 		context_instance=RequestContext(request))
 
 def listPieces(request):
 
-	if request.POST:
+	if request.POST: #Pour le trie par ordre alphabétique et la pagination
 		startwith = request.POST.get('start_with', '')
 		page = int(request.POST.get('page_num', '1'))
 	else :

@@ -190,3 +190,7 @@
   width: 16px;
   height: 16px;
 }
+
+.datetimepicker TABLE TR TD SPAN {
+    width: 200%!important;
+}

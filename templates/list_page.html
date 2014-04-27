@@ -4,6 +4,8 @@
 
 {% block content %}
 
+{% include "bar_chart.html" with data=data1 %}
+
 <center>
 <ul class="pagination pagination-sm">
   <li {% if start_with == '' %}class="active"{%endif%}><a href="javascript:startwith('');">Tout</a></li>

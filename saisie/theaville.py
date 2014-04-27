@@ -4,33 +4,33 @@ import re
 import requests
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template.loader import render_to_string
-from django.http import HttpResponseRedirect, HttpResponse     
+from django.http import HttpResponseRedirect, HttpResponse		 
  
-def searchPiece(request, titre='', auteur=''):        
+def searchPiece(request, titre='', auteur=''):				
 	payload = {'r': 'pieces', 'titre': titre, 'auteur': auteur,'crea_de_annee':'1709','crea_a_annee':'1794',
-	          'rep_de_annee':'1709', 'rep_a_annee':'1794'}
+						'rep_de_annee':'1709', 'rep_a_annee':'1794'}
 
-	#  r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,   
-	#         proxies= 
-	#         {
-	#           "http": "http://cache.wifi.univ-nantes.fr:3128",
-	#           "https": "http://cache.wifi.univ-nantes.fr:3128",
-	#         }
-	#  )
-	#  page = r.text
-	page = getPage1()
+	r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,	 
+	#				 proxies= 
+	#				 {
+	#					 "http": "http://cache.wifi.univ-nantes.fr:3128",
+	#					 "https": "http://cache.wifi.univ-nantes.fr:3128",
+	#				 }
+	)
+	page = r.text
+	#	page = getPage1()
 
 	page = page[page.index("<!--   Document   -->"):page.index('<br class="nettoyeur" />')]
-	if not u'Aucune donnée disponible' in page :   
+	if not u'Aucune donnée disponible' in page :	 
 		page = page[page.index("<table"):page.index("</table>")+8]
 		page = '<div style="overflow:auto; height:30em;"><table class="table table-striped">' + page[page.index("</thead>")+8:] + '</div>'
 #		page = page.replace(r'<tr>', u'')
-#		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"  onclick="parsePieceInfo(')		
+#		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"	onclick="parsePieceInfo(')		
 #		pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
 
 #		pattern = '<tr>(.|\n|\r)*<td><a href="index.php?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)* <td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
 #		pattern = re.compile(pattern, re.UNICODE)
-#		page = pattern.sub(r'<tr style="cursor:pointer;"  onclick="parsePieceInfo(\1)"><td><span class="glyphicon glyphicon-book"></span></td><td>\2<td/><td>\3<td/><td>\4<td/></tr>',page)
+#		page = pattern.sub(r'<tr style="cursor:pointer;"	onclick="parsePieceInfo(\1)"><td><span class="glyphicon glyphicon-book"></span></td><td>\2<td/><td>\3<td/><td>\4<td/></tr>',page)
 
 		pattern = '(\n|\r)*'
 		pattern = re.compile(pattern, re.UNICODE)
@@ -54,18 +54,18 @@ def searchPiece(request, titre='', auteur=''):
 		return HttpResponse(page, content_type="text/plain")
 	else:
 		return HttpResponse('Aucune Piece ne correspond à ce nom sur theaville.org', content_type="text/plain")
-    
+		
 def getInfoPiece(request, id):
-#    payload = {'fct': 'edit', 'person_UOID': id }
-#    r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
-#      # ,proxies= 
-#      # {
-#        # "http": "http://cache.wifi.univ-nantes.fr:3128",
-#        # "https": "http://cache.wifi.univ-nantes.fr:3128",
-#      # }
-#    )
-#    page = r.text
-	page = getPage2()
+	payload = {'fct': 'edit', 'person_UOID': id }
+	r = requests.get("http://www.cesar.org.uk/cesar2/people/people.php", params=payload 
+		# ,proxies= 
+		# {
+			# "http": "http://cache.wifi.univ-nantes.fr:3128",
+			# "https": "http://cache.wifi.univ-nantes.fr:3128",
+		# }
+	)
+	page = r.text
+#	page = getPage2()
 
 	page = page[page.index("<H1>People</H1>"):page.index("<H2>Notes</H2>")] 
 	infos = ''
@@ -79,12 +79,12 @@ def getInfoPiece(request, id):
 		else:
 			infos = infos + ';' + page[page.index('valueColumn')+19:page.index('keyColumn')-29]
 
-	return HttpResponse(infos, content_type="text/plain")    
+	return HttpResponse(infos, content_type="text/plain")		
 
 def getPage1() :
-  return u''' 
+	return u''' 
 
-<!--   Document   -->
+<!--	 Document	 -->
 
 <small>Liste | <a href="index.php?r=pieces/cibles">Cibles</a> | <a href="index.php?r=pieces/lieux">Lieux</a> | <a href="index.php?r=pieces/auteurs">Auteurs&nbsp;</a></small><br /><br />
 
@@ -93,48 +93,48 @@ def getPage1() :
 <p></p><strong>1 r&eacute;sultat&nbsp;:</strong></p>
 <table id="table" class="pieces">
 <thead>
-  <tr>
-    <th>Titre&nbsp;</th>
-    <th>Parodie de&nbsp;</th>
-    <th>Cr&eacute;ation&nbsp;</th>
-    <th>Auteur(s)&nbsp;</th>
-  </tr>
+	<tr>
+		<th>Titre&nbsp;</th>
+		<th>Parodie de&nbsp;</th>
+		<th>Cr&eacute;ation&nbsp;</th>
+		<th>Auteur(s)&nbsp;</th>
+	</tr>
 </thead>
 <tbody>
-  <tr>
-    <td><a href="index.php?r=pieces/afficher&amp;id=3">Alceste</a></td>
-    <td><em>Alceste</em> de Quinault et Lully</td>
-    <td>1728</td>
-    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-FranÃƒÂ§ois) dit Dominique<br />
+	<tr>
+		<td><a href="index.php?r=pieces/afficher&amp;id=3">Alceste</a></td>
+		<td><em>Alceste</em> de Quinault et Lully</td>
+		<td>1728</td>
+		<td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-FranÃƒÂ§ois) dit Dominique<br />
 <a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
-  </tr>
+	</tr>
 </tbody>
 </table>
 <br />
 
 <script>
 $(document).ready(function(){
-  $('#table').dataTable({
+	$('#table').dataTable({
 
-    "iDisplayLength": 25,
-    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-    "oLanguage": {
+		"iDisplayLength": 25,
+		"aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+		"oLanguage": {
 		"sLengthMenu": "Afficher _MENU_ lignes",
 		"sSearch": "Recherche&nbsp;:",
 		"oPaginate": {
 			"sNext": "suivant",
 			"sPrevious": "pr&eacute;c&eacute;dent"
 		}
-    }
-  });
+		}
+	});
 });
 </script>
 
 <br class="nettoyeur" />
-  '''
+	'''
 
 def getPage2() :
-  return '''
+	return '''
 
 <H1>People</H1>
 

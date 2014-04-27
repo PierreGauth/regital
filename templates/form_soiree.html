@@ -1,31 +1,205 @@
-{% extends "form.html" %}
+<link href="/static/css/datepicker.css" rel="stylesheet"> 
 
-{% block form %}
+<div id="{{alertZoneId}}">
+</div>
 
-<button type='button' onclick='addPersonne();'>+ Personne</button>
-<button type='button' onclick='addPiece();'>+ Piece</button>
+<form id='{{formId}}' class="form-horizontal" method="post" action="{{action}}"> {% csrf_token %} 
 
-{% for formset in formset_list %} 
-  {{ formset.management_form }} 
-    {% for form in formset %}
-    <div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
-      <div class="col-md-2 control-label">{{ form.label_tag }}</div>
-			<div class="col-md-10" style="margin-bottom: 0.5em;text-valign: bottom;"> {% for field in form %} {{ field }} {% endfor %} </div>
-		</div>
-		{% endfor %}
-{% endfor %} 
+<!--Soiree-->
+<div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+  <div class="col-md-2 control-label"><b>Date :</b></div>
+	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.date }}</div>
+	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.libelle_date_reg }}</div>
+</div>
 
-{% for nom,formitem in formitems.items %}
-	<div class="row"> 
-		<div class="col-sm-2 control-label"><b>{{nom|capfirst}} :</b></div>
-		<div class="col-sm-10">
-			<table class="table table-striped">
-				<tbody id="formitemdiv{{nom}}"></tbody>
-				<tfoot><tr><td>
-					<button class="btn btn-sm" type="button" onclick="addFormitem{{nom}}()"><span class="glyphicon glyphicon-plus"></span></button>
-				</td></tr></tfoot>
-			</table>
-		</div>
+<!--Page Registre-->
+<div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+  <div class="col-md-2 control-label"><b>Page Registre :</b></div>
+	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.ref_registre }}</div>
+	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.num_page_pdf }}</div>
+</div>
+<div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+  <div class="col-md-2 control-label"></div>
+	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.redacteurs }}</div>
+	<div class="col-md-2" style="margin-bottom: 0.5em;text-valign: bottom;">
+		<button class="btn" type='button' onclick='addPersonne();' data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listé ?">+ Personne</button>
 	</div>
-{% endfor %} 
-{% endblock %}
+</div>
+
+<br/>
+
+<!--Programme-->
+<div class="row" style="margin-bottom: 0.5em;text-valign: bottom;">
+	<div class="col-md-2 control-label"><b>Programme :</b></div>
+	<div class="col-md-10" style="margin-bottom: 0.5em;text-valign: bottom;">
+		<table class="table table-striped">
+			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
+			<tbody id="formitemdivrepresentation"></tbody>
+			<tfoot><tr><td>
+				<button class="btn btn-sm" type="button" onclick="addFormitemrepresentation()">+ Représentation</button>
+				<button class="btn btn-sm" type="button" onclick="addPiece()" data-toggle="tooltip" data-placement="right" title="La pièce que vous rechercher n'est pas listé ?">+ Pièce</button>		
+			</td></tr></tfoot>
+		</table>
+		<table class="table table-striped">
+			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
+			<tbody id="formitemdivanimation"></tbody>
+			<tfoot><tr><td>
+				<button class="btn btn-sm" type="button" onclick="addFormitemanimation()">+ Animation</button>
+			</td></tr></tfoot>
+		</table>
+	</div>
+</div>
+
+<br/>
+
+<!--Budget-->
+<div class="row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+  <div class="col-md-2 control-label"><b>Budget :</b></div>
+	<div class="col-md-5" style="margin-bottom: 0.5em;text-valign: bottom;">
+		<table class="table">
+			<thead><tr><th colspan="2" style="text-align:center;">Debits</th><tr></thead>
+			<tbody class="row" id="formitemdivdebit"></tbody>
+			<tfoot>				
+				<tr><td colspan="2">
+					<button class="btn btn-sm" type="button" onclick="addFormitemdebit()">+ Débit</button>
+				</td></tr>
+				<tr>
+					<td colspan="2">{{ formset_list.BudgetSoireeForm.total_depenses_reg }}</td>
+				</tr>
+				<tr>
+					<td colspan="2">{{ formset_list.BudgetSoireeForm.debit_derniere_soiree_reg }}</td>
+				</tr>
+				<tr>
+					<td colspan="2" data-toggle="tooltip" data-placement="right" title="dépenses + débit dernière soirée">
+						{{ formset_list.BudgetSoireeForm.total_depenses_corrige_reg }}</td>
+				</tr>
+				<tr>
+					<td colspan="2" data-toggle="tooltip" data-placement="right" title="impôt sur la recette">
+						{{ formset_list.BudgetSoireeForm.quart_pauvre_reg }}</td>
+				</tr>
+				<tr>
+					<td colspan="2" data-toggle="tooltip" data-placement="right" title="quart du pauvre + total dépenses corrigées">
+						{{ formset_list.BudgetSoireeForm.debit_initial_reg }}</td>
+				</tr>	
+				<tr>
+					<td>{{ formset_list.BudgetSoireeForm.nombre_cachets }}</td>
+					<td>{{ formset_list.BudgetSoireeForm.montant_cachet }}</td>
+				</tr>
+				<tr>
+					<td colspan="2">{{ formset_list.BudgetSoireeForm.montant_cachet_auteur }}</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	<div class="col-md-5" style="margin-bottom: 0.5em;text-valign: bottom;">
+		<table class="table">
+			<thead><tr><th colspan="2" style="text-align:center;">Crédits</th><tr></thead>
+			<tbody id="formitemdivbilletterie"></tbody>
+			<tfoot><tr><td colspan="2">
+					<button class="btn btn-sm" type="button" onclick="addFormitembilletterie()">+ Billetterie</button>
+			</td></tr></tfoot>
+		</table>
+		<table class="table">
+			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
+			<tbody id="formitemdivcredit"></tbody>
+			<tfoot>
+				<tr><td colspan="6">
+					<button class="btn btn-sm" type="button" onclick="addFormitemcredit()">+ Autre Crédit</button>
+				</td></tr>					
+				<tr>
+					<td>{{ formset_list.BudgetSoireeForm.total_recettes_reg }}</td>
+					<td>{{ formset_list.BudgetSoireeForm.nb_total_billets_vendus_reg }}</td>
+				</tr>						
+				<tr>
+					<td data-toggle="tooltip" data-placement="right" title="recette billets - débit initial">
+						{{ formset_list.BudgetSoireeForm.reste_reg }}</td>
+				</tr>					
+				<tr>
+					<td data-toggle="tooltip" data-placement="right" title="Avanza : reste - salaires">
+						{{ formset_list.BudgetSoireeForm.credit_final_reg }}</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+	<input type="hidden" name="other_information" value="" />
+
+	<button class="btn btn-primary" type="submit" id='{{formId}}Button'>Envoyer</button> 
+	
+</form>
+
+<script src="/static/js/bootstrap-datepicker.js"></script> 
+<script>
+
+$(function(){ 
+
+	$("td").tooltip();
+	$("button").tooltip();
+
+{% for date_picker_id in date_picker_id_list %} 
+	var myDatePicker{{forloop.counter}} = $({{ date_picker_id }}).datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
+		myDatePicker{{forloop.counter}}.hide(); 
+	}).data('datepicker'); 
+{% endfor %}
+
+/*Set the preivous filled value */
+{% for name,value in previous_values.items %}
+	setValue('{{name}}','{{value}}')
+{% endfor %}
+	  
+});
+		
+{% for nom,formitem in formitems.items %}
+
+	nbFormItem{{nom}} = 0;
+	
+	function addFormitem{{nom}}(nb_case){
+	 
+		newRow = window.document.getElementById("formitemdiv{{nom}}").insertRow(-1);
+		newCell = newRow.insertCell(-1);
+		
+	  {% for form in formitem %}	
+			newDiv = document.createElement('div');
+			newDiv.setAttribute("class","col-md-4");
+			{% for field in form %}
+				newDiv.innerHTML += '{{ field|escapejs }}'.replace(/name=\"/g,"name=\"{{nom}}"+nbFormItem{{nom}});
+			{% endfor %}
+			newCell.appendChild(newDiv);
+		{% endfor %}
+		
+		newCell = newRow.insertCell(-1);
+		newCell.setAttribute('style','text-align:right;');
+		newCell.innerHTML = '<button class="btn btn-sm" type="button" onclick="deleteRow{{nom}}(this);"><span class="glyphicon glyphicon-remove"/></button>';
+		nbFormItem{{nom}}++;
+		
+	}
+	function deleteRow{{nom}}(r)
+	{
+		var i = r.parentNode.parentNode.rowIndex;
+		document.getElementById("formitemdiv{{nom}}").deleteRow(i-2);
+	}
+	
+{% endfor %} 	
+
+function setValue(name,value) {
+ 
+ 	//if() {}
+ 
+	elements = document.getElementsByName(name); 
+	if(elements.length == 1) { elements[0].value = value; } 
+	else { 
+		for(i=0;i<elements.length;i++) { 
+			if(elements[i].value==value) { 
+				elements[i].checked = 'checked'; 
+				elements[i].selected = 'selected'; } 
+			else { 
+				elements[i].checked = '';
+				elements[i].selected = ''; } 
+		} 
+	}
+} 
+
+</script>
+
+<script src="/static/js/{{ specific_function }}"></script> 

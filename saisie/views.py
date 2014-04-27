@@ -1,5 +1,5 @@
  #-*- coding: utf-8 -*-
-
+ 
 from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template.loader import render_to_string
 from django.http import HttpResponseRedirect, HttpResponse
@@ -12,19 +12,20 @@ from django.forms.models import model_to_dict
 from django.db import IntegrityError
 from navigation.models import *
 from saisie.forms import *
-import re
+import re, ast
 
 	
 @login_required(login_url='/login/')
 def saisie(request, active_tab='Soiree', alert='off', alert_type='success', alert_message="unknown", previous_values = {}, date=''):
 
+	# Quand on click sur une case vide du calendrier
 	previous_values['date'] = date
 
 	personneForm = render_to_string(
 		'form.html' , 
-		{'action' : '/saisie/new/personne/', 'formset_list' : [PersonneForm()],'date_picker_id_list' : ['dpersonne1','dpersonne2'], 
-		'previous_values' : previous_values, 'specific_function' : 'saisie_personne.js', 
-		'alertZoneId':'azpersonne', 'formId':'personneForm'},
+		{'action' : '/saisie/new/personne/', 'formset_list' : {'PersonneForm':PersonneForm()},
+		'date_picker_id_list' : ['dpersonne1','dpersonne2'], 'previous_values' : previous_values, 
+		'specific_function' : 'saisie_personne.js', 'alertZoneId':'azpersonne', 'formId':'personneForm'},
 		context_instance=RequestContext(request)) + render_to_string(
 		'modal.html' , 
 		{'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar'},
@@ -32,9 +33,9 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 
 	pieceForm = render_to_string(
 		'form.html' , 
-		{'action' : '/saisie/new/piece/', 'formset_list' : [PieceForm()], 'date_picker_id_list' : ['dpiece1'],
-		'previous_values' : previous_values, 'specific_function' : 'saisie_piece.js',
-		'alertZoneId':'azpiece', 'formId':'pieceForm'},
+		{'action' : '/saisie/new/piece/', 'formset_list' : {'PieceForm':PieceForm()}, 
+		'date_picker_id_list' : ['dpiece1'],b'previous_values' : previous_values, 
+		'specific_function' : 'saisie_piece.js', 'alertZoneId':'azpiece', 'formId':'pieceForm'},
 		context_instance=RequestContext(request)) + render_to_string(
 		'modal.html' , 
 		{'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
@@ -42,7 +43,8 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 
 	soireeForm = render_to_string(
 		'form_soiree.html' , 
-		{'action' : '/saisie/new/soiree/', 'formset_list' : [PageRegistreForm(), SoireeForm(), BudgetSoireeForm()], 
+		{'action' : '/saisie/new/soiree/', 
+		'formset_list' : { 'PageRegistreForm' : PageRegistreForm(), 'SoireeForm' : SoireeForm(), 'BudgetSoireeForm' : BudgetSoireeForm()}, 
 		'formitems' : {'representation': RepresentationForm, 'animation': AnimationForm() ,'debit':DebitForm(),
 		'credit':CreditForm(),'billetterie':BilletterieForm()}, 'formId' : 'soireeForm',
 		'previous_values' : previous_values, 'specific_function' : 'saisie_soiree.js', 'date_picker_id_list' : ['dsoiree1']},
@@ -56,37 +58,60 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 				
 
 @login_required(login_url='/login/')
-def creerPersonne(request, createFrom='Personne'):
+def creerPersonne(request):
 	if request.POST:		
 		data = { x:y for x,y in request.POST.iteritems() }
 		data = testDateForm(data,['date_de_naissance','date_de_deces'])	
+		
+		# Info concernant la piece ou la soirée depuis laquele la personne à été créée
+		data['other_information'] = data['other_information'].replace('&', '","')
+		data['other_information'] = data['other_information'].replace('=', '":"')		
+		data['other_information'] = data['other_information'].replace('+', ' ')
+		if data['other_information']=='':
+			goBackTo = 'Personne'
+			prevData = {}
+		else :
+			goBackTo = 'Soiree'
+			prevData = ast.literal_eval('{"' + data['other_information'] + '"}')
+		del data['other_information']
 	
-		#instance = None
 		personne = PersonneForm(data)
 		
 		try:
 			instance = personne.save()
-			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + request.POST.get('prenom') + ' ' + request.POST.get('nom') + u'</a></b> a bien été ajouté dans la base'
-			return saisie(request, active_tab=createFrom,alert='on',alert_type='success',alert_message=message, previous_values = data)
+			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
+			return saisie(request, active_tab=goBackTo,alert='on',alert_type='success',alert_message=message, previous_values = prevData)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-			  previous_values = data)
+			  previous_values = request.POST)
 		except ValueError as e:
 			message = e
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-			  previous_values = data)
+			  previous_values = request.POST)
 		except IntegrityError as e:
 			message = e
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-				previous_values = data)
+				previous_values = request.POST)
                       
 @login_required(login_url='/login/')
 def creerPiece(request):
 	if request.POST:	
 		data = { x:y for x,y in request.POST.iteritems() }
 		data = testDateForm(data,['date_premiere'])	
-		del data['auteurs']
+		if 'auteurs' in data : del data['auteurs']
+		
+		# Info concernant la piece ou la soirée depuis laquele la personne à été créée
+		data['other_information'] = data['other_information'].replace('&', '","')
+		data['other_information'] = data['other_information'].replace('=', '":"')		
+		data['other_information'] = data['other_information'].replace('+', ' ')
+		if data['other_information']=='':
+			goBackTo = 'Piece'
+			prevData = {}
+		else :
+			goBackTo = 'Soiree'
+			prevData = ast.literal_eval('{"' + data['other_information'] + '"}')
+		del data['other_information']
 
 		auteurs = [ Personne.objects.get(id=int(x)) for x in request.POST.getlist('auteurs')]
 		piece = PieceForm(data)
@@ -128,13 +153,11 @@ def creerSoiree(request):
 			quart_pauvre_reg = request.POST.get('quart_pauvre_reg', 'none')
 			debit_initial_reg = request.POST.get('debit_initial_reg', 'none')
 			reste_reg = request.POST.get('reste_reg', 'none')
-			debit_total_reg = request.POST.get('debit_total_reg', 'none')
-			credit_total_reg = request.POST.get('credit_total_reg', 'none')
 			nombre_cachets = request.POST.get('nombre_cachets', 'none')
 			montant_cachet = request.POST.get('montant_cachet', 'none')
 			montant_cachet_auteur = request.POST.get('montant_cachet_auteur', 'none')
 			credit_final_reg = request.POST.get('credit_final_reg', 'none')
-			budgetSoiree = BudgetSoiree(total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, debit_total_reg=debit_total_reg, credit_total_reg=credit_total_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg)
+			budgetSoiree = BudgetSoiree(total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg)
 			budgetSoiree.save()
 
 			nb_debit = 0
@@ -218,10 +241,11 @@ def update(request, type, id) :
 	return saisie(request,active_tab=type.capitalize(), previous_values=instance)
 
 
-#Permet la mise en forme des champs date listé (list_champs_date) dans un dictionnaire donné (data)	  
+# Permet la mise en forme des champs date listé (list_champs_date) dans un dictionnaire donné (data)	  
 def testDateForm(data, list_champs_date) :
 	for champs_date in list_champs_date:
 		date = data[champs_date]
+		data[champs_date+'_isComplete'] = True
 		dateTextIsBlank = True
 		if '?' in date:
 			data[champs_date+'_text'] = date
@@ -262,6 +286,5 @@ def testDateForm(data, list_champs_date) :
 				data[champs_date+'_text'] = date
 				data[champs_date+'_isComplete'] = False
 				dateTextIsBlank = False
-			data[champs_date] = '1700-01-01'
-				
+			data[champs_date] = '1700-01-01'			
 	return data

@@ -15,5 +15,6 @@ urlpatterns = patterns('',
 	url(r'^soirees/$', views.listSoirees),
 	url(r'^soirees/(?P<date>\d{4}-\d{2}-\d{2})$', views.detailsSoiree),
 	url(r'^saisie/', include('saisie.urls')),
-	url(r'^$', views.index),
+	url(r'^stats/', include('stats.urls')),	
+	url(r'^$', views.listSoirees),
 )

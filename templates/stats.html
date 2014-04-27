@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+
+<br/>
+<center><h2>Generateur de Statistiques</h2></center> 
+
+<br/><br/>
+
+<form id='statform' class="form-horizontal" method="post" action=""> {% csrf_token %} 
+
+	<div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+    <div class="col-md-2 control-label"><b>De :</b></div>
+		<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">
+			<input class="form-control" id="dstat1" name="dstat1" type="text" value="1700-01-01"/>
+		</div>
+		<div class="col-md-2 control-label"><b>À :</b></div>
+		<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">
+			<input class="form-control" id="dstat2" name="dstat2" type="text" value="1799-12-31"/>
+		</div>
+	</div>
+	
+	<br/>
+
+	<div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
+		<div class="col-md-10 col-md-offset-1">
+			<table class="table table-striped col-md-10">
+				<thead><tr>
+					<th>Relation</th>
+					<th clospan="2">Entité</th>
+					<th>Attribut</th>
+					<th></th>
+				</tr></thead>
+				<tbody id="formConcerne"></tbody>
+				<tfoot><tr><td colspan=4>
+					<button class="btn btn-sm" type="button" onclick="addConcerne()"><span class="glyphicon glyphicon-plus"></span></button>
+				</td></tr></tfoot>
+			</table>
+		</div>
+	</div>
+	
+	<button class="btn btn-primary" type="submit" id='statButton'>Générer</button> 
+</form>
+
+<script src="/static/js/bootstrap-datepicker.js"></script> 
+<script>
+
+	$(function(){ 
+		var myDatePicker1 = $('#dstat1').datepicker({format: 'yyyy-mm-dd'}).data('datepicker');
+		var myDatePicker2 = $('#dstat2').datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
+			myDatePicker2.hide(); 
+		}).data('datepicker');
+	});
+	
+	nbConcerne = 0;
+	function addConcerne(){
+		newRow = window.document.getElementById("formConcerne").insertRow(-1);	
+		
+		newCell = newRow.insertCell(-1);
+		var arr = [
+		  {val : 1, text: 'Avec'},
+		  {val : 2, text: 'Ou'},
+		  {val : 3, text: 'Sans'}
+		];
+		var select = $('<select>').attr('class','form-control');
+		$(arr).each(function() {
+		 select.append($("<option>").attr('value',this.val).text(this.text));
+		});
+		$(newCell).append(select);
+		
+		newCell = newRow.insertCell(-1);
+		newCell.innerHTML = '<input class="form-control" type="text"/>';
+		newCell = newRow.insertCell(-1);
+		newCell.innerHTML = '<input class="form-control" type="text"/>';
+		newCell = newRow.insertCell(-1);
+		newCell.setAttribute('style','text-align:right;');
+		newCell.innerHTML = '<button class="btn btn-sm" type="button" onclick="delConcerne(this);"><span class="glyphicon glyphicon-remove"/></button>';
+		nbConcerne++;
+	}
+	function delConcerne(r)
+	{
+		var i = r.parentNode.parentNode.rowIndex;
+		document.getElementById("formConcerne").deleteRow(i-1);
+	}
+
+</script>
+	 
+{% endblock %}
