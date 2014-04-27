@@ -233,11 +233,14 @@ def creerSoiree(request):
 def update(request, type, id) :
 	instance = {}
 	if type == 'personne':
-		instance = model_to_dict(Personne.objects.get(id=id))
+		instance = model_to_dict(Personne.objects.get(id=id))		
+		instance = testDateForm(instance,['date_de_naissance','date_de_deces'])	
 	elif type == 'piece':
 		instance = model_to_dict(Piece.objects.get(id=id))
+		instance = testDateForm(instance,['date_premiere'])	
 	else :
-		instance = model_to_dict(Soiree.objects.get(id=id))
+		instance = model_to_dict(Soiree.objects.get(id=id))		
+		instance = testDateForm(instance,['date'])	
 	return saisie(request,active_tab=type.capitalize(), previous_values=instance)
 
 
