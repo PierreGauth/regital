@@ -145,8 +145,10 @@ $(function(){
 
 /*Set the preivous filled value */
 {% for name,value in previous_values.items %}
-	setValue('{{name}}','{{value}}')
+	setValue('{{name}}','{{value}}');
 {% endfor %}
+
+	setValue('debit4montant','123987');
 	  
 });
 		
@@ -154,7 +156,7 @@ $(function(){
 
 	nbFormItem{{nom}} = 0;
 	
-	function addFormitem{{nom}}(nb_case){
+	function addFormitem{{nom}}() {
 	 
 		newRow = window.document.getElementById("formitemdiv{{nom}}").insertRow(-1);
 		newCell = newRow.insertCell(-1);
@@ -171,11 +173,10 @@ $(function(){
 		newCell = newRow.insertCell(-1);
 		newCell.setAttribute('style','text-align:right;');
 		newCell.innerHTML = '<button class="btn btn-sm" type="button" onclick="deleteRow{{nom}}(this);"><span class="glyphicon glyphicon-remove"/></button>';
-		nbFormItem{{nom}}++;
 		
+		nbFormItem{{nom}}++;
 	}
-	function deleteRow{{nom}}(r)
-	{
+	function deleteRow{{nom}}(r) {
 		var i = r.parentNode.parentNode.rowIndex;
 		document.getElementById("formitemdiv{{nom}}").deleteRow(i-2);
 	}
@@ -184,7 +185,13 @@ $(function(){
 
 function setValue(name,value) {
  
- 	//if() {}
+	//Si c'est un formItem (une element de formulaire que l'ont peux ajouter au dynamiquement)
+	if(/(\w+)(\d+)(\w+)/.test(name)) { 
+		var funcName = "addFormitem"+RegExp.$1;
+		for(i=this['nbFormItem'+RegExp.$1];i<=parseInt(RegExp.$2);i++) { 
+			window[funcName](); 
+		}
+	}
  
 	elements = document.getElementsByName(name); 
 	if(elements.length == 1) { elements[0].value = value; } 
