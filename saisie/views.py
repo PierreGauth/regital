@@ -19,7 +19,9 @@ import re, ast
 def saisie(request, active_tab='Soiree', alert='off', alert_type='success', alert_message="unknown", previous_values = {}, date=''):
 
 	# Quand on click sur une case vide du calendrier
-	previous_values['date'] = date
+	if date != '' :
+		previous_values['soireeForm'] = {} 
+		previous_values['soireeForm']['date'] = date
 
 	personneForm = render_to_string(
 		'form.html' , 
@@ -67,19 +69,27 @@ def creerPersonne(request):
 		data['other_information'] = data['other_information'].replace('&', '","')
 		data['other_information'] = data['other_information'].replace('=', '":"')		
 		data['other_information'] = data['other_information'].replace('+', ' ')
+		prevData = {}
 		if data['other_information']=='':
 			goBackTo = 'Personne'
-			prevData = {}
 		else :
 			goBackTo = 'Soiree'
-			prevData = ast.literal_eval('{"' + data['other_information'] + '"}')
+			prevData['soireeForm'] = ast.literal_eval('{"' + data['other_information'] + '"}')
 		del data['other_information']
-	
-		personne = PersonneForm(data)
+		
+		# Si c'est un update plutot qu'un insert
+		id = data['personneForm_id']
+		del data['personneForm_id']
+		if id != '': 	#update
+			instance = Personne.objects.get(id=int(id))
+			personne = PersonneForm(data, instance=instance)			
+			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
+		else :				#insert
+			personne = PersonneForm(data)
+			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été mise à jour'
 		
 		try:
 			instance = personne.save()
-			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
 			return saisie(request, active_tab=goBackTo,alert='on',alert_type='success',alert_message=message, previous_values = prevData)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
@@ -89,10 +99,6 @@ def creerPersonne(request):
 			message = e
 			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
 			  previous_values = request.POST)
-		except IntegrityError as e:
-			message = e
-			return saisie(request, active_tab='Personne',alert='on',alert_type='danger',alert_message=message, 
-				previous_values = request.POST)
                       
 @login_required(login_url='/login/')
 def creerPiece(request):
@@ -105,21 +111,30 @@ def creerPiece(request):
 		data['other_information'] = data['other_information'].replace('&', '","')
 		data['other_information'] = data['other_information'].replace('=', '":"')		
 		data['other_information'] = data['other_information'].replace('+', ' ')
+		prevData = {}
 		if data['other_information']=='':
 			goBackTo = 'Piece'
-			prevData = {}
 		else :
 			goBackTo = 'Soiree'
-			prevData = ast.literal_eval('{"' + data['other_information'] + '"}')
+			prevData['soireeForm'] = ast.literal_eval('{"' + data['other_information'] + '"}')
 		del data['other_information']
 
 		auteurs = [ Personne.objects.get(id=int(x)) for x in request.POST.getlist('auteurs')]
-		piece = PieceForm(data)
+		
+		# Si c'est un update plutot qu'un insert
+		id = data['pieceForm_id']
+		del data['pieceForm_id']
+		if id != '': 	#update
+			instance = Piece.objects.get(id=int(id))
+			piece = PieceForm(data, instance=instance)
+			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été ajouté dans la base'
+		else :				#insert
+			piece = PieceForm(data)
+			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été mise à jour'
 		
 		try:
 			instance = piece.save()
 			for auteur in auteurs : instance.auteurs.add(auteur)
-			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été ajouté dans la base'
 			return saisie(request, active_tab='Piece',alert='on',alert_type='success',alert_message=message)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
@@ -129,22 +144,20 @@ def creerPiece(request):
 			message = e
 			return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
 			  previous_values = request.POST)
-#		except IntegrityError as e:
-#			message = 'Cette Piece existe déja dans la base'
-#			return saisie(request, active_tab='Piece',alert='on',alert_type='danger',alert_message=message, 
-#				previous_values = request.POST)
         
 
 @login_required(login_url='/login/')
 def creerSoiree(request):
 	if request.POST:
-		try:
-			ref_registre = request.POST.get('ref_registre', 'none')
-			num_page_pdf = request.POST.get('num_page_pdf', 'none')
-			redacteur = request.POST.get('redacteur', 'none')
-			page_registre = PageRegistre(ref_registre=ref_registre, num_page_pdf=num_page_pdf)
-			page_registre.save()
+		
+		#Page Registre
+		page_registre = PageRegistreForm(request.POST)
+		try : page_registre.save()
+		except ValueError as e:
+			page_registre = PageRegistre.objects.get(ref_registre=request.POST['ref_registre'], num_page_pdf=request.POST['num_page_pdf'])
 
+		try :
+			#budget soiree
 			total_depenses_reg = request.POST.get('total_depenses_reg', 'none')
 			nb_total_billets_vendus_reg = request.POST.get('nb_total_billets_vendus_reg', 'none')
 			total_recettes_reg = request.POST.get('total_recettes_reg', 'none')
@@ -153,13 +166,19 @@ def creerSoiree(request):
 			quart_pauvre_reg = request.POST.get('quart_pauvre_reg', 'none')
 			debit_initial_reg = request.POST.get('debit_initial_reg', 'none')
 			reste_reg = request.POST.get('reste_reg', 'none')
-			nombre_cachets = request.POST.get('nombre_cachets', 'none')
+			nombre_cachets = request.POST.get('nombre_cachets', 'none').replace(',','.')
 			montant_cachet = request.POST.get('montant_cachet', 'none')
 			montant_cachet_auteur = request.POST.get('montant_cachet_auteur', 'none')
 			credit_final_reg = request.POST.get('credit_final_reg', 'none')
-			budgetSoiree = BudgetSoiree(total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg)
-			budgetSoiree.save()
+			id = request.POST.get('budget_id', '')
 
+			if id != '':
+				budgetSoiree = BudgetSoiree(id=int(id), total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg) #update
+			else : 				
+				budgetSoiree = BudgetSoiree(total_depenses_reg=total_depenses_reg, nb_total_billets_vendus_reg=nb_total_billets_vendus_reg, total_recettes_reg=total_recettes_reg, debit_derniere_soiree_reg=debit_derniere_soiree_reg, total_depenses_corrige_reg=total_depenses_corrige_reg, quart_pauvre_reg=quart_pauvre_reg, debit_initial_reg=debit_initial_reg, reste_reg=reste_reg, nombre_cachets=nombre_cachets, montant_cachet=montant_cachet, montant_cachet_auteur=montant_cachet_auteur, credit_final_reg=credit_final_reg) #insert
+			budgetSoiree.save()
+			
+			#debits
 			nb_debit = 0
 			montant = request.POST.get('debit'+str(nb_debit)+'montant', 'none')
 			while montant != 'none' :
@@ -167,20 +186,30 @@ def creerSoiree(request):
 				type_depense = request.POST.get('debit'+str(nb_debit)+'type_depense', 'none')
 				traduction = request.POST.get('debit'+str(nb_debit)+'traduction', 'none')
 				mots_clefs = request.POST.get('debit'+str(nb_debit)+'mots_clefs', 'none')
+				id = request.POST.get('debit'+str(nb_debit)+'id', '')
 				nb_debit += 1
-				debit = Debit(montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
+				if id == '' :
+					debit = Debit(montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
+				else :
+					debit = Debit(id=int(id), montant=montant, libelle=libelle, type_depense=type_depense, traduction=traduction, mots_clefs=mots_clefs, budget=budgetSoiree)
 				debit.save()
 				montant = request.POST.get('debit'+str(nb_debit)+'montant', 'none')
-
+		
+			#credits
 			nb_credit = 0
 			montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 			while montant != 'none' :
 				libelle = request.POST.get('credit'+str(nb_credit)+'libelle', 'none')
+				id = request.POST.get('credit'+str(nb_debit)+'id', '')
 				nb_credit += 1
-				credit = Credit(montant=montant, libelle=libelle, budget=budgetSoiree)
+				if id == '' :
+					credit = Credit(montant=montant, libelle=libelle, budget=budgetSoiree)
+				else :
+					credit = Credit(id=int(id), montant=montant, libelle=libelle, budget=budgetSoiree)
 				credit.save()
 				montant = request.POST.get('credit'+str(nb_credit)+'montant', 'none')
 
+			#billetteries
 			nb_billetterie = 0
 			montant = request.POST.get('billetterie'+str(nb_billetterie)+'montant', 'none')
 			while montant != 'none' :
@@ -188,61 +217,146 @@ def creerSoiree(request):
 				nombre_billets_vendus = request.POST.get('billetterie'+str(nb_billetterie)+'nombre_billets_vendus', 'none')
 				type_billet = request.POST.get('billetterie'+str(nb_billetterie)+'type_billet', 'none')
 				commentaire = request.POST.get('billetterie'+str(nb_billetterie)+'commentaire', 'none')
+				id = request.POST.get('billetterie'+str(nb_debit)+'id', 'none')
 				nb_billetterie += 1
-				billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendus=nombre_billets_vendus, type_billet=type_billet, commentaire=commentaire)
+				if id == '' :
+					billetterie = Billetterie(montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendus=nombre_billets_vendus, type_billet=type_billet, commentaire=commentaire)
+				else :
+					billetterie = Billetterie(id=int(id), montant=montant, libelle=libelle, budget=budgetSoiree, nombre_billets_vendus=nombre_billets_vendus, type_billet=type_billet, commentaire=commentaire)
 				billetterie.save()
 				montant = request.POST.get('billetterie'+str(nb_billetterie)+'montant', 'none')
 
+			#Soiree
 			date = request.POST.get('date', 'none')
 			libelle_date_reg = request.POST.get('libelle_date_reg', 'none')
 			ligne_src = request.POST.get('ligne_src', 'none') 
-			soiree = Soiree(date=date, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src, page_registre=page_registre)
+			idSoiree = request.POST.get('soireeForm_id', '')
+			if idSoiree == '':
+				soiree = Soiree(date=date, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src, page_registre=page_registre)
+			else :
+				soiree = Soiree(id=int(idSoiree), date=date, libelle_date_reg=libelle_date_reg, budget=budgetSoiree, ligne_src=ligne_src, page_registre=page_registre)
 			soiree.save()
 			
+			#representations
 			nb_representations = 0
 			position = request.POST.get('representation'+str(nb_representations)+'position', 'none')
 			while position != 'none' :
 				piece = request.POST.get('representation'+str(nb_representations)+'piece', 'none')
+				id = request.POST.get('representation'+str(nb_debit)+'id', 'none')
 				nb_representations += 1
-				representation = Representation(position=position, piece=Piece.objects.get(id=int(piece)), Soiree=soiree)
+				if id == '' : 
+					representation = Representation(position=position, piece=Piece.objects.get(id=int(piece)), Soiree=soiree)
+				else :
+					representation = Representation(id=int(id), position=position, piece=Piece.objects.get(id=int(piece)), Soiree=soiree)
 				representation.save()
 				position = request.POST.get('representation'+str(nb_representations)+'position', 'none')
-				
+			
+			#animations	
 			nb_animations = 0
 			position = request.POST.get('animation'+str(nb_animations)+'position', 'none')
 			while position != 'none' :
 				type = request.POST.get('animation'+str(nb_animations)+'type', 'none')
 				auteur = request.POST.get('animation'+str(nb_animations)+'auteur', 'none')
 				description = request.POST.get('animation'+str(nb_animations)+'description', 'none')
+				id = request.POST.get('animation'+str(nb_debit)+'id', 'none')
 				nb_animations += 1
 				animation = Animation(position=position, type=type, auteur=Personne.objects.get(id=int(auteur)), description=description, Soiree=soiree)
 				animation.save()
 				position = request.POST.get('animation'+str(nb_animations)+'position', 'none')
 				
-			message = u"La soirée du<a href='/soirees/"+soiree.date+"'><b> " + date + u"</a></b> a bien été ajouté dans la base"
+			if idSoiree == '' :
+				message = u"La soirée du<a href='/soirees/"+soiree.date+"'><b> " + date + u"</a></b> a bien été ajouté dans la base"
+			else :
+				message = u"La soirée du<a href='/soirees/"+soiree.date+"'><b> " + date + u"</a></b> a bien été mise à jour"
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='success',alert_message=message)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
-#		except IntegrityError as e:
-#			message = 'Cette Soirée existe déja dans la base'
-#			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
-
+		except IntegrityError:
+			message = 'Une soiree utilise déjà cette page de registre'
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message)
+			
 
 @login_required(login_url='/login/')
 def update(request, type, id) :
 	instance = {}
 	if type == 'personne':
-		instance = model_to_dict(Personne.objects.get(id=id))		
-		instance = testDateForm(instance,['date_de_naissance','date_de_deces'])	
+		instance['personneForm'] = model_to_dict(Personne.objects.get(id=id))
+		instance['personneForm']['personneForm_id'] = id	
 	elif type == 'piece':
-		instance = model_to_dict(Piece.objects.get(id=id))
-		instance = testDateForm(instance,['date_premiere'])	
+		instance['pieceForm'] = model_to_dict(Piece.objects.get(id=id))
+		instance['pieceForm']['pieceForm_id'] = id	
 	else :
-		instance = model_to_dict(Soiree.objects.get(id=id))		
-		instance = testDateForm(instance,['date'])	
+		soiree = Soiree.objects.get(id=id)
+		instance['soireeForm'] = model_to_dict(soiree)
+		instance['soireeForm']['soireeForm_id'] = id
+		instance['soireeForm'].update(model_to_dict(soiree.page_registre))
+		instance['soireeForm'].update(model_to_dict(soiree.budget))
+		instance['soireeForm']['budget_id'] = soiree.budget.id
+		
+		representations = Representation.objects.all().filter(Soiree=soiree)
+		i = 0
+		for representation in representations :
+			instance['soireeForm'].update({ 'representation'+str(i)+k:v for k,v in model_to_dict(representation).iteritems() })	
+			instance['soireeForm']['representation'+str(i)+'id'] = representation.id
+			i += 1		
+		animations = Animation.objects.all().filter(Soiree=soiree)
+		i = 0
+		for animation in animations :
+			instance['soireeForm'].update({ 'animation'+str(i)+k:v for k,v in model_to_dict(animation).iteritems() })
+			instance['soireeForm']['animation'+str(i)+'id'] = animation.id
+			i += 1				
+		debits = Debit.objects.all().filter(budget=soiree.budget)
+		i = 0
+		for debit in debits :
+			instance['soireeForm'].update({ 'debit'+str(i)+k:v for k,v in model_to_dict(debit).iteritems() })
+			instance['soireeForm']['debit'+str(i)+'id'] = debit.id
+			i += 1		
+		billetteries = Billetterie.objects.all().filter(budget=soiree.budget)
+		i = 0
+		for billetterie in billetteries :
+			instance['soireeForm'].update({ 'billetterie'+str(i)+k:v for k,v in model_to_dict(billetterie).iteritems() })
+			instance['soireeForm']['billetterie'+str(i)+'id'] = billetterie.id
+			i += 1
+		credits = Credit.objects.all().filter(budget=soiree.budget).exclude(id__in=billetteries)
+		i = 0
+		for credit in credits :
+			instance['soireeForm'].update({ 'credit'+str(i)+k:v for k,v in model_to_dict(credit).iteritems() })
+			instance['soireeForm']['credits'+str(i)+'id'] = credits.id
+			i += 1		
+			
 	return saisie(request,active_tab=type.capitalize(), previous_values=instance)
 
+@login_required(login_url='/login/')
+def delete(request, type, id):
+	if type == "personne":
+		personne = Personne.objects.get(id=id)
+		personne.delete()
+	elif type == "piece":
+		piece = Piece.objects.get(id=id)
+		piece.delete()
+	else:
+		soiree = Soiree.objects.get(id=id)
+		budget = soiree.budget
+		representations = Representation.objects.all().filter(Soiree=soiree)
+		for representation in representations :
+			representation.delete()
+		animations = Animation.objects.all().filter(Soiree=soiree)
+		for animation in animations :
+			animation.delete()
+		debits = Debit.objects.all().filter(budget=soiree.budget)
+		for debit in debits :
+			debit.delete()
+		billetteries = Billetterie.objects.all().filter(budget=soiree.budget)
+		for billetterie in billetteries :
+			billetterie.delete()
+		credits = Credit.objects.all().filter(budget=soiree.budget).exclude(id__in=billetteries)
+		for credit in credits :
+			credit.delete()
+		soiree.delete()
+		budget.delete()
+	return HttpResponseRedirect('/'+type+'s')
+	
 
 # Permet la mise en forme des champs date listé (list_champs_date) dans un dictionnaire donné (data)	  
 def testDateForm(data, list_champs_date) :

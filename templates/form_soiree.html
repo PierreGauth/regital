@@ -10,6 +10,7 @@
   <div class="col-md-2 control-label"><b>Date :</b></div>
 	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.date }}</div>
 	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.libelle_date_reg }}</div>
+	<input type="hidden" name="{{formId}}_id" value=""/>
 </div>
 
 <!--Page Registre-->
@@ -121,6 +122,7 @@
 			</tfoot>
 		</table>
 	</div>
+	<input type="hidden" name="budget_id" value=""/>
 </div>
 
 	<input type="hidden" name="other_information" value="" />
@@ -143,12 +145,17 @@ $(function(){
 	}).data('datepicker'); 
 {% endfor %}
 
-/*Set the preivous filled value */
-{% for name,value in previous_values.items %}
-	setValue('{{name}}','{{value}}');
-{% endfor %}
+{% load type_filter %}
 
-	setValue('debit4montant','123987');
+/*Set the preivous filled value */
+{% for formName,values in previous_values.items %} {% if formName == formId %}
+	{% for name,value in values.items %}
+		{% if value|type == 'list' %} {% for selectedField in value %} setValue('{{name}}','{{ selectedField }}'); {% endfor %}
+		{% elif value|type == 'date' %} setValue('{{name}}','{{ value|date:"Y-m-d" }}');		
+		{% else %} setValue('{{name}}','{{ value }}');
+		{% endif %}
+	{% endfor %}
+{% endif %} {% endfor %}
 	  
 });
 		
@@ -172,7 +179,7 @@ $(function(){
 		
 		newCell = newRow.insertCell(-1);
 		newCell.setAttribute('style','text-align:right;');
-		newCell.innerHTML = '<button class="btn btn-sm" type="button" onclick="deleteRow{{nom}}(this);"><span class="glyphicon glyphicon-remove"/></button>';
+		newCell.innerHTML = '<input type="hidden" name="{{nom}}'+nbFormItem{{nom}}+'id" value=""/><button class="btn btn-sm" type="button" onclick="deleteRow{{nom}}(this);"><span class="glyphicon glyphicon-remove"/></button>';
 		
 		nbFormItem{{nom}}++;
 	}
@@ -182,30 +189,6 @@ $(function(){
 	}
 	
 {% endfor %} 	
-
-function setValue(name,value) {
- 
-	//Si c'est un formItem (une element de formulaire que l'ont peux ajouter au dynamiquement)
-	if(/(\w+)(\d+)(\w+)/.test(name)) { 
-		var funcName = "addFormitem"+RegExp.$1;
-		for(i=this['nbFormItem'+RegExp.$1];i<=parseInt(RegExp.$2);i++) { 
-			window[funcName](); 
-		}
-	}
- 
-	elements = document.getElementsByName(name); 
-	if(elements.length == 1) { elements[0].value = value; } 
-	else { 
-		for(i=0;i<elements.length;i++) { 
-			if(elements[i].value==value) { 
-				elements[i].checked = 'checked'; 
-				elements[i].selected = 'selected'; } 
-			else { 
-				elements[i].checked = '';
-				elements[i].selected = ''; } 
-		} 
-	}
-} 
 
 </script>
 

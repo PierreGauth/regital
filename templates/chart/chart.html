@@ -1,5 +1,5 @@
 
-<!--
+{% comment %}
 
 			Template pour les bar chart
 			
@@ -26,7 +26,7 @@
 				colorer les barres selon la nationalité ou l'age
 				
 				/!\ le champ y doit être des valeurs numérique
--->
+{% endcomment %}
 
 <style>
 
@@ -39,14 +39,6 @@
   fill: none;
   stroke: #000;
   shape-rendering: crispEdges;
-}
-
-.bar {
-  fill: rgb(0, 100, 200);
-}
-
-.bar:hover {
-  fill: orangered ;
 }
 
 .x.axis path {
@@ -93,15 +85,34 @@
 
 <script>
 
+	var data = {{data|safe}};
+
 	var margin = {top: 40, right: 20, bottom: 30, left: 40},
 	    width = 960 - margin.left - margin.right,
 	    height = 300 - margin.top - margin.bottom;
 
 	var x = d3.scale.ordinal()
+			//.domain([0, d3.max(data)])			
+      .domain(d3.time.days(new Date(2011, 0, 1), new Date(2011, 3, 1)))
 	    .rangeRoundBands([0, width], .1);
 
 	var y = d3.scale.linear()
+			//.domain([0, 5000])
 	    .range([height, 0]);
+			
+	// Scale bar
+	var yMin = 0;
+	var yMax = 1000;
+	var xMin = 0;
+	var xMax = 1000;
+			
+	/*var y = d3.scale.linear()
+		.domain([yMin, yMax])
+		.range([height-50, 50]);
+
+	var x = d3.scale.linear()
+				.domain([xMin, xMax])
+				.range([50, width - 50]);*/
 
 	var xAxis = d3.svg.axis()
 	    .scale(x)
@@ -109,13 +120,20 @@
 
 	var yAxis = d3.svg.axis()
 	    .scale(y)
-	    .orient("left");
+	    .orient("left");	
+			
+	var zoom = d3.behavior.zoom()
+	    //.x(x)
+	    //.y(y)
+	    //.scaleExtent([1, 10])
+	    .on("zoom", zoomBarChart);
 
-	var svg = d3.select(".barChartArea").append("svg")
+	var barchart = d3.select(".barChartArea").append("svg")
 	    .attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 	  .append("g")
-	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			.call(zoom);
 	
 	var data = {{data|safe}};
 	var info = data[0];
@@ -124,12 +142,12 @@
   x.domain(data.map(function(d) { return d[info.x]; }));
   y.domain([0, d3.max(data, function(d) { return d[info.y]; })]);
 
-  svg.append("g")
+  barchart.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
-  svg.append("g")
+  barchart.append("g")
       .attr("class", "y axis")
       .call(yAxis)
     .append("text")
@@ -139,10 +157,10 @@
       .style("text-anchor", "end")
       .text(info.y);
 
-  svg.selectAll(".bar")
+  barchart.selectAll(".bar")
       .data(data)
     .enter().append("rect")
-      .attr("class", "bar")
+      .attr("class", "bar svg-primary")
       .attr("x", function(d) { return x(d[info.x]); })
       .attr("width", x.rangeBand())
       .attr("y", function(d) { return y(d[info.y]); })
@@ -151,8 +169,16 @@
 	$.each(info.opt, function(index, value) {
 		var radioBtn = $('<input type="radio" name="barChartOpt" onClick="updateBarChartColor()" value="'+value+'">'+value+'</input></br>');
 		$('#barChartRadioArea').append(radioBtn);
-		svg.selectAll(".bar").attr(value, function(d) { return d[value] });
+		barchart.selectAll(".bar").attr(value, function(d) { return d[value] });
+	
 	});
+
+function zoomBarChart() {
+	//alert("zoom");
+  barchart.select(".xaxis").call(xAxis);
+  barchart.select(".yaxis").call(yAxis);
+  barchart.selectAll(".chart rect").attr("transform", "translate(" + d3.event.translate[0] + ",0)scale(" + d3.event.scale + ", 1)");
+}
 
 function updateBarChartColor() {
 	var radioValue = $('input[type=radio][name=barChartOpt]:checked').attr('value');

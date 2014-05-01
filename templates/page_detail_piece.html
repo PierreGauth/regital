@@ -3,12 +3,22 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block content %}
-<div class="row">
-	<h2><center><b>{{pieceinfos.titre|capfirst}}</b>
+<div class="row" style="text-align:center">
+	<h2><b>{{pieceinfos.titre|capfirst}}</b>
 		{% if user.is_authenticated %}
-			<a href="/saisie/update/piece/{{pieceinfos.id}}"><button class="btn btn-sm" type="button" style="float:right;">Modifier</button></a>
+			<div style="float:right">
+			<a href="/saisie/update/piece/{{pieceinfos.id}}">
+				<span class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="auto" 
+					title="Modifier les informations de cette piece"></span>
+			</a>
+			<a href="javascript:toogledelPieceModal()">
+				<span class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="auto" 
+					title="Supprimer cette piece"></span>
+			</a>
+			</div>
+			{% include "modal.html" with modalId="delPieceModal" modalTitle="Supprimer pièce" %}
 		{% endif %}
-		</center></h2>
+	</h2>
 	<br>
 	<table class="table table-striped">
 		<tr class="row">
@@ -51,7 +61,10 @@
 
 <script>
 	$(function() {
-		$('td').tooltip();
+		var modalContent = "<h4>Etes-vous sur de vouloir supprimer la pièce <b>{{pieceinfos.titre}}</b> de {% for auteur in pieceinfos.auteurs.all %}{{auteur.nom}} {{auteur.prenom}}</a>{% endfor %}</h4></br></br>"
+		modalContent += "<button type='button' class='btn' onCLick='toogledelPieceModal()'>Non</button> "		
+		modalContent += "<a href='/saisie/delete/piece/{{pieceinfos.id}}'><button type='button' class='btn btn-primary'>Oui</button></a>"
+		addTodelPieceModal(modalContent);
 	})
 </script>
 {% endblock %}

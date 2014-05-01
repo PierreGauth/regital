@@ -4,12 +4,22 @@
 
 {% block content %}
 <div class="row" style="margin-left:1%;">
-	<div class="col-md-12">
-		<h2><center><b>{{soireeinfos}}</b>
+	<div class="col-md-12"  style="text-align:center">
+		<h2><b>{{soireeinfos}}</b>
 		{% if user.is_authenticated %}
-			<a href="/saisie/update/soiree/{{soireeinfos.id}}"><button class="btn btn-sm" type="button" style="float:right;">Modifier</button></a>
+			<div style="float:right">
+			<a href="/saisie/update/soiree/{{soireeinfos.id}}">
+				<span class="glyphicon glyphicon-edit" data-toggle="tooltip" data-placement="auto" 
+					title="Modifier les informations de cette soiree"></span>
+			</a>
+			<a href="javascript:toogledelSoireeModal()">
+				<span class="glyphicon glyphicon-remove" data-toggle="tooltip" data-placement="auto" 
+					title="Supprimer cette soiree"></span>
+			</a>
+			</div>
+			{% include "modal.html" with modalId="delSoireeModal" modalTitle="Supprimer soiree" %}
 		{% endif %}
-		</center></h2>
+		</h2>
 		<br>
 		<table class="table table-striped">
 			<tr>
@@ -190,5 +200,14 @@
 	</div>
 	
 </div>
+
+<script>
+	$(function() {
+		var modalContent = "<h4>Etes-vous sur de vouloir supprimer la <b>{{soireeinfos}}</b></h4></br></br>"
+		modalContent += "<button type='button' class='btn' onCLick='toogledelSoireeModal()'>Non</button> "		
+		modalContent += "<a href='/saisie/delete/soiree/{{soireeinfos.id}}'><button type='button' class='btn btn-primary'>Oui</button></a>"
+		addTodelSoireeModal(modalContent);
+	})
+</script>
  
 {% endblock %}

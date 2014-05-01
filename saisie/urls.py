@@ -13,4 +13,5 @@ urlpatterns = patterns('',
   url(r'^new/soiree/$', views.creerSoiree),
 	url(r'^soiree/(?P<date>\d{4}-\d{2}-\d{2})$', views.saisie),
 	url(r'^update/(?P<type>\w+)/(?P<id>\d+)$', views.update),
+	url(r'^delete/(?P<type>\w+)/(?P<id>\d+)$', views.delete),
 	)

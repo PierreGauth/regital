@@ -1,0 +1,153 @@
+
+{% comment %}
+
+			Template pour les bar chart
+			
+			Utilisation :
+				Il suffit de passer une variable data contenant une liste de dict champs : valeurs
+				Le premier éléments de cette liste est un élément particulier qui permet de savoir quel
+				champs est a afficher en abscisse, en ordonnée ou en option (représenté par la couleur des barres)
+				Ce premier élément est un dictionnaire qui doit contenir la clef x, la clef y et la clef opt 
+			
+			Exemple :
+				[
+					{'x' : 'temps', 'y' : 'population', 'opt' : ['nationalité', 'age']},
+					{'temps' : '1', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '2', 'population : '153', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '3', 'population : '453', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '4', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '5', 'population : '163', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '6', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '7', 'population : '83',  'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '8', 'population : '3',   'nationalité' : 'test', 'age' : 'truc' },
+					{'temps' : '9', 'population : '13',  'nationalité' : 'test', 'age' : 'truc' }
+				]
+				Ces donnée permetterons d'afficher un bar chart de la population selon le temps avec la possibilité de 
+				colorer les barres selon la nationalité ou l'age
+				
+				/!\ le champ y doit être des valeurs numérique
+{% endcomment %}
+
+<style>
+.barChartArea {
+  font: 10px sans-serif;
+}
+
+.barChartAxis path,
+.barChartAxis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.barChartAxis path {
+  display: none;
+}
+</style>
+
+<div id="barChartRadioArea{{chartId}}">
+	<input type="radio" name="barChartOpt{{chartId}}" onClick="updateBarChartColor{{chartId}}()" value="---" checked="checked">Rien</input></br>
+</div>
+<div class="barChartArea{{chartId}}"></div>
+
+<script src="/static/js/d3.min.js"></script>
+
+<script>
+
+	var {{chartId}}data = {{data|safe}};
+
+	var {{chartId}}margin = {top: 40, right: 20, bottom: 30, left: 40},
+	    {{chartId}}width = 960 - {{chartId}}margin.left - {{chartId}}margin.right,
+	    {{chartId}}height = 300 - {{chartId}}margin.top - {{chartId}}margin.bottom;
+
+	var {{chartId}}x = d3.scale.ordinal()
+			//.domain([0, d3.max(data)])			
+      .domain(d3.time.days(new Date(2011, 0, 1), new Date(2011, 3, 1)))
+	    .rangeRoundBands([0, {{chartId}}width], .1);
+
+	var {{chartId}}y = d3.scale.linear()
+			//.domain([0, 5000])
+	    .range([{{chartId}}height, 0]);
+
+	var {{chartId}}xAxis = d3.svg.axis()
+	    .scale(x)
+	    .orient("bottom");
+
+	var {{chartId}}yAxis = d3.svg.axis()
+	    .scale(y)
+	    .orient("left");	
+			
+	var {{chartId}}zoom = d3.behavior.zoom()
+	    //.x(x)
+	    //.y(y)
+	    //.scaleExtent([1, 10])
+	    .on("zoom", zoomBarChart);
+
+	var {{chartId}}barchart = d3.select(".barChartArea{{chartId}}").append("svg")
+	    .attr("width", {{chartId}}width + {{chartId}}margin.left + {{chartId}}margin.right)
+	    .attr("height", {{chartId}}height + {{chartId}}margin.top + {{chartId}}margin.bottom)
+	  .append("g")
+	    .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");
+	
+	var {{chartId}}data = {{data|safe}};
+	var {{chartId}}info = data[0];
+	data.splice(0,1);
+	
+  {{chartId}}x.domain({{chartId}}data.map(function(d) { return d[info.x]; }));
+  {{chartId}}y.domain([0, d3.max({{chartId}}data, function(d) { return d[info.y]; })]);
+
+  barchart.append("g")
+      .attr("class", "x barChartAxis")
+      .attr("transform", "translate(0," + {{chartId}}height + ")")
+      .call({{chartId}}xAxis);
+
+  barchart.append("g")
+      .attr("class", "y barChartAxis")
+      .call({{chartId}}yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text({{chartId}}info.y);
+
+  barchart.selectAll(".bar{{chartId}}")
+      .data({{chartId}}data)
+    .enter().append("rect")
+      .attr("class", "bar{{chartId}} svg-primary")
+      .attr("x", function(d) { return x(d[info.x]); })
+      .attr("width", {{chartId}}x.rangeBand())
+      .attr("y", function(d) { return y(d[info.y]); })
+      .attr("height", function(d) { return {{chartId}}height - y(d[info.y]); })
+			
+	$.each(info.opt, function(index, value) {
+		var radioBtn = $('<input type="radio" name="barChartOpt" onClick="updateBarChartColor{{chartId}}()" value="'+value+'">'+value+'</input></br>');
+		$('#barChartRadioArea').append(radioBtn);
+		barchart.selectAll(".bar").attr(value, function(d) { return d[value] });
+	
+	});
+
+function zoomBarChart() {
+	//alert("zoom");
+  barchart.select(".xaxis").call(xAxis);
+  barchart.select(".yaxis").call(yAxis);
+  barchart.selectAll(".chart rect").attr("transform", "translate(" + d3.event.translate[0] + ",0)scale(" + d3.event.scale + ", 1)");
+}
+
+function updateBarChartColor() {
+	var radioValue = $('input[type=radio][name=barChartOpt]:checked').attr('value');
+	{% for opt in data.0.opt %}
+		if (radioValue == "{{opt}}")
+		{
+				$(".bar").attr("style","");
+				$(".bar[{{opt}}=i").attr("class","bar svg-danger");
+				$(".bar[{{opt}}=f").attr("class","bar svg-info");
+		}
+	{% endfor %}
+	if (radioValue == "---")
+	{
+		$(".bar").attr("class","bar svg-primary");
+	}
+}
+
+</script>

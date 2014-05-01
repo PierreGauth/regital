@@ -81,8 +81,12 @@ var width = 960,
     format = d3.time.format("%Y-%m-%d");
 
 	var color = d3.scale.quantize()
-    .domain([-.05, .05])
-    .range(d3.range(11).map(function(d) { return "filled"; }));
+    .domain([-1, 1])
+    .range(d3.range(6).map(function(d) { 
+				if (d==0) return ".calendar_rect_filled"; 
+				else if (d==1) return ".calendar_rect_filled";
+				else return "calendar_rect_filled";
+			}));
 
 function createCalendar(from, to, balise)
 {
@@ -126,7 +130,7 @@ function createCalendar(from, to, balise)
     .rollup(function(d) { return d[0].Exist; })
     .map({{list_soirees|safe}});
 
-  rect.filter(function(d) { return d in data; })
+  rect//.filter(function(d) { return d in data; })
       .attr("class", function(d) { return "day " + color(data[d]); })
     	.select("title")
       .text(function(d) { return d + ": " + percent(data[d]); });
@@ -193,7 +197,7 @@ function supprToolType() {
 }
 
 function clickDay(date) {	
-	if(clickDay.caller.arguments[0].target.getAttribute('class') == 'day filled') {
+	if(clickDay.caller.arguments[0].target.getAttribute('class') == 'day calendar_rect_filled') {
 		window.location.href= "/soirees/" + date; 
 	}
 {% if user.is_authenticated %}

@@ -25,3 +25,13 @@ function parsePieceInfo(data) {
     setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[0]);
     tooglepieceModal();
 }
+
+function addPersonneFromPiece() {
+	$('input[name=other_information]').attr('value', $('#pieceForm').serialize());
+  $('#myTab a[href="#Personne"]').tab('show');	
+} 
+
+$(function() {
+	var button = '<button class="btn" type="button" onclick="addPersonneFromPiece()" data-toggle="tooltip" data-placement="right" title="" data-original-title="La personne que vous rechercher n\'est pas listé ?" style="vertical-align:bottom	;">+ Personne</button>';
+	$("[name=auteurs]").parent().append(button);
+});

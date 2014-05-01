@@ -50,9 +50,36 @@ def listPersonnes(request):
   
 	personnes_nom = [(personne.id, personne.titre_personne+" "+personne.nom+" "+personne.prenom) for personne in personnes]
   
-	data = [{'letter': x, 'frequency' : .1234, 'langue' : 'f', 'partie' : '2'} for x in ['A','B','C','D','E','F', 'G']]
-	data.append({'letter': 'H', 'frequency' : .1234, 'langue' : 'i', 'partie' : '1'})	
-	data.insert(0, {'x' : 'letter', 'y' : 'frequency', 'opt' : ['langue', 'partie']})
+	data = [
+		{'x' : 'date', 'y' : 'nbSpectateur', 'opt' : ['langue', 'partie']},
+		{'date': '1702-02-05', 'nbSpectateur' : 1234, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1702-02-09', 'nbSpectateur' : 3234, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1702-02-22', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1702-03-05', 'nbSpectateur' : 1294, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1703-03-05', 'nbSpectateur' : 1236, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1703-07-05', 'nbSpectateur' : 1534, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'i', 'partie' : '2'},
+		{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1703-10-05', 'nbSpectateur' : 234, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1703-12-05', 'nbSpectateur' : 34, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1704-02-05', 'nbSpectateur' : 6234, 'langue' : 'i', 'partie' : '2'},
+		{'date': '1704-03-05', 'nbSpectateur' : 4214, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1705-04-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1705-05-05', 'nbSpectateur' : 1834, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1705-06-05', 'nbSpectateur' : 1934, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1708-02-05', 'nbSpectateur' : 934, 'langue' : 'i', 'partie' : '2'},
+		{'date': '1708-08-05', 'nbSpectateur' : 734, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1708-09-05', 'nbSpectateur' : 234, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1708-10-05', 'nbSpectateur' : 1244, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1710-02-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
+		{'date': '1710-05-05', 'nbSpectateur' : 3254, 'langue' : 'f', 'partie' : '2'},
+		{'date': '1712-02-05', 'nbSpectateur' : 6214, 'langue' : 'i', 'partie' : '1'},
+		{'date': '1736-02-05', 'nbSpectateur' : 4294, 'langue' : 'i', 'partie' : '2'},
+		{'date': '1786-02-05', 'nbSpectateur' : 2274, 'langue' : 'i', 'partie' : '2'}
+	]
+	
+	#data.append({'letter': 'H', 'frequency' : .1234, 'langue' : 'i', 'partie' : '1'})	
+	#data.insert(0, )
 					    
 	return render_to_response('list_page.html',
 		{'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/', 
@@ -80,40 +107,15 @@ def listPieces(request):
 	context_instance=RequestContext(request))
       
 def listSoirees(request,date='1700-01-01'):
-	if request.POST:
-		year = request.POST.get('year', '')
-		month = request.POST.get('month', '')
-		day = request.POST.get('day', '')
-		if year != '':
-			if month != '':
-				if day != '':
-					soirees = Soiree.objects.all().filter(date__year = year, date__month = month, date__day = day)
-				else:
-					soirees = Soiree.objects.all().filter(date__year = year, date__month = month)
-			else:
-				if day != '':
-					soirees = Soiree.objects.all().filter(date__year = year, date__day = day)
-				else:
-					soirees = Soiree.objects.all().filter(date__year = year)
-		else:
-			if month != '':
-				if day != '':
-					soirees = Soiree.objects.all().filter(date__month = month, date__day = day)
-				else:
-					soirees = Soiree.objects.all().filter(date__month = month)
-			else:
-				if day != '':
-					soirees = Soiree.objects.all().filter(date__day = day)
-				else:
-					soirees = Soiree.objects.all()
 
-	else:
-		soirees = Soiree.objects.all()
-
+ 	soirees = Soiree.objects.all()
+	soireesVide = SoireeVide.objects.all()
 	soiree_date = []
 
 	for soiree in soirees:
 		soiree_date.append({'Date' : str(soiree.date), 'Exist' : '1'})
+	for soireeVide in soireesVide:
+		soiree_date.append({'Date' : str(soireeVide.date), 'Exist' : '-1'})
 	
 	return render_to_response('list_soiree.html',
 	{'title':'Soirees', 'active':'soirees', 'list_soirees':soiree_date, 'date':date, 'link':'/soirees/'},

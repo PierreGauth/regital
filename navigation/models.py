@@ -77,7 +77,7 @@ class BudgetSoiree(models.Model):
 	debit_initial_reg = models.IntegerField(null=True, blank=True)	# quart du pauvre + total dépenses corrigé
 	reste_reg = models.IntegerField(null=True, blank=True)	# |recette billets - débit initial (quart du pauvre + total dépenses corrigé)|
 	nombre_cachets = models.FloatField(null=True, blank=True) # nombre de personnes rémunérées (hors auteurs)
-	montant_cachet = models.CharField(max_length=3, choices=T_SALAIRE) # montant du cachet, identique pour tous (sauf auteurs)
+	montant_cachet = models.IntegerField(choices=T_SALAIRE) # montant du cachet, identique pour tous (sauf auteurs)
 	montant_cachet_auteur = models.IntegerField(null=True, blank=True)	# montant du cachet aux auteurs (par auteur ?) - s'ajoute à la "masse salariale"
 	# (montant_cachets * nbre_cachets) + (m_c_auteur * nbre_auteurs) = montant des salaires
 	# Attention : en cas de solde négatif, les cachets déclarés sont versés au cours de la soirée suivante (avec solde positif) !
@@ -273,6 +273,13 @@ def pre_init_soiree( **kwargs):
 	kwargs['kwargs'] = attributes
 		
 pre_init.connect(pre_init_soiree, Soiree)
+
+### Soirée sans information
+class SoireeVide(models.Model):
+	date = models.DateField(unique=True)
+	
+	def __unicode__(self):
+		return u'Soiree vide du {0.date} '.format(self)
 	
 	
 class Representation(models.Model):
