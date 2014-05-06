@@ -18,42 +18,39 @@ def searchPiece(request, titre='', auteur=''):
 	#				 }
 	)
 	page = r.text
-	#	page = getPage1()
+#	page = getPage1()
 
 	page = page[page.index("<!--   Document   -->"):page.index('<br class="nettoyeur" />')]
-	if not u'Aucune donnée disponible' in page :	 
+	if not u'0 r&eacute;sultat&nbsp;:' in page :	 
 		page = page[page.index("<table"):page.index("</table>")+8]
 		page = '<div style="overflow:auto; height:30em;"><table class="table table-striped">' + page[page.index("</thead>")+8:] + '</div>'
-#		page = page.replace(r'<tr>', u'')
-#		page = page.replace(r'<td><a href="index.php?r=pieces/afficher&amp;id=', u'<tr style="cursor:pointer;"	onclick="parsePieceInfo(')		
-#		pattern = '\">(?P<title>\w+)</a></td>(.|\n|\r)*<td>\w+</td>'
 
-#		pattern = '<tr>(.|\n|\r)*<td><a href="index.php?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)* <td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
-#		pattern = re.compile(pattern, re.UNICODE)
-#		page = pattern.sub(r'<tr style="cursor:pointer;"	onclick="parsePieceInfo(\1)"><td><span class="glyphicon glyphicon-book"></span></td><td>\2<td/><td>\3<td/><td>\4<td/></tr>',page)
-
-		pattern = '(\n|\r)*'
+		pattern = '(\r|\t|(  )|(<em>)|(</em>)|\')*'
 		pattern = re.compile(pattern, re.UNICODE)
 		page = pattern.sub(r'',page)
 		
-		pattern = '<a href="index.php\?r=pieces/auteurs/details.php&amp;id=(?P<id>\d+)">'
+		pattern = '<a href="index.php.r=pieces/auteurs/details.php&amp;id=(?P<id>\d+)">'
 		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
 		page = pattern.sub(r' ',page)
 		
-		page = page.replace(u'<br />', u'')
+		page = page.replace(u'<br />\n', u'')
 		
-		pattern = '<tr>(\n|\r|\t| )*<td><a href="index.php\?r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<title>\w+)</a></td>(.|\n|\r)*<td>.*</td>(.|\n|\r)*<td>(?P<annee>\d+)</td>(.|\n|\r)*<td>(?P<auteurs>.*)</td>(.|\n|\r)*</tr>'
-		pattern = re.compile(pattern, re.UNICODE | re.DOTALL)
-		page = pattern.sub(r'<tr style="cursor:pointer;" onclick="parsePieceInfo(@\2;\3;\6;\8@);"><td><span class="glyphicon glyphicon-book"></span></td><td>\3<td/><td>\6<td/><td>\8<td/></tr>',page)
+		pattern = '''<tr>
+<td><a href="index.php.r=pieces/afficher&amp;id=(?P<id>\d+)">(?P<titre>.+)</a></td>
+<td>.+</td>
+<td>(?P<annee>\d+)</td>
+<td>(?P<auteurs>.*)</td>
+</tr>\n'''
+		pattern = re.compile(pattern, re.UNICODE)
+		page = pattern.sub(r'''<tr style="cursor:pointer;" onclick="parsePieceInfo(\g<id>,'\g<titre>','\g<auteurs>','\g<annee>')">
+<td><span class="glyphicon glyphicon-book"></span></td>
+<td>\g<titre><td/>
+<td>\g<annee><td/>
+<td>\g<auteurs><td/></tr>''',page)
 		
-		
-#		pattern = re.compile(pattern, re.UNICODE)
-#		page = pattern.sub(r')"><td><span class="glyphicon glyphicon-book"></span></td><td>\1',page)
-#		page = page.replace(u'<td>', u'<td style="vertical-align:middle;">')
-#		page = page.replace(u'<a ', u'<span ')
 		return HttpResponse(page, content_type="text/plain")
 	else:
-		return HttpResponse('Aucune Piece ne correspond à ce nom sur theaville.org', content_type="text/plain")
+		return HttpResponse('Aucune Piece ne correspond', content_type="text/plain")
 		
 def getInfoPiece(request, id):
 	payload = {'fct': 'edit', 'person_UOID': id }
@@ -84,96 +81,122 @@ def getInfoPiece(request, id):
 def getPage1() :
 	return u''' 
 
-<!--	 Document	 -->
+<!--   Document   -->
+
 
 <small>Liste | <a href="index.php?r=pieces/cibles">Cibles</a> | <a href="index.php?r=pieces/lieux">Lieux</a> | <a href="index.php?r=pieces/auteurs">Auteurs&nbsp;</a></small><br /><br />
 
 <h1 class="invisible">Liste des pi&egrave;ces</h1>
 
-<p></p><strong>1 r&eacute;sultat&nbsp;:</strong></p>
+<p></p><strong>12 r&eacute;sultats&nbsp;:</strong></p>
 <table id="table" class="pieces">
 <thead>
-	<tr>
-		<th>Titre&nbsp;</th>
-		<th>Parodie de&nbsp;</th>
-		<th>Cr&eacute;ation&nbsp;</th>
-		<th>Auteur(s)&nbsp;</th>
-	</tr>
+  <tr>
+    <th>Titre&nbsp;</th>
+    <th>Parodie de&nbsp;</th>
+    <th>Cr&eacute;ation&nbsp;</th>
+    <th>Auteur(s)&nbsp;</th>
+  </tr>
 </thead>
 <tbody>
-	<tr>
-		<td><a href="index.php?r=pieces/afficher&amp;id=3">Alceste</a></td>
-		<td><em>Alceste</em> de Quinault et Lully</td>
-		<td>1728</td>
-		<td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-FranÃƒÂ§ois) dit Dominique<br />
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=11">Arlequin Amadis</a></td>
+    <td><em>Amadis de Gaule</em> de Quinault et Lully</td>
+    <td>1731</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique<br />
 <a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
-	</tr>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=12">Arlequin Atys</a></td>
+    <td><em>Atys</em> de Quinault et Lully</td>
+    <td>1726</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=11">Boizard de Pontau (Claude Florimond)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=237">Arlequin Atys</a></td>
+    <td><em>Atys</em> de Quinault et Lully</td>
+    <td>1710</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=13">Arlequin Bellérophon</a></td>
+    <td><em>Bellérophon</em> de T. Corneille/Fontenelle et Lully</td>
+    <td>1728</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique<br />
+<a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=17">Arlequin Marchand de poupées ou le Pygmalion moderne</a></td>
+    <td><em>Pygmalion</em> de Rousseau et Coignet</td>
+    <td>1779</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=30">Guillemain (Charles-Jacob)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=18">Arlequin Persée</a></td>
+    <td><em>Persée</em> de Quinault et Lully</td>
+    <td>1747</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=86">Valois d'Orville (de) (Adrien-Joseph)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=19">Arlequin Phaéton</a></td>
+    <td><em>Phaéton</em> de Quinault et Lully</td>
+    <td>1731</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique<br />
+<a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=20">Arlequin Roland</a></td>
+    <td><em>Roland</em> de Quinault et Lully</td>
+    <td>1727</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=21">Arlequin Tancrède</a></td>
+    <td><em>Tancrède</em> de Danchet et Campra</td>
+    <td>1729</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique<br />
+<a href="index.php?r=pieces/auteurs/details.php&amp;id=77">Romagnesi (Jean-Antoine)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=22">Arlequin Thésée</a></td>
+    <td><em>Thésée</em> de Quinault et Lully</td>
+    <td>1745</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=86">Valois d'Orville (de) (Adrien-Joseph)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=23">Arlequin Thétis</a></td>
+    <td><em>Thétis et Pélée</em> de Fontenelle et Colasse</td>
+    <td>1713</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=41">Le Sage (Alain-René)</td>
+  </tr>
+  <tr>
+    <td><a href="index.php?r=pieces/afficher&amp;id=115">Le Mariage d'Arlequin et de Silvia, ou Thétis et Pélée déguisés</a></td>
+    <td><em>Thétis et Pélée</em> de Fontenelle et Colasse</td>
+    <td>1724</td>
+    <td><a href="index.php?r=pieces/auteurs/details.php&amp;id=10">Biancolelli (Pierre-François) dit Dominique</td>
+  </tr>
 </tbody>
 </table>
 <br />
 
 <script>
 $(document).ready(function(){
-	$('#table').dataTable({
+  $('#table').dataTable({
 
-		"iDisplayLength": 25,
-		"aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-		"oLanguage": {
+    "iDisplayLength": 25,
+    "aLengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+    "oLanguage": {
 		"sLengthMenu": "Afficher _MENU_ lignes",
 		"sSearch": "Recherche&nbsp;:",
 		"oPaginate": {
 			"sNext": "suivant",
 			"sPrevious": "pr&eacute;c&eacute;dent"
 		}
-		}
-	});
+    }
+  });
 });
 </script>
 
 <br class="nettoyeur" />
 	'''
 
-def getPage2() :
-	return '''
-
-<H1>People</H1>
-
- 
- 
-<TABLE WIDTH='100%' CELLPADDING=2 CELLSPACING=2 BORDER=0>
-<TR><TD ID='objectSummary'>Mlle Marie-Anne-Xavier <B> Mathieu </B><I>dite Testard </I>(1746 - )</TD></TR>
-</TABLE>
-<P>
-<TABLE WIDTH='100%' CELLPADDING='0' CELLSPACING='2' BORDER='0'>
-<TR><TD ID='keyColumn'>&nbsp;Titre&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;Mlle&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Prénom&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;Marie-Anne-Xavier&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Particule&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Nom de famille&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;Mathieu&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Date de naissance&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;1746&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Date de décès&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Pseudonyme&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;Testard&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Sexe&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;female</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Nationalité&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;French&nbsp;</TD></TR>
-<TR><TD ID='keyColumn'>&nbsp;Compétences&nbsp;</TD>
-<TD ID='valueColumn'>&nbsp;Danseur(euse)</TD></TR>
-</TABLE>
-
-<P><HR><H2>Notes</H2><P>
-<H3>Campardon</H3><UL>
-L'Académie royale de musique au XVIIIe siècle, 1884, t. II, p. 304 : 
-"danseuse, née à Rouen, vers 1746. Avant d'appartenir à l'Académie royale de musique, où elle figura pendant les années 1769 et 1770, 
-elle avait été attachée aux corps de ballet de l'Opéra-Comique et de la Comédie-Française (…)" [AS]
-
-</UL>
-</P>
-
-'''

@@ -15,6 +15,42 @@ from navigation.models import *
 
 def index(request):
 	return render_to_response('accueil.html', {"title":"Accueil", "active":"accueil"}, context_instance=RequestContext(request))
+	
+	
+
+def test_chart(request):
+
+	data = [
+	{'x' : 'date', 'y' : 'nbSpectateur', 'opt' : ['langue', 'partie']},
+	{'date': '1702-02-05', 'nbSpectateur' : 1234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1702-02-09', 'nbSpectateur' : 3234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1702-02-22', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1702-03-05', 'nbSpectateur' : 1294, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1703-03-05', 'nbSpectateur' : 1236, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1703-07-05', 'nbSpectateur' : 1534, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'i', 'partie' : '2'},
+	{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1703-10-05', 'nbSpectateur' : 234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1703-12-05', 'nbSpectateur' : 34, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1704-02-05', 'nbSpectateur' : 6234, 'langue' : 'i', 'partie' : '2'},
+	{'date': '1704-03-05', 'nbSpectateur' : 4214, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1705-04-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1705-05-05', 'nbSpectateur' : 1834, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1705-06-05', 'nbSpectateur' : 1934, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1708-02-05', 'nbSpectateur' : 934, 'langue' : 'i', 'partie' : '2'},
+	{'date': '1708-08-05', 'nbSpectateur' : 734, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1708-09-05', 'nbSpectateur' : 234, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1708-10-05', 'nbSpectateur' : 1244, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1710-02-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1710-05-05', 'nbSpectateur' : 3254, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1712-02-05', 'nbSpectateur' : 6214, 'langue' : 'i', 'partie' : '1'},
+	{'date': '1736-02-05', 'nbSpectateur' : 4294, 'langue' : 'i', 'partie' : '2'},
+	{'date': '1786-02-05', 'nbSpectateur' : 2274, 'langue' : 'i', 'partie' : '2'}
+	]
+
+	return render_to_response('chart/test_chart.html', {'data1':data},	context_instance=RequestContext(request))	
+	
+	
 
 def log_in(request, next='/'):
 	logout(request)
@@ -49,41 +85,10 @@ def listPersonnes(request):
 	personnes = personnes[20*(page-1):20*page]
   
 	personnes_nom = [(personne.id, personne.titre_personne+" "+personne.nom+" "+personne.prenom) for personne in personnes]
-  
-	data = [
-		{'x' : 'date', 'y' : 'nbSpectateur', 'opt' : ['langue', 'partie']},
-		{'date': '1702-02-05', 'nbSpectateur' : 1234, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1702-02-09', 'nbSpectateur' : 3234, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1702-02-22', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1702-03-05', 'nbSpectateur' : 1294, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1703-03-05', 'nbSpectateur' : 1236, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1703-07-05', 'nbSpectateur' : 1534, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'i', 'partie' : '2'},
-		{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1703-10-05', 'nbSpectateur' : 234, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1703-12-05', 'nbSpectateur' : 34, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1704-02-05', 'nbSpectateur' : 6234, 'langue' : 'i', 'partie' : '2'},
-		{'date': '1704-03-05', 'nbSpectateur' : 4214, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1705-04-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1705-05-05', 'nbSpectateur' : 1834, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1705-06-05', 'nbSpectateur' : 1934, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1708-02-05', 'nbSpectateur' : 934, 'langue' : 'i', 'partie' : '2'},
-		{'date': '1708-08-05', 'nbSpectateur' : 734, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1708-09-05', 'nbSpectateur' : 234, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1708-10-05', 'nbSpectateur' : 1244, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1710-02-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '1'},
-		{'date': '1710-05-05', 'nbSpectateur' : 3254, 'langue' : 'f', 'partie' : '2'},
-		{'date': '1712-02-05', 'nbSpectateur' : 6214, 'langue' : 'i', 'partie' : '1'},
-		{'date': '1736-02-05', 'nbSpectateur' : 4294, 'langue' : 'i', 'partie' : '2'},
-		{'date': '1786-02-05', 'nbSpectateur' : 2274, 'langue' : 'i', 'partie' : '2'}
-	]
-	
-	#data.append({'letter': 'H', 'frequency' : .1234, 'langue' : 'i', 'partie' : '1'})	
-	#data.insert(0, )
 					    
 	return render_to_response('list_page.html',
 		{'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/', 
-		'page_nb': page_nb, 'start_with': startwith, 'page_num': page, 'data1' : data },
+		'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
 		context_instance=RequestContext(request))
 
 def listPieces(request):

@@ -17,12 +17,11 @@ function lauchPieceModal() {
 	document.getElementById('azpiece').innerHTML='';
 }
 
-function parsePieceInfo(data) {
-		var values = data.split(';');                  
-    setValue('titre',values[1]);  
-		setValue('auteurs',values[3]);                                                            
-    setValue('date_premiere',values[2]);              
-    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+values[0]);
+function parsePieceInfo(id,titre,auteurs,date_premiere) {                 
+    setValue('titre',titre);  
+		setValue('auteurs',auteurs);                                                            
+    setValue('date_premiere',date_premiere);              
+    setValue('uri_theaville','http://theaville.org/index.php?r=pieces/auteurs/details.php&amp;id='+id);
     tooglepieceModal();
 }
 

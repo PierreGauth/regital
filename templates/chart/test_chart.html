@@ -1,0 +1,10 @@
+
+{% extends "base.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+ 
+ {% include "chart/barchart.html" with data=data1 %}
+ 
+{% endblock %}

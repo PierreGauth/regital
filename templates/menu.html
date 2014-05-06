@@ -10,7 +10,13 @@
 	<li class=" {% if active == "accueil" %}active{% endif %}"><a href="/">
 		Accueil<span style="float:right;" class="glyphicon glyphicon-home"/></a></li>
 	<li class=" {% if active == "statistiques" %}active{% endif %}"><a href="/stats/">
-		Rechercher<span style="float:right;" class="glyphicon glyphicon-stats"/></a></li>
+		Rechercher<span style="float:right;" class="glyphicon glyphicon-stats"/></a>
+		  <div class="panel panel-default" id="accordion" style="border:none; margin:0px;">
+				<div id="collapseCriteria" class="panel-collapse collapse"><div class="panel-body">
+		       azert  
+		  	</div>
+			</div></div>
+	</li>
 	<li class=" {% if active == "soirees" %}active{% endif %}"><a href="/soirees/">
 		Soirées<span style="float:right;" class="glyphicon glyphicon-calendar"/></a></li>
 	<li class=" {% if active == "personnes" %}active{% endif %}"><a href="/personnes/">
@@ -19,6 +25,14 @@
 		Pièces<span style="float:right;" class="glyphicon glyphicon-book"/></a></li>
 	{% if user.is_authenticated %}
 	<li class=" {% if active == "saisie" %}active{% endif %}"><a href="/saisie/">
-		Saisie<span style="float:right;" class="glyphicon glyphicon-pencil"/></a></li>
+		Saisie<span style="float:right;" class="glyphicon glyphicon-pencil"/></a></li>	
 	{% endif %}
 </ul>
+
+{% if active == 'statistiques' %}
+<script>
+	$(function () {
+		$('#collapseCriteria').collapse();
+	});
+</script>
+{% endif %}

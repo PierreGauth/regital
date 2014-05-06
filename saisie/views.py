@@ -30,7 +30,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 		'specific_function' : 'saisie_personne.js', 'alertZoneId':'azpersonne', 'formId':'personneForm'},
 		context_instance=RequestContext(request)) + render_to_string(
 		'modal.html' , 
-		{'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar'},
+		{'modalId' : 'personneModal', 'modalTitle' : 'Recherche sur Cesar', 'modalFoot' : True},
 		context_instance=RequestContext(request))
 
 	pieceForm = render_to_string(
@@ -40,7 +40,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 		'specific_function' : 'saisie_piece.js', 'alertZoneId':'azpiece', 'formId':'pieceForm'},
 		context_instance=RequestContext(request)) + render_to_string(
 		'modal.html' , 
-		{'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville'},
+		{'modalId' : 'pieceModal', 'modalTitle' : 'Recherche sur Theaville', 'modalFoot' : True},
 		context_instance=RequestContext(request))
 
 	soireeForm = render_to_string(
@@ -48,7 +48,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 		{'action' : '/saisie/new/soiree/', 
 		'formset_list' : { 'PageRegistreForm' : PageRegistreForm(), 'SoireeForm' : SoireeForm(), 'BudgetSoireeForm' : BudgetSoireeForm()}, 
 		'formitems' : {'representation': RepresentationForm, 'animation': AnimationForm() ,'debit':DebitForm(),
-		'credit':CreditForm(),'billetterie':BilletterieForm()}, 'formId' : 'soireeForm',
+		'credit':CreditForm(),'billetterie':BilletterieForm(), 'role':RoleForm()}, 'formId' : 'soireeForm',
 		'previous_values' : previous_values, 'specific_function' : 'saisie_soiree.js', 'date_picker_id_list' : ['dsoiree1']},
 		context_instance=RequestContext(request))
 
@@ -83,13 +83,14 @@ def creerPersonne(request):
 		if id != '': 	#update
 			instance = Personne.objects.get(id=int(id))
 			personne = PersonneForm(data, instance=instance)			
-			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
+			message = data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
 		else :				#insert
 			personne = PersonneForm(data)
-			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été mise à jour'
+			message = data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été mise à jour'
 		
 		try:
 			instance = personne.save()
+			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + message
 			return saisie(request, active_tab=goBackTo,alert='on',alert_type='success',alert_message=message, previous_values = prevData)
 		except ValidationError as e:
 			message = ' '.join(e.messages)
@@ -127,13 +128,14 @@ def creerPiece(request):
 		if id != '': 	#update
 			instance = Piece.objects.get(id=int(id))
 			piece = PieceForm(data, instance=instance)
-			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été ajouté dans la base'
+			message = data['titre'] + u'</a></b> a bien été ajouté dans la base'
 		else :				#insert
 			piece = PieceForm(data)
-			message = u'<b><a href="/pieces/' + str(instance.id) + '">' + instance.titre + u'</a></b> a bien été mise à jour'
+			message = data['titre']  + u'</a></b> a bien été mise à jour'
 		
 		try:
 			instance = piece.save()
+			message = u'<b><a href="/pieces/' + str(instance.id) + message
 			for auteur in auteurs : instance.auteurs.add(auteur)
 			return saisie(request, active_tab='Piece',alert='on',alert_type='success',alert_message=message)
 		except ValidationError as e:
@@ -242,7 +244,7 @@ def creerSoiree(request):
 			position = request.POST.get('representation'+str(nb_representations)+'position', 'none')
 			while position != 'none' :
 				piece = request.POST.get('representation'+str(nb_representations)+'piece', 'none')
-				id = request.POST.get('representation'+str(nb_debit)+'id', 'none')
+				id = request.POST.get('representation'+str(nb_representations)+'id', 'none')
 				nb_representations += 1
 				if id == '' : 
 					representation = Representation(position=position, piece=Piece.objects.get(id=int(piece)), Soiree=soiree)
@@ -260,9 +262,28 @@ def creerSoiree(request):
 				description = request.POST.get('animation'+str(nb_animations)+'description', 'none')
 				id = request.POST.get('animation'+str(nb_debit)+'id', 'none')
 				nb_animations += 1
-				animation = Animation(position=position, type=type, auteur=Personne.objects.get(id=int(auteur)), description=description, Soiree=soiree)
+				if id == '' : 
+					animation = Animation(position=position, type=type, auteur=Personne.objects.get(id=int(auteur)), description=description, Soiree=soiree)
+				else :
+					animation = Animation(id=int(id), position=position, type=type, auteur=Personne.objects.get(id=int(auteur)), description=description, Soiree=soiree)
 				animation.save()
 				position = request.POST.get('animation'+str(nb_animations)+'position', 'none')
+			
+			#role
+			nb_role = 0
+			personne = request.POST.get('role'+str(nb_role)+'personne', 'none')
+			while personne != 'none' :
+				representation = request.POST.get('role'+str(nb_role)+'representation', 'none')
+				roleField = request.POST.get('role'+str(nb_role)+'role', 'none')
+				plus_dinfo = request.POST.get('role'+str(nb_role)+'plus_dinfo', 'none')
+				id = request.POST.get('role'+str(nb_role)+'id', 'none')
+				nb_role += 1
+				if id == '' : 
+					role = Role(personne=Personne.objects.get(id=int(personne)), representation=Representation.objects.get(Soiree=soiree, position=int(representation)), role=roleField, plus_dinfo=plus_dinfo)
+				else :
+					role = Role(id=int(id), personne=Personne.objects.get(id=int(personne)), representation=Representation.objects.get(Soiree=soiree, position=int(representation)), role=roleField, plus_dinfo=plus_dinfo)
+				role.save()
+				personne = request.POST.get('role'+str(nb_role)+'personne', 'none')
 				
 			if idSoiree == '' :
 				message = u"La soirée du<a href='/soirees/"+soiree.date+"'><b> " + date + u"</a></b> a bien été ajouté dans la base"
@@ -299,12 +320,18 @@ def update(request, type, id) :
 		for representation in representations :
 			instance['soireeForm'].update({ 'representation'+str(i)+k:v for k,v in model_to_dict(representation).iteritems() })	
 			instance['soireeForm']['representation'+str(i)+'id'] = representation.id
-			i += 1		
+			i += 1	
 		animations = Animation.objects.all().filter(Soiree=soiree)
 		i = 0
 		for animation in animations :
 			instance['soireeForm'].update({ 'animation'+str(i)+k:v for k,v in model_to_dict(animation).iteritems() })
 			instance['soireeForm']['animation'+str(i)+'id'] = animation.id
+			i += 1	
+		roles = Role.objects.all().filter(representation__Soiree=soiree)
+		i = 0
+		for role in roles :
+			instance['soireeForm'].update({ 'role'+str(i)+k:v for k,v in model_to_dict(role).iteritems() })
+			instance['soireeForm']['role'+str(i)+'id'] = role.id
 			i += 1				
 		debits = Debit.objects.all().filter(budget=soiree.budget)
 		i = 0

@@ -31,20 +31,21 @@
 $(function(){ 
 
 {% for date_picker_id in date_picker_id_list %} 
-	var myDatePicker{{forloop.counter}} = $({{ date_picker_id }}).datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
-		myDatePicker{{forloop.counter}}.hide(); 
-	}).data('datepicker'); 
+	$('#{{ date_picker_id }}').datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
+		this.hide(); 
+	}).data('datepicker');
 {% endfor %}
 
 {% load type_filter %}
 
-/*Set the preivous filled value */
+/*Set the previous filled value */
 {% for formName,values in previous_values.items %} {% if formName == formId %}
 	{% for name,value in values.items %}
 		{% if value|type == 'list' %} {% for selectedField in value %} setValue('{{name}}','{{ selectedField }}'); {% endfor %}
-		{% elif value|type == 'date' %} setValue('{{name}}','{{ value|date:"Y-m-d" }}');		
+		{% elif value|type == 'date' %} setValue('{{name}}','{{ value|date:"Y-m-d" }}'); 
 		{% else %} setValue('{{name}}','{{ value }}');
 		{% endif %}
+		{% if name == 'date' %}$('[name=date]').trigger('keyup');{% endif %}		
 	{% endfor %}
 {% endif %} {% endfor %}
 

@@ -54,8 +54,6 @@
 
 <script>
 
-	alert($('#barChartArea{{chartId}}').attr('width'));
-
 	var {{chartId}}data = {{data|safe}};
 
 	var {{chartId}}margin = {top: 40, right: 20, bottom: 30, left: 40},
@@ -64,7 +62,7 @@
 
 	var {{chartId}}x = d3.scale.ordinal()
 			//.domain([0, d3.max(data)])			
-      .domain(d3.time.days(new Date(2011, 0, 1), new Date(2011, 3, 1)))
+      .domain(d3.time.days(new Date(1700, 0, 1), new Date(1720, 3, 1)))
 	    .rangeRoundBands([0, {{chartId}}width], .1);
 
 	var {{chartId}}y = d3.scale.linear()

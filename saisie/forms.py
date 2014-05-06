@@ -184,6 +184,17 @@ AnimationForm = modelform_factory(Animation,
   labels={
   }
 )
+RoleForm = modelform_factory(Role,
+  fields=('personne','representation','role','plus_dinfo'),
+  widgets={
+    'personne': forms.Select(attrs={'class' : 'form-control input-sm'}),
+    'representation' : forms.Select(attrs={'class' : 'form-control input-sm', 'onclick' : 'updateRepresentationSelect(this)'}),
+    'role' : forms.TextInput(attrs={'class' : 'form-control input-sm', 'placeholder' : 'Rôle'}),
+    'plus_dinfo' : forms.Textarea(attrs={'class' : 'form-control input-sm', 'placeholder' : 'Information supplémentaire', 'rows':'1'}),
+  },
+  labels={
+  }
+)
 
 TransactionSoireeForm = modelform_factory(TransactionSoiree)
 TransactionAbonnementForm = modelform_factory(TransactionAbonnement)
@@ -191,4 +202,3 @@ AbonnementForm = modelform_factory(Abonnement)
 RecapitulatifForm = modelform_factory(Recapitulatif)
 DebitRecapitulatifForm = modelform_factory(DebitRecapitulatif)
 CreditRecapitulatifForm = modelform_factory(CreditRecapitulatif)
-RoleForm = modelform_factory(Role)

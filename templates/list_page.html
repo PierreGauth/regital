@@ -4,20 +4,6 @@
 
 {% block content %}
 
-<div class="row">
-	<div class="col-md-6">
-		{% include "chart/barchart.html" with data=data1 chartId="chart1" %}
-	</div>
-	<div class="col-md-6">
-		{% include "chart/barchart.html" with data=data1 chartId="chart2" %}
-	</div>
-</div>
-<div class="row">
-	<div class="col-md-12">
-		{% include "chart/barchart.html" with data=data1 chartId="chart3" %}
-	</div>
-</div>
-
 <center>
 <ul class="pagination pagination-sm">
   <li {% if start_with == '' %}class="active"{%endif%}><a href="javascript:startwith('');">Tout</a></li>

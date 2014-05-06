@@ -18,9 +18,9 @@
  * ========================================================= */
  
 !function( $ ) {
-
+	
 	// Picker object
-
+	
 	var Datepicker = function(element, options){
 		this.element = $(element);
 		this.format = DPGlobal.parseFormat(options.format||this.element.data('date-format')||'mm/dd/yyyy');
@@ -28,7 +28,7 @@
 
 		this.isInput = this.element.is('input') || this.element.is('textarea');
 		this.component = this.element.is('.date') ? this.element.find('.add-on') : false;
-
+		
 		if (this.isInput) {
 			this.element.on({
 				"focus.Datepicker": $.proxy(this.show, this),
@@ -44,7 +44,7 @@
 				this.element.on('click.Datepicker', $.proxy(this.show, this));
 			}
 		}
-
+		
 		this.viewMode = 0;
 		this.weekStart = options.weekStart||this.element.data('date-weekstart')||0;
 		this.scroll = (options.scroll != undefined ? options.scroll : true);
@@ -54,10 +54,10 @@
 		this.update();
 		this.showMode();
 	};
-
+	
 	Datepicker.prototype = {
 		constructor: Datepicker,
-
+		
 		show: function(e) {
 		  $('div.datepicker.dropdown-menu').hide(); //make sure to hide all other calendars
 			this.picker.show();
@@ -85,7 +85,7 @@
 			if (this.scroll && docScrollTop+winHeight<elemTop+elemHeight)
                           $(document).scrollTop(elemTop-elemHeight);
 		},
-
+		
 		setValue: function() {
 			var formated = DPGlobal.formatDate(this.date, this.format);
 			if (!this.isInput) {
@@ -97,7 +97,7 @@
 				this.element.prop('value', formated);
 			}
 		},
-
+		
 		place: function(){
 			var offset = this.component ? this.component.offset() : this.element.offset();
 			this.picker.css({
@@ -105,7 +105,7 @@
 				left: offset.left
 			});
 		},
-
+		
 		update: function(){
 		  var date = this.element.val();
 			this.date = DPGlobal.parseDate(
@@ -115,7 +115,7 @@
 			this.viewDate = new Date(this.date);
 			this.fill();
 		},
-
+		
 		fillDow: function(){
 			var dowCnt = this.weekStart;
 			var html = '<tr>';
@@ -125,7 +125,7 @@
 			html += '</tr>';
 			this.picker.find('.datepicker-days thead').append(html);
 		},
-
+		
 		fillMonths: function(){
 			var html = '';
 			var i = 0
@@ -134,7 +134,7 @@
 			}
 			this.picker.find('.datepicker-months td').append(html);
 		},
-
+		
 		fill: function() {
 			var d = new Date(this.viewDate),
 				year = d.getFullYear(),
@@ -172,7 +172,7 @@
 			}
 			this.picker.find('.datepicker-days tbody').empty().append(html.join(''));
 			var currentYear = this.date.getFullYear();
-
+			
 			var months = this.picker.find('.datepicker-months')
 						.find('th:eq(1)')
 							.text(year)
@@ -181,7 +181,7 @@
 			if (currentYear == year) {
 				months.eq(this.date.getMonth()).addClass('active');
 			}
-
+			
 			html = '';
 			year = parseInt(year/10, 10) * 10;
 			var yearCont = this.picker.find('.datepicker-years')
@@ -196,10 +196,10 @@
 			}
 			yearCont.html(html);
 		},
-
+		
 		blur:function(e) {
   	},
-
+		
 		hide: function(e){
   		this.picker.hide();
 			$(window).off('resize.Datepicker', this.place);
@@ -275,17 +275,17 @@
                   var keyCode = e.keyCode || e.which; 
                   if (keyCode == 9) this.hide(); // when hiting TAB, for accessibility
                 },
-
+	
 		showMode: function(dir) {
 			if (dir) {
 				this.viewMode = Math.max(0, Math.min(2, this.viewMode + dir));
 			}
 			this.picker.find('>div').hide().filter('.datepicker-'+DPGlobal.modes[this.viewMode].clsName).show();
 		},
-
+		
 		destroy: function() { this.element.removeData("datepicker").off(".Datepicker"); this.picker.remove() }
 	};
-
+	
 	$.fn.datepicker = function ( option ) {
 		return this.each(function () {
 			var $this = $(this),
@@ -301,7 +301,7 @@
 	$.fn.datepicker.defaults = {
 	};
 	$.fn.datepicker.Constructor = Datepicker;
-
+	
 	var DPGlobal = {
 		modes: [
 			{

@@ -23,7 +23,7 @@
   <div class="col-md-2 control-label"></div>
 	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.redacteurs }}</div>
 	<div class="col-md-2" style="margin-bottom: 0.5em;text-valign: bottom;">
-		<button class="btn" type='button' onclick='addPersonne();' data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listé ?">+ Personne</button>
+		<button class="btn" type='button' onclick='addPersonne();' data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listée ?">+ Personne</button>
 	</div>
 </div>
 
@@ -36,16 +36,31 @@
 		<table class="table table-striped">
 			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
 			<tbody id="formitemdivrepresentation"></tbody>
-			<tfoot><tr><td>
+			<tfoot><tr><td colspan="2">
 				<button class="btn btn-sm" type="button" onclick="addFormitemrepresentation()">+ Représentation</button>
-				<button class="btn btn-sm" type="button" onclick="addPiece()" data-toggle="tooltip" data-placement="right" title="La pièce que vous rechercher n'est pas listé ?">+ Pièce</button>		
+				<button class="btn btn-sm" type="button" onclick="addPiece()" data-toggle="tooltip" data-placement="right" title="La pièce que vous rechercher n'est pas listée ?">+ Pièce</button>		
 			</td></tr></tfoot>
 		</table>
 		<table class="table table-striped">
 			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
 			<tbody id="formitemdivanimation"></tbody>
-			<tfoot><tr><td>
+			<tfoot><tr><td colspan="2">
 				<button class="btn btn-sm" type="button" onclick="addFormitemanimation()">+ Animation</button>
+			</td></tr></tfoot>
+		</table>
+	</div>
+</div>
+
+<!--Role-->
+<div class="row" style="margin-bottom: 0.5em;text-valign: bottom;">
+	<div class="col-md-2 control-label"><b>Acteurs :</b></div>
+	<div class="col-md-10" style="margin-bottom: 0.5em;text-valign: bottom;">
+		<table class="table table-striped">
+			<thead style="visibility: hidden"><tr><th colspan="2" style="text-align:center;"></th><tr></thead>
+			<tbody id="formitemdivrole"></tbody>
+			<tfoot><tr><td colspan="2">
+				<button class="btn btn-sm" type="button" onclick="addFormitemrole()">+ Acteur</button>
+				<button class="btn btn-sm" type="button" onclick="addPersonne()" data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listée ?">+ Pièce</button>		
 			</td></tr></tfoot>
 		</table>
 	</div>
@@ -136,24 +151,22 @@
 
 $(function(){ 
 
-	$("td").tooltip();
-	$("button").tooltip();
-
 {% for date_picker_id in date_picker_id_list %} 
-	var myDatePicker{{forloop.counter}} = $({{ date_picker_id }}).datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
-		myDatePicker{{forloop.counter}}.hide(); 
-	}).data('datepicker'); 
+	$('#{{ date_picker_id }}').datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
+		this.hide(); 
+	}).data('datepicker');
 {% endfor %}
 
 {% load type_filter %}
 
-/*Set the preivous filled value */
+/*Set the previous filled value */
 {% for formName,values in previous_values.items %} {% if formName == formId %}
 	{% for name,value in values.items %}
 		{% if value|type == 'list' %} {% for selectedField in value %} setValue('{{name}}','{{ selectedField }}'); {% endfor %}
-		{% elif value|type == 'date' %} setValue('{{name}}','{{ value|date:"Y-m-d" }}');		
+		{% elif value|type == 'date' %} setValue('{{name}}','{{ value|date:"Y-m-d" }}'); 
 		{% else %} setValue('{{name}}','{{ value }}');
 		{% endif %}
+		{% if name == 'date' %}$('[name=date]').trigger('keyup');{% endif %}		
 	{% endfor %}
 {% endif %} {% endfor %}
 	  

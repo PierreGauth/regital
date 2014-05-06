@@ -22,6 +22,7 @@
   
   <script src="/static/js/jquery.js"></script>
   <script src="/static/js/bootstrap.js"></script>
+	
 </head>
 
 <body>   
@@ -51,8 +52,6 @@
   </div>    
 </body>
 
-</html>
-
 <script>
 
 $(function () {
@@ -71,7 +70,7 @@ $(function () {
 });
 		
 function setValue(name,value) {
- 
+
 	//Si c'est un formItem (une element de formulaire que l'ont peux ajouter au dynamiquement)
 	if(/(\w+)(\d+)(\w+)/.test(name)) { 
 		var funcName = "addFormitem"+RegExp.$1;
@@ -81,11 +80,17 @@ function setValue(name,value) {
 	}
 	
 	elements = document.getElementsByName(name); 
-	if(elements[0] != undefined) {		 	 
+	if(elements[0] != undefined) {
 		if( elements[0].nodeName == 'SELECT' ) {
 			for ( var i = 0; i < elements[0].options.length; i++ ) {				
 				if(elements[0].options[i].value == value) {  
 					elements[0].options[i].selected = true; }
+			}
+		}
+		else if( elements.length > 1 ) {
+			for ( var i = 0; i < elements.length; i++ ) {				
+				if(elements[i].value == value) {  
+					elements[i].checked = true; }
 			}
 		} 
 		else { elements[0].value = value; }
@@ -111,3 +116,5 @@ function updateMulipleSelectTooltip(el) {
 }
 
 </script>
+
+</html>
