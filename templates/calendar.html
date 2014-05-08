@@ -74,19 +74,21 @@ var width = 960,
     height = 136,
     cellSize = 17;
 
-	var day = d3.time.format("%w"),
-    week = d3.time.format("%U"),
-		year = d3.time.format("%Y"),
-    percent = d3.format(".1%"),
-    format = d3.time.format("%Y-%m-%d");
+var day = d3.time.format("%w"),
+  week = d3.time.format("%U"),
+	year = d3.time.format("%Y"),
+  percent = d3.format(".1%"),
+  format = d3.time.format("%Y-%m-%d");
 
-	var color = d3.scale.quantize()
+	/*var color = d3.scale.quantize()
     .domain([-1, 1])
-    .range(d3.range(6).map(function(d) { 
-				if (d==0) return ".calendar_rect_filled"; 
-				else if (d==1) return ".calendar_rect_filled";
-				else return "calendar_rect_filled";
-			}));
+    .range(d3.range(3).map(function(d) {
+				//alert(d); 
+				if (d==1) return "svg-primary"; 
+				else return "svg-muted";
+			}));*/
+			
+var color = {"undefined":"","filled":"svg-primary","empty":"svg-success"}
 
 function createCalendar(from, to, balise)
 {
@@ -95,7 +97,7 @@ function createCalendar(from, to, balise)
   .enter().append("svg")
     .attr("width", width)
     .attr("height", height)
-    .attr("class", "RdYlGn")
+    .attr("class", "svg")
   .append("g")
     .attr("transform", "translate(" + ((width - cellSize * 53) / 2) + "," + (height - cellSize * 7 - 1) + ")");
 
@@ -130,10 +132,7 @@ function createCalendar(from, to, balise)
     .rollup(function(d) { return d[0].Exist; })
     .map({{list_soirees|safe}});
 
-  rect//.filter(function(d) { return d in data; })
-      .attr("class", function(d) { return "day " + color(data[d]); })
-    	.select("title")
-      .text(function(d) { return d + ": " + percent(data[d]); });
+  rect.attr("class", function(d) { return "day " + color[data[d]]; });
 }
 
 function monthPath(t0) {

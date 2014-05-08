@@ -131,9 +131,9 @@ def listSoirees(request,date='1700-01-01'):
 	soiree_date = []
 
 	for soiree in soirees:
-		soiree_date.append({'Date' : str(soiree.date), 'Exist' : '1'})
+		soiree_date.append({'Date' : str(soiree.date), 'Exist' : 'filled'})
 	for soireeVide in soireesVide:
-		soiree_date.append({'Date' : str(soireeVide.date), 'Exist' : '-1'})
+		soiree_date.append({'Date' : str(soireeVide.date), 'Exist' : 'empty'})
 	
 	return render_to_response('list_soiree.html',
 	{'title':'Soirees', 'active':'soirees', 'list_soirees':soiree_date, 'date':date, 'link':'/soirees/'},

@@ -14,8 +14,14 @@
 .svg-info {fill: #5bc0de;}
 .svg-info:hover {fill: #39b3d7;}
 
-.calendar_rect_empty {fill: #999999;}
-.calendar_rect_filled {fill: #428bca;}
-.calendar_rect_filled:hover {fill: #3071a9;}
-.calendar_rect_other {fill: #5bc0de;}
-.calendar_rect_other:hover {fill: #39b3d7;}
+.svg .svg-muted {fill: #999999;}
+.svg .svg-primary {fill: #428bca;}
+.svg .svg-primary:hover {fill: #3071a9;}
+.svg .svg-warning {fill: #f0ad4e;}
+.svg .svg-warning:hover {fill: #ed9c28;}
+.svg .svg-danger {fill: #d9534f;}
+.svg .svg-danger:hover {fill: #d2322d;}
+.svg .svg-success {fill: #5cb85c;}
+.svg .svg-success:hover {fill: #47a447;}
+.svg .svg-info {fill: #5bc0de;}
+.svg .svg-info:hover {fill: #39b3d7;}
