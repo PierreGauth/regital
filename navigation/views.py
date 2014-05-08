@@ -12,6 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.forms.models import model_to_dict
 from django.db.models import Q
 from navigation.models import *
+from navigation.currency import *
 
 def index(request):
 	return render_to_response('accueil.html', {"title":"Accueil", "active":"accueil"}, context_instance=RequestContext(request))
@@ -21,6 +22,18 @@ def index(request):
 def test_chart(request):
 
 	data = [
+	{'rep' : 'date', 'color' : 'langue', 'opt' : ['langue', 'partie']},
+	{'date': '1702-02-05', 'nbSpectateur' : 1234, 'langue' : 'f', 'partie' : '1'},
+	{'date': '1702-02-09', 'nbSpectateur' : 3234, 'langue' : 'f', 'partie' : '0'},
+	{'date': '1702-02-22', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '4'},
+	{'date': '1702-03-05', 'nbSpectateur' : 1294, 'langue' : 'i', 'partie' : '6'},
+	{'date': '1703-03-05', 'nbSpectateur' : 1236, 'langue' : 'f', 'partie' : '2'},
+	{'date': '1703-07-05', 'nbSpectateur' : 1534, 'langue' : 'f', 'partie' : '8'},
+	{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'i', 'partie' : '7'},
+	{'date': '1703-09-05', 'nbSpectateur' : 2234, 'langue' : 'f', 'partie' : '3'}
+	]
+	
+	data2 = [
 	{'x' : 'date', 'y' : 'nbSpectateur', 'opt' : ['langue', 'partie']},
 	{'date': '1702-02-05', 'nbSpectateur' : 1234, 'langue' : 'f', 'partie' : '1'},
 	{'date': '1702-02-09', 'nbSpectateur' : 3234, 'langue' : 'f', 'partie' : '1'},
@@ -48,7 +61,7 @@ def test_chart(request):
 	{'date': '1786-02-05', 'nbSpectateur' : 2274, 'langue' : 'i', 'partie' : '2'}
 	]
 
-	return render_to_response('chart/test_chart.html', {'data1':data},	context_instance=RequestContext(request))	
+	return render_to_response('chart/test_chart.html', {'data1':data, 'data2':data2, 'cid1':'cid1', 'cid2':'cid2'}, context_instance=RequestContext(request))	
 	
 	
 
@@ -152,7 +165,7 @@ def detailsSoiree(request,date):
 	try :
 		soiree = Soiree.objects.get(date = date)
 		billetteries = Billetterie.objects.all().filter(budget = soiree.budget)
-		debits = Debit.objects.all().filter(budget = soiree.budget)
+		debits = Debit.objects.all().filter(budget = soiree.budget)			
 		credits = Credit.objects.all().filter(budget = soiree.budget).exclude(id__in=billetteries)
 		liste_representations = []
 		representations = Representation.objects.all().filter(Soiree = soiree)
@@ -162,7 +175,15 @@ def detailsSoiree(request,date):
 		for rep in animations : 
 			liste_representations.append(rep)
 	except ObjectDoesNotExist as e:
-		return listSoirees(request,date)
+		try :
+			soiree = SoireeVide.objects.get(date = date)
+		except ObjectDoesNotExist as e:
+			return listSoirees(request,date)
+		return render_to_response('page_detail_soiree.html',
+	    {'title':str(soiree.date),
+	    'active':'soirees',
+	    'soireeinfos':soiree},
+	    context_instance=RequestContext(request))
 	return render_to_response('page_detail_soiree.html',
     {'title':str(soiree.date),
     'active':'soirees',

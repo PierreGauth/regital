@@ -3,26 +3,30 @@
 <div id="{{alertZoneId}}">
 </div>
 
-<form id='{{formId}}' class="form-horizontal" method="post" action="{{action}}"> {% csrf_token %} 
+<form id='{{formId}}' class="form-horizontal" method="post" action="{{action}}"> {% csrf_token %}
 
 <!--Soiree-->
 <div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
   <div class="col-md-2 control-label"><b>Date :</b></div>
-	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.date }}</div>
-	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.libelle_date_reg }}</div>
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.date }}</div>
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.SoireeForm.libelle_date_reg }}</div>
+	<button class="col-md-2 btn btn-sm" onclick="javascript:newSoireeVide()" style="float:right" type='button' data-toggle="tooltip" data-placement="auto" 
+		title="Pas d'information disponible pour cette soirée. L'enregistrer comme étant vide ? (Vous perdrez les champs remplis) ">
+		<a>Pas d'information <span class="glyphicon glyphicon-exclamation-sign"></span></a>
+	</button>
 	<input type="hidden" name="{{formId}}_id" value=""/>
 </div>
 
 <!--Page Registre-->
 <div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
   <div class="col-md-2 control-label"><b>Page Registre :</b></div>
-	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.ref_registre }}</div>
-	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.num_page_pdf }}</div>
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.ref_registre }}</div>
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.num_page_pdf }}</div>
 </div>
 <div class="form-inline row" style="margin-bottom: 0.5em;text-valign: bottom;"> 
   <div class="col-md-2 control-label"></div>
-	<div class="col-md-4" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.redacteurs }}</div>
-	<div class="col-md-2" style="margin-bottom: 0.5em;text-valign: bottom;">
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">{{ formset_list.PageRegistreForm.redacteurs }}</div>
+	<div class="col-md-3" style="margin-bottom: 0.5em;text-valign: bottom;">
 		<button class="btn" type='button' onclick='addPersonne();' data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listée ?">+ Personne</button>
 	</div>
 </div>
@@ -60,7 +64,8 @@
 			<tbody id="formitemdivrole"></tbody>
 			<tfoot><tr><td colspan="2">
 				<button class="btn btn-sm" type="button" onclick="addFormitemrole()">+ Acteur</button>
-				<button class="btn btn-sm" type="button" onclick="addPersonne()" data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listée ?">+ Pièce</button>		
+				<button class="btn btn-sm" type="button" onclick="addPersonne()" data-toggle="tooltip" data-placement="right" title="La personne que vous rechercher n'est pas listée ?">+ Personne</button>		
+				<button class="btn btn-sm" type="button" onclick="addPiece()" data-toggle="tooltip" data-placement="right" title="La piece que vous rechercher n'est pas listée ?">+ Pièce</button>		
 			</td></tr></tfoot>
 		</table>
 	</div>
@@ -97,10 +102,10 @@
 					<td colspan="2" data-toggle="tooltip" data-placement="right" title="quart du pauvre + total dépenses corrigées">
 						{{ formset_list.BudgetSoireeForm.debit_initial_reg }}</td>
 				</tr>	
-				<tr>
-					<td>{{ formset_list.BudgetSoireeForm.nombre_cachets }}</td>
-					<td>{{ formset_list.BudgetSoireeForm.montant_cachet }}</td>
-				</tr>
+				<tr><td>
+					<span class="col-md-6" style="margin:0; padding:0">{{ formset_list.BudgetSoireeForm.nombre_cachets }}</span>
+					<span class="col-md-6">{{ formset_list.BudgetSoireeForm.montant_cachet }}</span>			
+				</td></tr>
 				<tr>
 					<td colspan="2">{{ formset_list.BudgetSoireeForm.montant_cachet_auteur }}</td>
 				</tr>
@@ -183,7 +188,7 @@ $(function(){
 		
 	  {% for form in formitem %}	
 			newDiv = document.createElement('div');
-			newDiv.setAttribute("class","col-md-4");
+			newDiv.setAttribute("class","col-md-6");
 			{% for field in form %}
 				newDiv.innerHTML += '{{ field|escapejs }}'.replace(/name=\"/g,"name=\"{{nom}}"+nbFormItem{{nom}});
 			{% endfor %}

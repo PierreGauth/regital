@@ -55,6 +55,8 @@
 <script>
 
 	var {{chartId}}data = {{data|safe}};
+	var {{chartId}}info = {{chartId}}data[0];
+	{{chartId}}data.splice(0,1);
 
 	var {{chartId}}margin = {top: 40, right: 20, bottom: 30, left: 40},
 	    {{chartId}}width = 960 - {{chartId}}margin.left - {{chartId}}margin.right,
@@ -87,11 +89,7 @@
 	    .attr("width", {{chartId}}width + {{chartId}}margin.left + {{chartId}}margin.right)
 	    .attr("height", {{chartId}}height + {{chartId}}margin.top + {{chartId}}margin.bottom)
 	  .append("g")
-	    .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");
-	
-	var {{chartId}}data = {{data|safe}};
-	var {{chartId}}info = {{chartId}}data[0];
-	{{chartId}}data.splice(0,1);
+	    .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");	
 	
   {{chartId}}x.domain({{chartId}}data.map(function(d) { return d[{{chartId}}info.x]; }));
   {{chartId}}y.domain([0, d3.max({{chartId}}data, function(d) { return d[{{chartId}}info.y]; })]);

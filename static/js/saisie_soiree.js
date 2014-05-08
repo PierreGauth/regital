@@ -32,3 +32,7 @@ function updateRepresentationSelect(e) {
 	});
 	$select.selectmenu("refresh", true);
 }
+
+function newSoireeVide() {
+	document.location.href="/saisie/new/soireeVide/" + $("[name=date]").val();
+}

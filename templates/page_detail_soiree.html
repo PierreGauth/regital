@@ -3,6 +3,9 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block content %}
+
+{% load currency_filter %}
+
 <div class="row" style="margin-left:1%;">
 	<div class="col-md-12"  style="text-align:center">
 		<h2><b>{{soireeinfos}}</b>
@@ -73,19 +76,19 @@
 		<table class="table table-striped">
 			<tr>
 				<th >Débit Initial :</th>
-				<td >{{soireeinfos.budget.debit_initial_reg}}</td>
+				<td >{{soireeinfos.budget.debit_initial_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Crédit Final :</th>
-				<td >{{soireeinfos.budget.credit_final_reg}}</td>
+				<td >{{soireeinfos.budget.credit_final_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Cachet :</th>
-				<td >{{soireeinfos.budget.get_montant_cachet_display }}</td>
+				<td >{{soireeinfos.budget.get_montant_cachet_display|currency }}</td>
 			</tr>
 			<tr>
 				<th >Cachet Auteur :</th>
-				<td >{{soireeinfos.budget.montant_cachet_auteur}}</td>
+				<td >{{soireeinfos.budget.montant_cachet_auteur|currency}}</td>
 			</tr>
 			<tr>
 				<th >Total Billets Vendus :</th>
@@ -97,35 +100,35 @@
 			</tr>
 			<tr>
 				<th >Quart Pauvre :</th>
-				<td >{{soireeinfos.budget.quart_pauvre_reg}}</td>
+				<td >{{soireeinfos.budget.quart_pauvre_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Credit Total :</th>
-				<td >{{soireeinfos.budget.credit_total_reg}}</td>
+				<td >{{soireeinfos.budget.credit_total_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Debit Total :</th>
-				<td >{{soireeinfos.budget.debit_total_reg}}</td>
+				<td >{{soireeinfos.budget.debit_total_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Reste :</th>
-				<td >{{soireeinfos.budget.reste_reg}}</td>
+				<td >{{soireeinfos.budget.reste_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Total Dépenses :</th>
-				<td >{{soireeinfos.budget.total_depenses_reg}}</td>
+				<td >{{soireeinfos.budget.total_depenses_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Total Recettes :</th>
-				<td >{{soireeinfos.budget.total_recettes_reg}}</td>
+				<td >{{soireeinfos.budget.total_recettes_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Débit dernière soirée :</th>
-				<td >{{soireeinfos.budget.debit_derniere_soiree_reg}}</td>
+				<td >{{soireeinfos.budget.debit_derniere_soiree_reg|currency}}</td>
 			</tr>
 			<tr>
 				<th >Dépenses corrigées :</th>
-				<td >{{soireeinfos.budget.total_depenses_corrige_reg}}</td>
+				<td >{{soireeinfos.budget.total_depenses_corrige_reg|currency}}</td>
 			</tr>
 		</table>
 	</div>
@@ -146,7 +149,7 @@
 				{% for billetterie in billetterieinfos.all %}
 				<tr>				
 					<td>{{billetterie.get_type_billet_display}}</td>
-					<td>{{billetterie.montant}}</td>
+					<td>{{billetterie.montant|currency}}</td>
 					<td>{{billetterie.nombre_billets_vendus}}</td>
 					<td>{{billetterie.commentaire}}</td>
 				</tr>
@@ -170,7 +173,7 @@
 				{% for debit in debitsinfos.all %}
 				<tr>				
 					<td>{{debit.libelle}}</td>
-					<td>{{debit.montant}}</td>
+					<td>{{debit.montant|currency}}</td>
 					<td>{{debit.get_type_depense_display}}</td>
 					<td>{{debit.traduction}}</td>
 					<td>{{debit.mots_clefs}}</td>
@@ -192,7 +195,7 @@
 				{% for credit in creditsinfos.all %}
 				<tr>				
 					<td>{{credit.libelle}}</td>
-					<td>{{credit.montant}}</td>
+					<td>{{credit.montant|currency}}</td>
 				</tr>
 				{% endfor %}
 			</tbody>

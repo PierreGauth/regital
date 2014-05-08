@@ -4,7 +4,9 @@
 {% block title %}{{title}}{% endblock %}
 
 {% block content %}
- 
- {% include "chart/barchart.html" with data=data1 %}
+
+  {% include "chart/piechart.html" with data=data1 chartId='cid0' %} 
+ {% include "chart/barchart.html" with data=data2 chartId='cid1' %}
+ {% include "chart/linechart.html" with data=data2 chartId='cid2' %}
  
 {% endblock %}
