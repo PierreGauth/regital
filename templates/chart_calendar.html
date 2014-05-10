@@ -1,3 +1,20 @@
+
+{% comment %}
+
+	Calendar chart de D3js
+	
+	Permet la visualisation sur un calendrier de donnée contenu dans la variable:
+		* data  =  une liste de dictionnaire du type { 'date' : '1700-01-01, 'value' : 'filled' }
+		
+	Exemple : data = [
+		{ 'date' : '1700-01-01, 'value' : 'filled' },
+		{ 'date' : '1700-02-04, 'value' : 'empty' },
+		{ 'date' : '1700-06-22, 'value' : 'filled' },
+		{ 'date' : '1710-03-01, 'value' : 'filled' }
+	]
+
+{% endcomment %}
+
 <link href="/static/css/calendar.css" rel="stylesheet">
 {% if user.is_authenticated %}
 	<style>
@@ -120,9 +137,9 @@ function createCalendar(from, to, balise)
     .attr("d", monthPath);
 		
 	var data = d3.nest()
-    .key(function(d) { return d.Date; })
-    .rollup(function(d) { return d[0].Exist; })
-    .map({{list_soirees|safe}});
+    .key(function(d) { return d.date; })
+    .rollup(function(d) { return d[0].value; })
+    .map({{data|safe}});
 
   rect.attr("class", function(d) { return "day " + color[data[d]]; });
 }

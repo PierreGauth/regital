@@ -1,7 +1,19 @@
-<link href="/static/css/datepicker.css" rel="stylesheet"> 
 
-<div id="{{alertZoneId}}">
-</div>
+{% comment %}
+
+	Ce template gère les formulaires issus d'un model_form_factory
+	
+	les variable utilisées sont :
+		* formset_list : une liste de formulaires issus de model_from_factory
+		* formId : identifiant du formulaire (pour eviter des soucis lorque que 
+								plusieurs formulaires sont utilisés sur la même page)
+		* previous_values : est optionel, il peut contenir un dictionnaire nom: valeur
+												qui permet de preremplir le formulaire (pour ne pas perdre les
+												valeur en cas d'erreur à la validation par exemple)		
+
+{% endcomment %}
+
+<link href="/static/css/datepicker.css" rel="stylesheet"> 
 
 <form id='{{formId}}' class="form-horizontal" method="post" action="{{action}}"> {% csrf_token %} 
 {% block form %}

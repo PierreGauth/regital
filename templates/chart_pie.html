@@ -3,36 +3,37 @@
 
 			Template pour les pie chart
 			
-			Utilisation :
-				Il suffit de passer une variable data contenant une liste de dict champs : valeurs
-				Le premier éléments de cette liste est un élément particulier qui permet de savoir quel
+			Utilisation :				
+				Lui donner identtifiant unique dans chartId 
+				Il suffit de passer une variable 
+					* data contenant un dictionnaire nom : liste
+					  la liste contient des dictionnaire champs : valeurs
+					
+				Le premier éléments de ces listes est un élément particulier qui permet de savoir quel
 				champs sert a la repartition, et quels champs servent à la coloration
 				Ce premier élément est un dictionnaire qui doit contenir la clef rep, la clef color
 			
 			Exemple :
 				{
-					'Avec' : [
-						{'rep' : 'nbJoueAvec', 'color' : 'nomPiece'},
-						{'nbJoueAvec': 7, 'nomPiece' : 'Alceste'},
-						{'nbJoueAvec': 2, 'nomPiece' : 'truc'},
-						{'nbJoueAvec': 1, 'nomPiece' : 'test'},
-						{'nbJoueAvec': 3, 'nomPiece' : 'blabla'},
-						{'nbJoueAvec': 2, 'nomPiece' : 'machin'},
-						{'nbJoueAvec': 7, 'nomPiece' : 'Alceste2'},
-						{'nbJoueAvec': 2, 'nomPiece' : 'truc2'},
-						{'nbJoueAvec': 1, 'nomPiece' : 'test2'},
-						{'nbJoueAvec': 3, 'nomPiece' : 'blabla2'}
+					'Depense' : [
+						{'rep' : 'val', 'color' : 'depense'},
+						{'val': 7, 'depense' : 'bougie'},
+						{'val': 2, 'depense' : 'musique'},
+						{'val': 1, 'depense' : 'acteurs'},
+						{'val's: 3, 'depense' : 'danseur'},
+						{'val': 2, 'depense' : 'ordinnaire'}
 					],
-					'Musicien' : [
-						{'rep' : 'nbJoue', 'color' : 'avecsans'},
-						{'nbJoue': 10, 'avecsans' : 'Avec'},
-						{'nbJoue': 5, 'avecsans' : 'Sans'},
+					'Langue' : [
+						{'rep' : 'nbJoue', 'color' : 'langue'},
+						{'nbJoue': 10, 'langue' : 'It'},
+						{'nbJoue': 5, 'langue' : 'Fr'},
 					]
 				}
-				Ces donnée permetterons d'afficher un bar chart de la population selon le temps avec la possibilité de 
-				colorer les barres selon la nationalité ou l'age
+			Cet exemple creer un diagramme de repartition avec deux boutton radio qui permette
+			d'afficher la repartition des dépense en fonction de leur valeur ou de la langue en 
+			fonction du nombre de fois joué
 				
-				/!\ le champ y doit être des valeurs numérique
+				/!\ le champ rep doit être des valeurs numérique
 {% endcomment %}
 
 {% load math_filter %}

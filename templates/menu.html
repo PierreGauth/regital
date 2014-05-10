@@ -1,9 +1,12 @@
 
-<!--
+{% comment %}
 	
 	Menu
+	
+	utilise une seule variable:
+		*active pour savoir quel element du menu est actuelement ouvert
 
--->
+{% endcomment %}
 
 
 <ul class="nav nav-pills nav-stacked">
@@ -21,11 +24,3 @@
 		Saisie<span style="float:right;" class="glyphicon glyphicon-pencil"/></a></li>	
 	{% endif %}
 </ul>
-
-{% if active == 'statistiques' %}
-<script>
-	$(function () {
-		$('#collapseCriteria').collapse();
-	});
-</script>
-{% endif %}

@@ -53,7 +53,7 @@ def saisie(request, active_tab='Soiree', alert='off', alert_type='success', aler
 		'previous_values' : previous_values, 'specific_function' : 'saisie_soiree.js', 'date_picker_id_list' : ['dsoiree1']},
 		context_instance=RequestContext(request))
 
-	return render_to_response('tab_page.html', 
+	return render_to_response('page_tab.html', 
 		{"title":"Saisie", "active":"saisie", "tab_list" : 
 		{"Personne" : personneForm, "Soiree":soireeForm, "Piece":pieceForm}, "active_tab":active_tab, 
 		'alert' : alert, 'alert_type' : alert_type, 'alert_message' : alert_message}, 

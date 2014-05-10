@@ -242,7 +242,7 @@ class Debit(models.Model):
 		(5, 'indéterminé')
 	)
 	montant = models.IntegerField(null=False)
-	libelle = models.CharField(max_length=64, blank=True)
+	libelle = models.CharField(max_length=256, blank=True)
 	type_depense = models.IntegerField(choices=T_DEPENSE, default=5, blank=True)
 	budget = models.ForeignKey(BudgetSoiree)
 	traduction = models.CharField(max_length=64, null=True, blank=True)
@@ -262,7 +262,7 @@ class Soiree(models.Model):
 	libelle_date_reg = models.CharField(max_length=64)
 	budget = models.OneToOneField(BudgetSoiree, null=True, blank=True)
 	ligne_src = models.IntegerField(null=False)
-	page_registre = models.OneToOneField(PageRegistre)
+	page_registre = models.ForeignKey(PageRegistre)
 
 	def __unicode__(self):
 		return u'Soiree du {0.date} '.format(self)

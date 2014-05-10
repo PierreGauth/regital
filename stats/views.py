@@ -63,7 +63,7 @@ def statsForm(request):
 		{'data':statsPiece(8),"list": list, },
 		context_instance=RequestContext(request))
 		
-	return render_to_response('stats.html', {
+	return render_to_response('page_stats.html', {
 		"title":"Rechercher", "active":"rechercher", 
 		"all_personnes":[ (x.id,x.nom + ' ' + x.prenom) for x in Personne.objects.all().order_by('nom') ],
 		"all_pieces":[ (x.id,x.titre) for x in Piece.objects.all().order_by('titre') ], 

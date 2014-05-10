@@ -1,4 +1,20 @@
-{% extends "base.html" %}
+{% extends "page_base.html" %}
+
+{% comment %}
+
+	Page chargée de listé des éléments en fournissant un système de pagination 
+	et de recherche par première lettre
+	
+	Les différentes varaibles qu'elle utilise sont:
+		* link : le lien vers le détail des éléments listé
+		* list : un dictionnaire id -> element
+							élement étant ce qui sera afficher dans la liste
+							et id est ce qui sera concaté a like pour créer le lien
+							vers le détail de l'élément
+		
+	Les pages de détails doivent étre située à {{link}}{{id}}
+
+{% endcomment %}
 
 {% block title %}{{title}}{% endblock %}
 

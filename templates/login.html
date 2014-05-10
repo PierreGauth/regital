@@ -1,10 +1,13 @@
 
-
-<!--
+{% comment %}
 
 	Page de login
 
--->
+	Ce template gère les inputs d'identifiant et de mot de passe pour la connexion
+	ainsi que le bouton connexion/deconnexion
+
+{% endcomment %}
+
 
 {% if user.is_authenticated %}
 
@@ -15,10 +18,8 @@
 	</a>
 	
 {% else %}
-
-
 	
-	<div id="modalContent" visibility="none">
+	<div>
 		<form class="form-signin" action="/login/" method="post"> {% csrf_token %}
 			<h5 class="form-signin-heading"> - Connexion - </h5>
 			<input type="text" class="form-control" placeholder="Identifiant" id="username" name="username">
@@ -33,29 +34,5 @@
 			</button>
 		</form>
 	</div>
-	
-	<!-- Modal -->
-	<!--<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog"><div class="modal-content">
-	  <div class="modal-header">
-		<h3 id="myModalLabel">Connexion</h3>
-	  </div>
-	  <div class="modal-body">
-		<form class="form-signin" action="/login/" method="post">
-		  {% csrf_token %}
-			<h2 class="form-signin-heading"></h2>
-			<input type="text" class="form-control" placeholder="Identifiant" id="username" name="username"><br/>
-			<input type="password" class="form-control" placeholder="Mot de passe" name="password" id="password">
-			<label class="checkbox"><input type="checkbox" value="remember-me"> Se souvenir de moi</label>
-			<button class="btn btn-primary" type="submit">Se Connecter</button>
-			<script type="text/javascript">
-				document.write("<input type=\"hidden\" name=\"next\" value=\"");
-				document.write(location.href);
-				document.write("\" />");
-			</script>
-			<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#myModal">Annuler</button>
-		</form>
-	  </div></div></div>  
-	</div>-->
 	
 {% endif %}

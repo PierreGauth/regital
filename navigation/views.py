@@ -49,7 +49,7 @@ def listPersonnes(request):
   
 	personnes_nom = [(personne.id, personne.titre_personne+" "+personne.nom+" "+personne.prenom) for personne in personnes]
 					    
-	return render_to_response('list_page.html',
+	return render_to_response('page_list.html',
 		{'title':'Personnes', 'active':'personnes', 'list':personnes_nom, 'link':'/personnes/', 
 		'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
 		context_instance=RequestContext(request))
@@ -69,7 +69,7 @@ def listPieces(request):
 
 	piece_titre = [(piece.id, piece.titre) for piece in pieces]
 
-	return render_to_response('list_page.html',
+	return render_to_response('page_list.html',
 	{'title':'Pieces', 'active':'pieces', 'list':piece_titre, 'link':'/pieces/', 
 	'page_nb': page_nb, 'start_with': startwith, 'page_num': page },
 	context_instance=RequestContext(request))
@@ -81,12 +81,12 @@ def listSoirees(request,date='1700-01-01'):
 	soiree_date = []
 
 	for soiree in soirees:
-		soiree_date.append({'Date' : str(soiree.date), 'Exist' : 'filled'})
+		soiree_date.append({'date' : str(soiree.date), 'value' : 'filled'})
 	for soireeVide in soireesVide:
-		soiree_date.append({'Date' : str(soireeVide.date), 'Exist' : 'empty'})
+		soiree_date.append({'date' : str(soireeVide.date), 'value' : 'empty'})
 	
-	return render_to_response('list_soiree.html',
-	{'title':'Accueil', 'active':'accueil', 'list_soirees':soiree_date, 'date':date, 'link':'/soirees/'},
+	return render_to_response('page_list_soiree.html',
+	{'title':'Accueil', 'active':'accueil', 'data':soiree_date, 'date':date, 'link':'/soirees/'},
 	context_instance=RequestContext(request))
 	
 def detailsPersonne(request,id):
