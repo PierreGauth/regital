@@ -14,9 +14,7 @@ from django.db.models import Q
 from navigation.models import *
 from navigation.currency import *
 
-def index(request):
-	return render_to_response('accueil.html', {"title":"Accueil", "active":"accueil"}, context_instance=RequestContext(request))
-	
+		
 def log_in(request, next='/'):
 	logout(request)
 	username = password = ''
@@ -88,7 +86,7 @@ def listSoirees(request,date='1700-01-01'):
 		soiree_date.append({'Date' : str(soireeVide.date), 'Exist' : 'empty'})
 	
 	return render_to_response('list_soiree.html',
-	{'title':'Soirees', 'active':'soirees', 'list_soirees':soiree_date, 'date':date, 'link':'/soirees/'},
+	{'title':'Accueil', 'active':'accueil', 'list_soirees':soiree_date, 'date':date, 'link':'/soirees/'},
 	context_instance=RequestContext(request))
 	
 def detailsPersonne(request,id):
