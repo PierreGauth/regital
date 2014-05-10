@@ -7,25 +7,21 @@
 				Il suffit de passer une variable data contenant une liste de dict champs : valeurs
 				Le premier éléments de cette liste est un élément particulier qui permet de savoir quel
 				champs est a afficher en abscisse, en ordonnée ou en option (représenté par la couleur des barres)
-				Ce premier élément est un dictionnaire qui doit contenir la clef x, la clef y et la clef opt 
+				Ce premier élément est un dictionnaire qui doit contenir la clef x, la clef y et la clef opt (avec les valeur 
+				possible de ce champs) 
 			
 			Exemple :
 				[
-					{'x' : 'temps', 'y' : 'population', 'opt' : ['nationalité', 'age']},
-					{'temps' : '1', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '2', 'population : '153', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '3', 'population : '453', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '4', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '5', 'population : '163', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '6', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '7', 'population : '83',  'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '8', 'population : '3',   'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '9', 'population : '13',  'nationalité' : 'test', 'age' : 'truc' }
+					{'x' : 'date', 'y' : 'nbSpectateur', 'opt' : {'langue': ['f','i'], 'partie' : ['1','2']}},
+					{'date': '1700-01-05', 'nbSpectateur' : 124, 'langue' : 'f', 'partie' : '1'},
+					{'date': '1700-02-09', 'nbSpectateur' : 334, 'langue' : 'f', 'partie' : '1'},
+					{'date': '1700-03-05', 'nbSpectateur' : 129, 'langue' : 'i', 'partie' : '1'},
+					{'date': '1700-03-12', 'nbSpectateur' : 126, 'langue' : 'f', 'partie' : '2'},
 				]
 				Ces donnée permetterons d'afficher un bar chart de la population selon le temps avec la possibilité de 
 				colorer les barres selon la nationalité ou l'age
 				
-				/!\ le champ y doit être des valeurs numérique
+				/!\ le champ x doit être des dates, le champ y doit être des valeurs numérique
 {% endcomment %}
 
 <style>
@@ -45,30 +41,50 @@
 }
 </style>
 
-<div id="barChartRadioArea{{chartId}}">
-	<input type="radio" name="barChartOpt{{chartId}}" onClick="updateBarChartColor{{chartId}}()" value="---" checked="checked">Rien</input></br>
+<div class="row">
+	<div class="barChartArea{{chartId}} col-md-10"></div>
+	<div id="barChartRadioArea{{chartId}}" class="col-md-2">
+		<input type="radio" name="barChartOpt{{chartId}}" onClick="updateBarChartColor{{chartId}}()" checked="checked"><b> Rien</b></input></br>
+	</div>
 </div>
-<div class="barChartArea{{chartId}}"></div>
-
-<script src="/static/js/d3.min.js"></script>
 
 <script>
 
 	var {{chartId}}data = {{data|safe}};
-	var {{chartId}}info = {{chartId}}data[0];
-	{{chartId}}data.splice(0,1);
+	var {{chartId}}info = {{metadata|safe}};
+	
+	var {{chartId}}color = ["primary", "danger", "warning","success", "info", "default"];
+	
+	var {{chartId}}infoColor = {};
+	$.each({{chartId}}info.opt, function(name, values) {
+		i = 0;
+		{{chartId}}infoColor[name] = {};
+		radioText = " <b>" + name + "</b> ( ";
+		$.each(values, function(index, value) {
+			{{chartId}}infoColor[name][value] = {{chartId}}color[i];
+			radioText += "<span class=\"bg-"+{{chartId}}color[i]+"\"> "+value+" </span> ";
+			i++;
+		});
+		radioText += ")";
+		var {{chartId}}radioBtn = $('<input type="radio" name="barChartOpt{{chartId}}" onClick="updateBarChartColor{{chartId}}(\''+name+'\')" value="'+name+'">'+radioText+'</input></br>');
+		$('#barChartRadioArea{{chartId}}').append({{chartId}}radioBtn);
+	});
 
-	var {{chartId}}margin = {top: 40, right: 20, bottom: 30, left: 40},
-	    {{chartId}}width = 960 - {{chartId}}margin.left - {{chartId}}margin.right,
-	    {{chartId}}height = 300 - {{chartId}}margin.top - {{chartId}}margin.bottom;
+	var {{chartId}}margin = {top: 40, right: 0, bottom: 30, left: 40},
+	    {{chartId}}width = {{width}} - {{chartId}}margin.left - {{chartId}}margin.right,
+	    {{chartId}}height = {{height}} - {{chartId}}margin.top - {{chartId}}margin.bottom;
 
-	var {{chartId}}x = d3.scale.ordinal()
-			//.domain([0, d3.max(data)])			
-      .domain(d3.time.days(new Date(1700, 0, 1), new Date(1720, 3, 1)))
-	    .rangeRoundBands([0, {{chartId}}width], .1);
+	var {{chartId}}parseDate = d3.time.format("%Y-%m-%d").parse;
+	for (i = 0; i < {{chartId}}data.length; ++i) {
+	    {{chartId}}data[i]['date'] = {{chartId}}parseDate({{chartId}}data[i]['date']);
+	}
+	
+	var {{chartId}}barWidth = {{width}}/{{chartId}}data.length;	
+	
+	var {{chartId}}x = d3.time.scale()
+			.range([0, {{chartId}}width-{{chartId}}barWidth]);
 
 	var {{chartId}}y = d3.scale.linear()
-			//.domain([0, 5000])
 	    .range([{{chartId}}height, 0]);
 
 	var {{chartId}}xAxis = d3.svg.axis()
@@ -77,22 +93,17 @@
 
 	var {{chartId}}yAxis = d3.svg.axis()
 	    .scale({{chartId}}y)
-	    .orient("left");	
-			
-	var {{chartId}}zoom = d3.behavior.zoom()
-	    //.x(x)
-	    //.y(y)
-	    //.scaleExtent([1, 10])
-	    .on("zoom", zoomBarChart{{chartId}}	);
+    .orient("left");	
 
 	var {{chartId}}barchart = d3.select(".barChartArea{{chartId}}").append("svg")
 	    .attr("width", {{chartId}}width + {{chartId}}margin.left + {{chartId}}margin.right)
 	    .attr("height", {{chartId}}height + {{chartId}}margin.top + {{chartId}}margin.bottom)
 	  .append("g")
-	    .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");	
-	
-  {{chartId}}x.domain({{chartId}}data.map(function(d) { return d[{{chartId}}info.x]; }));
-  {{chartId}}y.domain([0, d3.max({{chartId}}data, function(d) { return d[{{chartId}}info.y]; })]);
+	    .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");
+
+  {{chartId}}x.domain([d3.min({{chartId}}data, function(d) { return d[{{chartId}}info.x]; }), 
+		d3.max({{chartId}}data, function(d) { return d[{{chartId}}info.x]; })]);
+	{{chartId}}y.domain(d3.extent({{chartId}}data, function(d) { return d[{{chartId}}info.y]; }));
 
   {{chartId}}barchart.append("g")
       .attr("class", "x barChartAxis")
@@ -113,39 +124,26 @@
       .data({{chartId}}data)
     .enter().append("rect")
       .attr("class", "bar{{chartId}} svg-primary")
-      .attr("x", function(d) { return {{chartId}}x(d[{{chartId}}info.x]); })
-      .attr("width", {{chartId}}x.rangeBand())
+      .attr("x", function( d ) { return {{chartId}}x( d.date ); })
+      .attr("width", {{chartId}}barWidth)
       .attr("y", function(d) { return {{chartId}}y(d[{{chartId}}info.y]); })
-      .attr("height", function(d) { return {{chartId}}height - {{chartId}}y(d[{{chartId}}info.y]); })
-			
-	$.each({{chartId}}info.opt, function(index, value) {
-		var {{chartId}}radioBtn = $('<input type="radio" name="barChartOpt{{chartId}}" onClick="updateBarChartColor{{chartId}}()" value="'+value+'">'+value+'</input></br>');
-		$('#barChartRadioArea{{chartId}}').append({{chartId}}radioBtn);
-		{{chartId}}barchart.selectAll(".bar{{chartId}}").attr(value, function(d) { return d[value] });
-	
-	});
+      .attr("height", function(d) { return {{chartId}}height - {{chartId}}y(d[{{chartId}}info.y]); })	
+			.attr("langue", function(d) { return d.langue; })
+			.attr("partie", function(d) { return d.partie; })
+			.append("svg:title")
+	   	.text(function(d) { return d[{{chartId}}info.y]; });
 
-function zoomBarChart{{chartId}}() {
-	//alert("zoom");
-  barchart.select(".xaxis").call(xAxis);
-  barchart.select(".yaxis").call(yAxis);
-  barchart.selectAll(".chart rect").attr("transform", "translate(" + d3.event.translate[0] + ",0)scale(" + d3.event.scale + ", 1)");
-}
 
-function updateBarChartColor{{chartId}}() {
-	var radioValue{{chartId}} = $('input[type=radio][name=barChartOpt{{chartId}}]:checked').attr('value');
-	{% for opt in data.0.opt %}
-		if (radioValue{{chartId}} == "{{opt}}")
-		{
-				$(".bar{{chartId}}").attr("style","");
-				$(".bar{{chartId}}[{{opt}}=i").attr("class","bar{{chartId}} svg-danger");
-				$(".bar{{chartId}}[{{opt}}=f").attr("class","bar{{chartId}} svg-info");
-		}
-	{% endfor %}
-	if (radioValue{{chartId}} == "---")
-	{
-		$(".bar{{chartId}}").attr("class","bar{{chartId}} svg-primary");
-	}
+function updateBarChartColor{{chartId}}(name) {
+
+	if(name)
+		$(".bar{{chartId}}").each(function() {
+			$(this).attr("class", "bar{{chartId}} svg-" + {{chartId}}infoColor[name][$(this).attr(name)]);
+		});
+	else
+		$(".bar{{chartId}}").each(function() {
+			$(this).attr("class", "bar{{chartId}} svg-primary");
+		});
 }
 
 </script>

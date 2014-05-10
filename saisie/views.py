@@ -84,11 +84,12 @@ def creerPersonne(request):
 		if id != '': 	#update
 			instance = Personne.objects.get(id=int(id))
 			personne = PersonneForm(data, instance=instance)			
-			message = data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
-		else :				#insert
-			personne = PersonneForm(data)
 			message = data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été mise à jour'
-		
+		else :				#insert			
+			personne = PersonneForm(data)			
+			message = data['prenom'] + ' ' + data['nom'] + u'</a></b> a bien été ajouté dans la base'
+			
+			
 		try:
 			instance = personne.save()
 			message = u'<b><a href="/personnes/' + str(instance.id) + '">' + message
@@ -126,17 +127,17 @@ def creerPiece(request):
 		# Si c'est un update plutot qu'un insert
 		id = data['pieceForm_id']
 		del data['pieceForm_id']
-		if id != '': 	#update
+		if id != '': 	#update		
 			instance = Piece.objects.get(id=int(id))
 			piece = PieceForm(data, instance=instance)
-			message = data['titre'] + u'</a></b> a bien été ajouté dans la base'
+			message = data['titre']  + u'</a></b> a bien été mise à jour'		
 		else :				#insert
 			piece = PieceForm(data)
-			message = data['titre']  + u'</a></b> a bien été mise à jour'
+			message = data['titre'] + u'</a></b> a bien été ajouté dans la base'
 		
 		try:
 			instance = piece.save()
-			message = u'<b><a href="/pieces/' + str(instance.id) + message
+			message = u'<b><a href="/pieces/' + str(instance.id) + u'">' + message
 			for auteur in auteurs : instance.auteurs.add(auteur)
 			return saisie(request, active_tab='Piece',alert='on',alert_type='success',alert_message=message)
 		except ValidationError as e:
@@ -152,12 +153,19 @@ def creerPiece(request):
 @login_required(login_url='/login/')
 def creerSoiree(request):
 	if request.POST:
+	
+		previous_values = {'soireeForm':request.POST}
 		
 		#Page Registre
 		page_registre = PageRegistreForm(request.POST)
 		try : page_registre.save()
 		except ValueError as e:
-			page_registre = PageRegistre.objects.get(ref_registre=request.POST['ref_registre'], num_page_pdf=request.POST['num_page_pdf'])
+			try :
+				page_registre = PageRegistre.objects.get(ref_registre=request.POST['ref_registre'], num_page_pdf=request.POST['num_page_pdf'])
+			except Exception as e:
+				message = "Erreur concernant la page de registre (le numéro de page doit etre un nombre)"
+				return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message,
+				  previous_values = previous_values)
 
 		try :
 			#budget soiree
@@ -301,15 +309,19 @@ def creerSoiree(request):
 		except ValidationError as e:
 			message = ' '.join(e.messages)
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message,
-			  previous_values = request.POST)
+			  previous_values = previous_values)
 		except IntegrityError:
 			message = 'Une soiree utilise déjà cette page de registre'
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message,
-			  previous_values = request.POST)
+			  previous_values = previous_values)
 		except CurrencyError as e:
-			message = 'La valeur de '+e.message+' n\'a pas été entré correctement : livre,sou,denier'
+			message = 'Une valeur monnétaire n\'a pas été entré correctement : livre,sou,denier'
 			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message,
-			  previous_values = request.POST)
+			  previous_values = previous_values)
+		except Exception as e:
+			message = str(e)
+			return saisie(request, active_tab='Soiree',alert='on',alert_type='danger',alert_message=message,
+			  previous_values = previous_values)
 			
 
 @login_required(login_url='/login/')

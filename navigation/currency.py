@@ -2,11 +2,9 @@
 
 
 
-class CurrencyException(Exception):
-	def __init__(self, value):
-		self.value = value
-	def __str__(self):
-		return repr(self.value)
+class CurrencyError(Exception):
+	def __init__(self):
+		self.value = 0
 
 # Change une chaine de caractere de la forme 12,25,54 (livre, sou, denier) une un entier (la valeur en denier)
 def currencyToNumber(strValue):
@@ -18,7 +16,7 @@ def currencyToNumber(strValue):
 	elif len(listValue) == 1 :
 		return (int(listValue[0])*240)
 	else:
-		raise CurrencyException('')
+		raise CurrencyError()
 		
 def numberToCurrency(intValue):
 	livreValue = intValue/240

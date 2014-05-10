@@ -3,5 +3,5 @@ from stats import views
 
 urlpatterns = patterns('',
   # .../saisie/
-  url(r'^$', views.statsForm),  
+  url(r'^$', views.statsForm),   
 	)

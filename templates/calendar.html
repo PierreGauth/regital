@@ -50,9 +50,9 @@
 <div id="carousel-calendar" class="carousel slide vertical" data-ride="carousel" data-interval="0" style="overflow:hidden;">
 	<div id="toolTipsArea" style="position:relative;z-index:1;opacity:0.7;"></div>
   <div id="slideList" class="carousel-inner">
-		<div class="item calendar calendar1697"></div>
-		<div class="item active calendar calendar1700"></div> 
-		<div class="item calendar calendar1703"></div>
+		<div class="item calendar calendar1698"></div>
+		<div class="item active calendar calendar1701"></div> 
+		<div class="item calendar calendar1704"></div>
   </div>
  	<div id="load_calendar"><div class="progress progress-striped active"><br/><br/><br/>
 		<div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" width=100%></div>
@@ -68,7 +68,7 @@
 <script src="/static/js/d3.min.js"></script>
 <script>
 
-var currentDate = 1700;
+var currentDate = 1701;
 
 var width = 960,
     height = 136,
@@ -79,14 +79,6 @@ var day = d3.time.format("%w"),
 	year = d3.time.format("%Y"),
   percent = d3.format(".1%"),
   format = d3.time.format("%Y-%m-%d");
-
-	/*var color = d3.scale.quantize()
-    .domain([-1, 1])
-    .range(d3.range(3).map(function(d) {
-				//alert(d); 
-				if (d==1) return "svg-primary"; 
-				else return "svg-muted";
-			}));*/
 			
 var color = {"undefined":"","filled":"svg-primary","empty":"svg-success"}
 
@@ -196,7 +188,10 @@ function supprToolType() {
 }
 
 function clickDay(date) {	
-	if(clickDay.caller.arguments[0].target.getAttribute('class') == 'day calendar_rect_filled') {
+	if(clickDay.caller.arguments[0].target.getAttribute('class') == 'day '+color['filled']) {
+		window.location.href= "/soirees/" + date; 
+	}
+	else if(clickDay.caller.arguments[0].target.getAttribute('class') == 'day '+color['empty']) {
 		window.location.href= "/soirees/" + date; 
 	}
 {% if user.is_authenticated %}
@@ -207,10 +202,10 @@ function clickDay(date) {
 }
 
 $(function() {
-	createCalendar(1699,1704, ".calendar1700");
+	createCalendar(1699,1704, ".calendar1701");
 	window.document.getElementById('load_calendar').innerHTML='';
-	createCalendar(1696,1701, ".calendar1697");
-	createCalendar(1702,1707, ".calendar1703");
+	createCalendar(1696,1701, ".calendar1698");
+	createCalendar(1702,1707, ".calendar1704");
 });
 
 </script>

@@ -1,31 +1,30 @@
 
 {% comment %}
 
-			Template pour les bar chart
+	Template pour les line chart
 			
-			Utilisation :
-				Il suffit de passer une variable data contenant une liste de dict champs : valeurs
-				Le premier éléments de cette liste est un élément particulier qui permet de savoir quel
-				champs est a afficher en abscisse, en ordonnée ou en option (représenté par la couleur des barres)
-				Ce premier élément est un dictionnaire qui doit contenir la clef x, la clef y et la clef opt 
+	Utilisation :
+		Il suffit de passer une variable metadata définie le champs en abscisse et ceux en ordonné,
+		et une variable data qui contient une liste de dictionnaire.   
+	
+	Exemple :
+		metadata = 
+			{'x' : 'date', 'y' : ['nbSpectateur','nbSpecPremiereLoge','nbSpecParterre']}
+		data = 
+			[	
+				{'date': '1700-01-01', 'nbSpectateur' : 1024, 'nbSpecPremiereLoge' : 453, 'nbSpecParterre' : 732},
+				{'date': '1700-01-02', 'nbSpectateur' : 1234, 'nbSpecPremiereLoge' : 423, 'nbSpecParterre' : 756},
+				{'date': '1700-01-03', 'nbSpectateur' : 124, 'nbSpecPremiereLoge' : 253, 'nbSpecParterre' : 742},
+				{'date': '1700-01-04', 'nbSpectateur' : 2124, 'nbSpecPremiereLoge' : 53, 'nbSpecParterre' : 832},
+				{'date': '1700-01-05', 'nbSpectateur' : 3124, 'nbSpecPremiereLoge' : 453, 'nbSpecParterre' : 752},
+				{'date': '1700-01-06', 'nbSpectateur' : 1240, 'nbSpecPremiereLoge' : 353, 'nbSpecParterre' : 733},
+				{'date': '1700-01-07', 'nbSpectateur' : 124, 'nbSpecPremiereLoge' : 423, 'nbSpecParterre' : 732},
+				{'date': '1700-01-08', 'nbSpectateur' : 924, 'nbSpecPremiereLoge' : 413, 'nbSpecParterre' : 732}
+			]	
 			
-			Exemple :
-				[
-					{'x' : 'temps', 'y' : 'population', 'opt' : ['nationalité', 'age']},
-					{'temps' : '1', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '2', 'population : '153	, 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '3', 'population : '453', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '4', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '5', 'population : '163', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '6', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '7', 'population : '83',  'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '8', 'population : '3',   'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '9', 'population : '13',  'nationalité' : 'test', 'age' : 'truc' }
-				]
-				Ces donnée permetterons d'afficher un bar chart de la population selon le temps avec la possibilité de 
-				colorer les barres selon la nationalité ou l'age
-				
-				/!\ le champ y doit être des valeurs numérique
+		Une checkbox sera creer par champs y, elle permettera d'afficher ou non ce champs sur le graphiique		
+		/!\ le champ x doit être des dates
+		
 {% endcomment %}
 
 <style>
@@ -46,13 +45,11 @@
 
 .line {
   fill: none;
-  stroke: steelblue;
   stroke-width: 1.5px;
 }
 </style>
 
-<div id="lineChartRadioArea{{chartId}}">
-	<input type="radio" name="lineChartOpt{{chartId}}" value="---" checked="checked">Rien</input></br>
+<div id="lineChartCheckboxArea{{chartId}}">
 </div>
 <div class="lineChartArea{{chartId}}"></div>
 
@@ -60,8 +57,7 @@
 <script>
 
 var {{chartId}}data = {{data|safe}};
-var {{chartId}}info = {{chartId}}data[0];
-{{chartId}}data.splice(0,1);
+var {{chartId}}info = {{metadata|safe}};
 
 var {{chartId}}margin = {top: 40, right: 20, bottom: 30, left: 40},
     {{chartId}}width = 960 - {{chartId}}margin.left - {{chartId}}margin.right,
@@ -86,10 +82,6 @@ var {{chartId}}yAxis = d3.svg.axis()
     .scale({{chartId}}y)
     .orient("left");	
 
-var {{chartId}}line = d3.svg.line()
-    .x(function(d) { return {{chartId}}x(d[{{chartId}}info.x]); })
-    .y(function(d) { return {{chartId}}y(d[{{chartId}}info.y]); });
-
 var {{chartId}}svg = d3.select(".lineChartArea{{chartId}}").append("svg")
     .attr("width", {{chartId}}width + {{chartId}}margin.left + {{chartId}}margin.right)
     .attr("height", {{chartId}}height + {{chartId}}margin.top + {{chartId}}margin.bottom)
@@ -97,7 +89,7 @@ var {{chartId}}svg = d3.select(".lineChartArea{{chartId}}").append("svg")
     .attr("transform", "translate(" + {{chartId}}margin.left + "," + {{chartId}}margin.top + ")");
 		
 {{chartId}}x.domain(d3.extent({{chartId}}data, function(d) { return d[{{chartId}}info.x]; }));
-{{chartId}}y.domain(d3.extent({{chartId}}data, function(d) { return d[{{chartId}}info.y]; }));
+{{chartId}}y.domain(d3.extent({{chartId}}data, function(d) { return d[{{chartId}}info.y[0]]; }));
 
 {{chartId}}svg.append("g")
     .attr("class", "x lineChartAxis")
@@ -112,11 +104,41 @@ var {{chartId}}svg = d3.select(".lineChartArea{{chartId}}").append("svg")
     .attr("y", 6)
     .attr("dy", ".71em")
     .style("text-anchor", "end")
-    .text("Price ($)");
+    .text({{chartId}}info.y[0]);
+		
+var {{chartId}}color = ['primary', 'danger', 'warning', 'success', 'info', 'defautl']
 
+{% for y in metadata.y %}
+
+checkbox = '<input type="checkbox" name="{{y}}" onclick="updateLine(\'{{chartId}}line{{y}}\', this)" checked="checked"/><span class="bg-'+{{chartId}}color[{{forloop.counter0}}]+'">{{y}}</span><br/>';
+$('#lineChartCheckboxArea{{chartId}}').append(checkbox);
+
+var {{chartId}}line{{y}} = d3.svg.line()
+    .x(function(d) { return {{chartId}}x(d[{{chartId}}info.x]); })
+    .y(function(d) { return {{chartId}}y(d['{{y}}']); });
+		
+//function {{chartId}}tip{{y}}() {
+	//var m = d3.svg.mouse(this);
+  //d3.select("#{{chartId}}line{{y}}").select("title").text("azerty");
+//}
+		
 {{chartId}}svg.append("path")
     .datum({{chartId}}data)
-    .attr("class", "line")
-    .attr("d", {{chartId}}line);
+		.attr("id", "{{chartId}}line{{y}}")
+    .attr("class", "line line-"+{{chartId}}color[{{forloop.counter0}}])
+    .attr("d", {{chartId}}line{{y}});
+		//.on("mousemove", {{chartId}}tip{{y}})
+    //.append("title");
+		
+{% endfor %}
+
+function updateLine(id, checkbox) {
+	if(checkbox.checked) {
+		$("#"+id).attr("display","inline");
+	}
+	else {
+		$("#"+id).attr("display","none");
+	}
+}
 		
 </script>

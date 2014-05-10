@@ -1,90 +1,211 @@
 
 {% comment %}
 
-			Template pour les bar chart
+			Template pour les pie chart
 			
 			Utilisation :
 				Il suffit de passer une variable data contenant une liste de dict champs : valeurs
 				Le premier éléments de cette liste est un élément particulier qui permet de savoir quel
-				champs est a afficher en abscisse, en ordonnée ou en option (représenté par la couleur des barres)
-				Ce premier élément est un dictionnaire qui doit contenir la clef x, la clef y et la clef opt 
+				champs sert a la repartition, et quels champs servent à la coloration
+				Ce premier élément est un dictionnaire qui doit contenir la clef rep, la clef color
 			
 			Exemple :
-				[
-					{'x' : 'temps', 'y' : 'population', 'opt' : ['nationalité', 'age']},
-					{'temps' : '1', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '2', 'population : '153	, 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '3', 'population : '453', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '4', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '5', 'population : '163', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '6', 'population : '123', 'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '7', 'population : '83',  'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '8', 'population : '3',   'nationalité' : 'test', 'age' : 'truc' },
-					{'temps' : '9', 'population : '13',  'nationalité' : 'test', 'age' : 'truc' }
-				]
+				{
+					'Avec' : [
+						{'rep' : 'nbJoueAvec', 'color' : 'nomPiece'},
+						{'nbJoueAvec': 7, 'nomPiece' : 'Alceste'},
+						{'nbJoueAvec': 2, 'nomPiece' : 'truc'},
+						{'nbJoueAvec': 1, 'nomPiece' : 'test'},
+						{'nbJoueAvec': 3, 'nomPiece' : 'blabla'},
+						{'nbJoueAvec': 2, 'nomPiece' : 'machin'},
+						{'nbJoueAvec': 7, 'nomPiece' : 'Alceste2'},
+						{'nbJoueAvec': 2, 'nomPiece' : 'truc2'},
+						{'nbJoueAvec': 1, 'nomPiece' : 'test2'},
+						{'nbJoueAvec': 3, 'nomPiece' : 'blabla2'}
+					],
+					'Musicien' : [
+						{'rep' : 'nbJoue', 'color' : 'avecsans'},
+						{'nbJoue': 10, 'avecsans' : 'Avec'},
+						{'nbJoue': 5, 'avecsans' : 'Sans'},
+					]
+				}
 				Ces donnée permetterons d'afficher un bar chart de la population selon le temps avec la possibilité de 
 				colorer les barres selon la nationalité ou l'age
 				
 				/!\ le champ y doit être des valeurs numérique
 {% endcomment %}
 
+{% load math_filter %}
+
 <style>
 .pieChartArea{{chartId}} {
-  font: 10px sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
 }
 
-.arc path {
-  stroke: #fff;
+path.slice{
+	stroke-width:2px;
 }
+
+polyline{
+	opacity: .3;
+	stroke: black;
+	stroke-width: 2px;
+	fill: none;
+}}
 </style>
 
-<div id="pieChartRadioArea{{chartId}}">
-	<input type="radio" name="pieChartOpt{{chartId}}" value="---" checked="checked">Rien</input></br>
+<div id="pieChartRadioArea{{chartId}}" style="position:relative;top:{{height|div:2|add:-10}}px;left:{{width|div:2|add:-20}}px;z-index:2;width:{{width|div:6}}px" >
+	{% for name,value in data.items %}
+		<input type="radio" name="pieChartOpt{{chartId}}" {% if forloop.first %}checked="checked"{%endif%} onclick="{{chartId}}change({{value}})">{{name}}</input></br>
+	{% endfor %}
 </div>
-<div class="pieChartArea{{chartId}}"></div>
+<div class="pieChartArea{{chartId}}" style="position:absolute;top:{{height|div:10}}px;left:{{width|div:20}}px;width:{{width}}px;height:{{height}}px"></div>
 
-<script src="/static/js/d3.min.js"></script>
 <script>
 
-var {{chartId}}data = {{data|safe}};
-var {{chartId}}info = {{chartId}}data[0];
-{{chartId}}data.splice(0,1);
-
-var {{chartId}}width = 960,
-    {{chartId}}height = 500,
+	var {{chartId}}width = {{width}},
+    {{chartId}}height = {{height}},
     {{chartId}}radius = Math.min({{chartId}}width, {{chartId}}height) / 2;
 
-var {{chartId}}color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+	var {{chartId}}svg = d3.select(".pieChartArea{{chartId}}")
+		.append("svg")
+		.append("g")
 
-var {{chartId}}arc = d3.svg.arc()
-    .outerRadius({{chartId}}radius - 10)
-    .innerRadius({{chartId}}radius - 100);
+	{{chartId}}svg.append("g")
+		.attr("class", "slices");
+	{{chartId}}svg.append("g")
+		.attr("class", "labels");
+	{{chartId}}svg.append("g")
+		.attr("class", "lines");
 
-var {{chartId}}pie = d3.layout.pie()
-    .sort(null)
-    .value(function(d) { return d[{{chartId}}info.rep]; });
+	var {{chartId}}arc = d3.svg.arc()
+		.outerRadius({{chartId}}radius * 0.8)
+		.innerRadius({{chartId}}radius * 0.4);
 
-var {{chartId}}svg = d3.select(".pieChartArea{{chartId}}").append("svg")
-    .attr("width", {{chartId}}width)
-    .attr("height", {{chartId}}height)
-  .append("g")
-    .attr("transform", "translate(" + {{chartId}}width / 2 + "," + {{chartId}}height / 2 + ")");
-		
-var {{chartId}}g = {{chartId}}svg.selectAll(".arc")
-      .data({{chartId}}pie({{chartId}}data))
-    .enter().append("g")
-      .attr("class", "arc");
+	var {{chartId}}outerArc = d3.svg.arc()
+		.innerRadius({{chartId}}radius * 0.9)
+		.outerRadius({{chartId}}radius * 0.9);
 
-  {{chartId}}g.append("path")
-      .attr("d", {{chartId}}arc)
-      .style("fill", function(d) { return {{chartId}}color(d.data[{{chartId}}info.color])});
+	{{chartId}}svg.attr("transform", "translate(" + {{chartId}}width / 2 + "," + {{chartId}}height / 2 + ")");
 
-  {{chartId}}g.append("text")
-      .attr("transform", function(d) { return "translate(" + {{chartId}}arc.centroid(d) + ")"; })
-      .attr("dy", ".35em")
-      .style("text-anchor", "middle")
-      .text(function(d) { return d.data[{{chartId}}info.color]; });
+{% for name,value in data.items %}
+	{% if forloop.first %}{{chartId}}change({{value|safe}});{%endif%}
+{% endfor %}		
+			
+function {{chartId}}change(data) {
 
+	var {{chartId}}info = data[0];
+	data.splice(0,1);
+	
+	var {{chartId}}pie = d3.layout.pie()
+	.sort(null)
+	.value(function(d) {
+		return d[{{chartId}}info.rep];
+	});
+	
+	var colorDomain = [];
+	var total = 0;
+	data.map(function(d) { 
+		if( colorDomain.indexOf(d[{{chartId}}info.color]) < 0) { colorDomain.push(d[{{chartId}}info.color]); }
+		total += d[{{chartId}}info.rep];
+	});
+	
+	var {{chartId}}color = d3.scale.ordinal()
+		.domain(colorDomain)
+		.range(["svg-primary", "svg-warning", "svg-danger", "svg-success", "svg-info", "svg-default"]);
+	
+	var {{chartId}}key = function(d){ return d.data[{{chartId}}info.color]; };
+	
+	/* ------- PIE SLICES -------*/
+	var slice = {{chartId}}svg.select(".slices").selectAll("path.slice")
+		.data({{chartId}}pie(data), {{chartId}}key);
+
+	slice.enter()
+		.insert("path")
+		.attr("class", function(d) { return "slice " + {{chartId}}color(d.data[{{chartId}}info.color]);})
+		.append("svg:title")
+   	.text(function(d) { return Math.round(d.data[{{chartId}}info.rep]*1000/total)/10 + '% (' + d.data[{{chartId}}info.rep] + ")"; });
+
+	slice		
+		.transition().duration(1000)
+		.attrTween("d", function(d) {
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				return {{chartId}}arc(interpolate(t));
+			};
+		})
+
+	slice.exit()
+		.remove();
+
+	/* ------- TEXT LABELS -------*/
+	var text = {{chartId}}svg.select(".labels").selectAll("text")
+		.data({{chartId}}pie(data), {{chartId}}key);
+
+	text.enter()
+		.append("text")
+		.attr("dy", ".35em")
+		.text(function(d) {
+			return d.data[{{chartId}}info.color];
+		});
+	
+	function midAngle(d){
+		return d.startAngle + (d.endAngle - d.startAngle)/2;
+	}
+
+	text.transition().duration(1000)
+		.attrTween("transform", function(d) {
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				var pos = {{chartId}}outerArc.centroid(d2);
+				pos[0] = {{chartId}}radius * (midAngle(d2) < Math.PI ? 1 : -1);
+				return "translate("+ pos +")";
+			};
+		})
+		.styleTween("text-anchor", function(d){
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				return midAngle(d2) < Math.PI ? "start":"end";
+			};
+		});
+
+	text.exit()
+		.remove();
+
+	/* ------- SLICE TO TEXT POLYLINES -------*/
+
+	var polyline = {{chartId}}svg.select(".lines").selectAll("polyline")
+		.data({{chartId}}pie(data), {{chartId}}key);
+	
+	polyline.enter()
+		.append("polyline");
+
+	polyline.transition().duration(1000)
+		.attrTween("points", function(d){
+			this._current = this._current || d;
+			var interpolate = d3.interpolate(this._current, d);
+			this._current = interpolate(0);
+			return function(t) {
+				var d2 = interpolate(t);
+				var pos = {{chartId}}outerArc.centroid(d2);
+				pos[0] = {{chartId}}radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+				return [{{chartId}}arc.centroid(d2), {{chartId}}outerArc.centroid(d2), pos];
+			};			
+		});
+	
+	polyline.exit()
+		.remove();
+};
 
 </script>
