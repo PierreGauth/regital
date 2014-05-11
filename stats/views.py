@@ -97,7 +97,7 @@ def quantize(data,freq,func):
 			if func == 'sum' : newData[datetime.date(k.year,1,1)] += data[k]
 			else : newData[datetime.date(k.year,1,1)] += 1
 			
-	elif freq == 'decenie':
+	elif freq == 'decennie':
 		for date in daterange(min(dates),max(dates),'decade'):
 			newData[date] = 0
 		for k,v in data.items():
