@@ -15,6 +15,9 @@
 
 <link href="/static/css/datepicker.css" rel="stylesheet"> 
 
+<div id="{{alertZoneId}}">
+</div>
+
 <form id='{{formId}}' class="form-horizontal" method="post" action="{{action}}"> {% csrf_token %} 
 {% block form %}
 {% for nom,formset in formset_list.items %} 
