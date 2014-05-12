@@ -11,7 +11,7 @@ PersonneForm = modelform_factory( Personne,
 		'plus_dinfo','date_de_deces_text','date_de_deces_isComplete','date_de_naissance_text','date_de_naissance_isComplete'],
 	widgets={
     'nom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Nom', 'onblur' :'recupPersonneInfo()'}),
-    'prenom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Prénom', 'onblur' :'recupPersonneInfo()'}),
+    'prenom': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Prénom'}),
     'pseudonyme': forms.TextInput(attrs={'class' : 'form-control', 'placeholder' : 'Pseudonyme'}),
     'genre': forms.RadioSelect(attrs={'class' : 'radio inline'}),
     'nationalite': forms.Select(attrs={'class' : 'form-control'}),

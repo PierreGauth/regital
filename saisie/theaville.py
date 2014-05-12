@@ -11,11 +11,11 @@ def searchPiece(request, titre='', auteur=''):
 						'rep_de_annee':'1709', 'rep_a_annee':'1794'}
 
 	r = requests.get("http://www.theaville.org/kitesite/index.php", params=payload,	 
-	#				 proxies= 
-	#				 {
-	#					 "http": "http://cache.wifi.univ-nantes.fr:3128",
-	#					 "https": "http://cache.wifi.univ-nantes.fr:3128",
-	#				 }
+					 proxies= 
+					 {
+						 "http": "http://cache.wifi.univ-nantes.fr:3128",
+						 "https": "http://cache.wifi.univ-nantes.fr:3128",
+					 }
 	)
 	page = r.text
 #	page = getPage1()
