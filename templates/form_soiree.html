@@ -175,9 +175,7 @@
 $(function(){ 
 
 {% for date_picker_id in date_picker_id_list %} 
-	$('#{{ date_picker_id }}').datepicker({format: 'yyyy-mm-dd'}).on('changeDate', function(ev) { 
-		this.hide(); 
-	}).data('datepicker');
+	$('#{{ date_picker_id }}').datepicker({format: 'yyyy-mm-dd'}).data('datepicker');
 {% endfor %}
 
 {% load type_filter %}
