@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'navigation',
     'dataManager',
     'saisie',
+    'importcsv',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

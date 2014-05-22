@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
 from navigation import views
+from importcsv import inputs
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -15,6 +16,7 @@ urlpatterns = patterns('',
 	url(r'^soirees/$', views.listSoirees),
 	url(r'^soirees/(?P<date>\d{4}-\d{2}-\d{2})$', views.detailsSoiree),
 	url(r'^saisie/', include('saisie.urls')),
-	url(r'^stats/', include('stats.urls')),	
+	url(r'^stats/', include('stats.urls')),
+	url(r'^importcsv/', include('importcsv.urls')),
 	url(r'^$', views.listSoirees),
 )

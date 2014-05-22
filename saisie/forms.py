@@ -68,7 +68,39 @@ SoireeForm = modelform_factory( Soiree,
     'libelle_date_reg': 'Date Registre'
   }
 )
-  
+
+BudgetSoireeFormInputs = modelform_factory( BudgetSoiree,
+  fields=['credit_final_reg', 'debit_initial_reg','montant_cachet','montant_cachet_auteur','nb_total_billets_vendus_reg','nombre_cachets','quart_pauvre_reg','reste_reg','total_depenses_reg','total_recettes_reg','debit_derniere_soiree_reg','total_depenses_corrige_reg'],
+  widgets={
+    'credit_final_reg': forms.NumberInput(),
+    'debit_initial_reg': forms.NumberInput(),
+    'montant_cachet': forms.NumberInput(),
+    'montant_cachet_auteur': forms.NumberInput(),
+    'nb_total_billets_vendus_reg': forms.NumberInput(),
+    'nombre_cachets': forms.NumberInput(),
+    'quart_pauvre_reg': forms.NumberInput(),
+    'reste_reg': forms.NumberInput(),
+    'total_depenses_reg': forms.NumberInput(),
+    'total_recettes_reg': forms.NumberInput(),
+    'debit_derniere_soiree_reg': forms.NumberInput(),
+    'total_depenses_corrige_reg': forms.NumberInput(),
+  },
+  labels={
+    'credit_final_reg':'Crédit Final', 
+    'debit_initial_reg':'Débit Initial',
+    'montant_cachet':'Montant Cachet',
+    'montant_cachet_auteur':'Montant Cachet Auteur',
+    'nb_total_billets_vendus_reg':'Total Billets Vendus',
+    'nombre_cachets':'Nombre Cachets',
+    'quart_pauvre_reg':'Quart Pauvre',
+    'reste_reg':'Reste',
+    'total_depenses_reg': 'Total Dépenses',
+    'total_recettes_reg': 'Total Recettes',
+    'debit_derniere_soiree_reg': 'Débit dernière soirée',
+    'total_depenses_corrige_reg': 'Dépenses corrigées',
+  }
+)
+
 BudgetSoireeForm = modelform_factory( BudgetSoiree,
   fields=['credit_final_reg', 'debit_initial_reg','montant_cachet','montant_cachet_auteur','nb_total_billets_vendus_reg','nombre_cachets','quart_pauvre_reg','reste_reg','total_depenses_reg','total_recettes_reg','debit_derniere_soiree_reg','total_depenses_corrige_reg'],
 	widgets={
@@ -113,6 +145,24 @@ PageRegistreForm = modelform_factory(PageRegistre,
   labels={
     'ref_registre':'Référence Registre',
     'num_page_pdf':'Numéro page PDF',
+  }
+)
+
+DebitFormInputs = modelform_factory(Debit,
+  fields=('type_depense','libelle','montant','traduction','mots_clefs'),
+  widgets={
+    'montant': forms.NumberInput(),
+    'libelle' : forms.TextInput(),
+    'type_depense' : forms.NumberInput(),
+    'traduction' : forms.TextInput(),
+    'mots_clefs' : forms.TextInput(),
+  },
+  labels={
+    'montant':'',
+    'libelle':'',
+    'type_depense':'Type de dépense',
+    'traduction':'',
+    'mots_clefs':'',
   }
 )
 
@@ -161,6 +211,17 @@ BilletterieForm = modelform_factory(Billetterie,
     'nombre_billets_vendus':'',
     'type_billet':'Type billet',
     'commentaire':'',
+  }
+)
+
+RepresentationFormInputs = modelform_factory(Representation,
+  fields=('position','piece','Soiree'),
+  widgets={
+    'position': forms.NumberInput(),
+    'piece' : forms.Select(),
+    'Soiree' : forms.Select(),
+  },
+  labels={
   }
 )
 

@@ -391,7 +391,7 @@ class Piece(models.Model):
 		return u'{0.titre}'.format(self)
 
 	class Meta:
-		unique_together=(('titre', 'date_premiere',),)
+		unique_together=(('titre', ),)
 
 #	def validate_unique(self, *args, **kwargs):
 #		super(Piece, self).validate_unique(*args, **kwargs)

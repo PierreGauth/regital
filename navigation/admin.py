@@ -1,5 +1,6 @@
 from django.contrib import admin
 from navigation.models import *
+from importcsv.models import *
 
 admin.site.register(PageRegistre)
 admin.site.register(TransactionSoiree)
